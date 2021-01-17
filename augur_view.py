@@ -31,6 +31,6 @@ def augur_view():
         page = render_template('index.html', title="Repos - Augur View", repos=data, query_key=query, api_url=URL)
     except Exception as err:
         print(err)
-        page = render_template('index.html', title="Repos - Augur View")
+        page = render_template('index.html')
 
     return page
