@@ -52,8 +52,8 @@
                         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                     </li> -->
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Filter Repos..." aria-label="Search">
+                <form class="d-flex" method="get" action="?">
+                    <input class="form-control me-2" name="q" type="search" placeholder="Filter Repos" aria-label="Search" value="{{query_key}}"></input>
                     <button class="btn btn-outline-dark" type="submit" style="color: white;">Search</button>
                 </form>
             </div>

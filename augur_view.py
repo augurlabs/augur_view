@@ -27,7 +27,10 @@ def augur_view():
                 if query in repo["repo_name"]:
                     results.append(repo)
             data = results
-        page = render_template('index.html', title="Repos - Augur View", repos=data)
+        else:
+            query = ""
+            
+        page = render_template('index.html', title="Repos - Augur View", repos=data, query_key=query)
     except Exception as err:
         print(err)
         page = render_template('index.html', title="Repos - Augur View")
