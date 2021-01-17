@@ -33,54 +33,62 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="#">Repos</a>
-                    </li> <!--
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </li>
+                    <!--
                     <li class="nav-item">
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                    </li> -->
-                </ul>
-                <form class="d-flex" method="get" action="?">
-                    <input class="form-control me-2" name="q" type="search" placeholder="Filter Repos" aria-label="Search" value="{{query_key}}"></input>
-                    <button class="btn btn-outline-dark" type="submit" style="color: white;">Search</button>
-                </form>
-            </div>
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Dropdown
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+        </ul>
+    </li>
+    <li class="nav-item">
+    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+</li> -->
+</ul>
+<form class="d-flex" method="get" action="?">
+    <input class="form-control me-2" name="q" type="search" placeholder="Filter Repos" aria-label="Search" value="{{query_key or ''}}"></input>
+    <button class="btn btn-outline-dark" type="submit" style="color: white;">Search</button>
+</form>
+</div>
+</div>
+</nav>
+
+<!-- body-content -->
+<div class="content">
+    <p>Currently serving: {{api_url or 'api_url unspecified'}}</p>
+    {% if repos %}
+    {% include 'card.html' %}
+    {% elif query_key %}
+    <h1>Your search did not match any repositories</h1>
+    {% else %}
+    <h1>Unable to load repository information</h1>
+    {% endif %}
+</div>
+
+<!-- footer -->
+<div class="jumbotron text-center footer">
+    <div class="d-flex flex-fill align-content-between flex-wrap">
+        <div class="order-1 flex-grow-1">
+            <p style="color: white;">This is a beta build of Augur-View. Experimental frontend features may not be fully functional.</p>
         </div>
-    </nav>
-
-    <!-- body-content -->
-    <div class="content">
-        {% include 'card.html' %}
-    </div>
-
-    <!-- footer -->
-    <div class="jumbotron text-center footer">
-        <div class="d-flex flex-fill align-content-between flex-wrap">
-            <div class="order-1 flex-grow-1">
-                <p style="color: white;">This is a beta build of Augur-View. Experimental frontend features may not be fully functional.</p>
-            </div>
-            <div class="order-2">
-                <a href="https://chaoss.community/">
-                    <img src="{{ url_for('static', filename= 'img/Chaoss_Logo_white.png') }}" class="img-fluid float-center" alt="Chaos Logo" style="width: 50%;">
-                </a>
-            </div>
+        <div class="order-2">
+            <a href="https://chaoss.community/">
+                <img src="{{ url_for('static', filename= 'img/Chaoss_Logo_white.png') }}" class="img-fluid float-center" alt="Chaos Logo" style="width: 50%;">
+            </a>
         </div>
     </div>
+</div>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
 
 </body>
 </html>

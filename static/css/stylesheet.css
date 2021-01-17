@@ -14,6 +14,7 @@ body {
     flex: 1 0 auto; /* Prevent Chrome, Opera, and Safari from letting these items shrink to smaller than their content's default minimum size. */
     padding: 20px;
     color: white;
+    text-align: center;
 }
 
 .footer {
