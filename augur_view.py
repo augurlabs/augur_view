@@ -6,31 +6,37 @@ app = Flask(__name__)
 
 URL = "http://zephyr.osshealth.io:5222/api/unstable"
 
+def requestJson(endpoint):
+    filename = 'cache/' + endpoint.replace("/", ".") + '.json'
+    requestURL = URL + "/" + endpoint
+    try:
+        cache_file = Path(filename)
+        if cache_file.is_file():
+            with open(filename) as f:
+                data = json.load(f)
+        else:
+            with urllib.request.urlopen(requestURL) as url:
+                data = json.loads(url.read().decode())
+                with open(filename, 'w') as f:
+                    json.dump(data, f)
+        return data
+    except Exception as err:
+        print(err)
+
 @app.route('/')
 def augur_view():
     query = request.args.get('q')
 
-    try:
-        cache_file = Path("cache/repos.json")
-        if cache_file.is_file():
-            with open('cache/repos.json') as f:
-                data = json.load(f)
-        else:
-            with urllib.request.urlopen(URL + "/repos") as url:
-                data = json.loads(url.read().decode())
-                with open('cache/repos.json', 'w') as f:
-                    json.dump(data, f)
+    data = requestJson("repos")
 
-        if(query is not None):
-            results = []
-            for repo in data:
-                if query in repo["repo_name"]:
-                    results.append(repo)
-            data = results
+    if(data is None):
+        return render_template('index.html')
 
-        page = render_template('index.html', title="Repos - Augur View", repos=data, query_key=query, api_url=URL)
-    except Exception as err:
-        print(err)
-        page = render_template('index.html')
+    if(query is not None):
+        results = []
+        for repo in data:
+            if query in repo["repo_name"]:
+                results.append(repo)
+        data = results
 
-    return page
+    return render_template('index.html', body="repos-card", title="Repos", repos=data, query_key=query, api_url=URL)

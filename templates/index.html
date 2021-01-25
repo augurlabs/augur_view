@@ -15,7 +15,7 @@
     <link href="{{ url_for('static', filename= 'css/stylesheet.css') }}" rel="stylesheet">
 
     {% if title %}
-    <title>{{title}}</title>
+    <title>{{title}} - Augur View</title>
     {% else %}
     <title>Augur View</title>
     {% endif %}
@@ -47,12 +47,14 @@
     <!-- body-content -->
     <div class="content">
         <p>Currently serving: {{api_url or 'api_url unspecified'}}</p>
-        {% if repos %}
-        {% include 'card.html' %}
-        {% elif query_key %}
-        <h1>Your search did not match any repositories</h1>
-        {% else %}
-        <h1>Unable to load repository information</h1>
+        {% if body == "repos-card" %}
+            {% if repos %}
+                {% include 'card.html' %}
+            {% elif query_key %}
+                <h1>Your search did not match any repositories</h1>
+            {% else %}
+                <h1>Unable to load repository information</h1>
+            {% endif %}
         {% endif %}
     </div>
 
