@@ -6,6 +6,18 @@ app = Flask(__name__)
 
 # URL for all endpoint calls, probably won't be hardcoded for much longer
 URL = "http://augur.osshealth.io:5055/api/unstable"
+try:
+    rootPath = Path(".app_root")
+    if rootPath.is_file():
+        with open(".app_root") as f:
+            approot = f.readline()
+    else:
+        approot = "/"
+except Exception as err:
+    print("Error reading application root from .app_root:")
+    print(err)
+    print("Application root set to [/]")
+    approot = "/"
 
 """
 requestJson:
@@ -53,7 +65,7 @@ def renderRepos(view, query, data):
                 results.append(repo)
         data = results
 
-    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, api_url=URL)
+    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, api_url=URL, root=approot)
 
 # ROUTES ----------------------------------------------------------------------
 
@@ -82,7 +94,7 @@ def repo_groups_view():
                 buffer.append(repo)
         return renderRepos("table", None, buffer)
     else:
-        return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url= URL)
+        return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url= URL, root=approot)
 
 @app.route('/repo/view/pr')
 def repo_issues_view():
@@ -91,4 +103,4 @@ def repo_issues_view():
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('index.html', title='404'), 404
+    return render_template('index.html', title='404', root=approot), 404

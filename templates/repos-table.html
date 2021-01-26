@@ -17,7 +17,7 @@
                 <tr>
                     <th scope="row">{{loop.index}}</th>
                     <td><a href="https://{{ repo.url }}">{{ repo.repo_name }}</a></td>
-                    <td><a href="/groups?q={{ repo.repo_group_id }}">{{ repo.rg_name }}</a></td>
+                    <td><a href="{{root}}groups?q={{ repo.repo_group_id }}">{{ repo.rg_name }}</a></td>
                     <td>TODO</td>
                     <td>{{ repo.commits_all_time }}</td>
                     <td>{{ repo.issues_all_time }}</td>
