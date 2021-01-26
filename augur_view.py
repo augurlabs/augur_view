@@ -1,11 +1,13 @@
-from flask import Flask, render_template, request, abort
-import urllib.request, json
+from flask import Flask, render_template, render_template_string, request, abort
+import urllib.request, json, os
 from pathlib import Path
 
 app = Flask(__name__)
 
 # URL for all endpoint calls, probably won't be hardcoded for much longer
 URL = "http://augur.osshealth.io:5055/api/unstable"
+cacheDir = "cache/"
+
 try:
     rootPath = Path(".app_root")
     if rootPath.is_file():
@@ -38,7 +40,7 @@ requestJson:
         encountered.
 """
 def requestJson(endpoint):
-    filename = 'cache/' + endpoint.replace("/", ".") + '.json'
+    filename = cacheDir + endpoint.replace("/", ".") + '.json'
     requestURL = URL + "/" + endpoint
     try:
         cache_file = Path(filename)
@@ -104,3 +106,13 @@ def repo_issues_view():
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('index.html', title='404', root=approot), 404
+
+@app.route('/cache/clear')
+def clear_cache():
+    try:
+        for f in os.listdir(cacheDir):
+            os.remove(os.path.join(cacheDir, f))
+        return render_template_string('<meta http-equiv="refresh" content="5; URL=' + approot + '"/><p>Cache successfully cleared</p>')
+    except Exception as err:
+        print(err)
+        return render_template_string('<meta http-equiv="refresh" content="5; URL=' + approot + '"/><p>An error occurred while attempting to clear JSON cache</p>')
