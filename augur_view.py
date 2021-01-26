@@ -1,11 +1,30 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, abort
 import urllib.request, json
 from pathlib import Path
 
 app = Flask(__name__)
 
-URL = "http://zephyr.osshealth.io:5222/api/unstable"
+# URL for all endpoint calls, probably won't be hardcoded for much longer
+URL = "http://augur.osshealth.io:5055/api/unstable"
 
+"""
+requestJson:
+    Attempts to load JSON data from cache for the given endpoint.
+    If no cache file is found, a request is made to the URL for
+    the given endpoint and, if successful, the resulting JSON is
+    cached for future use. Cached files will be stored with all
+    '/' characters replaced with '.' for filesystem compatibility.
+
+@PARAM:     endpoint: String
+        A String representation of the requested
+        json endpoint (relative to the api root).
+
+@RETURN:    data: JSON
+        An object representing the JSON data read
+        from either the cache file or the enpoint
+        URL. Will return None if an error is
+        encountered.
+"""
 def requestJson(endpoint):
     filename = 'cache/' + endpoint.replace("/", ".") + '.json'
     requestURL = URL + "/" + endpoint
@@ -23,20 +42,53 @@ def requestJson(endpoint):
     except Exception as err:
         print(err)
 
-@app.route('/')
-def augur_view():
-    query = request.args.get('q')
-
-    data = requestJson("repos")
-
+def renderRepos(view, query, data):
     if(data is None):
-        return render_template('index.html')
+        return render_template('index.html', body="repos-" + view, title="Repos")
 
     if(query is not None):
         results = []
         for repo in data:
-            if query in repo["repo_name"]:
+            if query in repo["repo_name"] or query in str(repo["repo_group_id"]) or query in repo["rg_name"]:
                 results.append(repo)
         data = results
 
-    return render_template('index.html', body="repos-card", title="Repos", repos=data, query_key=query, api_url=URL)
+    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, api_url=URL)
+
+# ROUTES ----------------------------------------------------------------------
+
+@app.route('/')
+@app.route('/repos/views/table')
+def repo_table_view():
+    query = request.args.get('q')
+    return renderRepos("table", query, requestJson("repos"))
+
+@app.route('/repos/views/card')
+def repo_card_view():
+    query = request.args.get('q')
+    return renderRepos("card", query, requestJson("repos"))
+
+@app.route('/groups')
+def repo_groups_view():
+    query = request.args.get('q')
+
+    groups = requestJson("repo-groups")
+
+    if(query is not None):
+        buffer = []
+        data = requestJson("repos")
+        for repo in data:
+            if query == str(repo["repo_group_id"]) or query in repo["rg_name"]:
+                buffer.append(repo)
+        return renderRepos("table", None, buffer)
+    else:
+        return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url= URL)
+
+@app.route('/repo/view/pr')
+def repo_issues_view():
+    data = requestJson('collection_status/pull_requests')
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('index.html', title='404'), 404

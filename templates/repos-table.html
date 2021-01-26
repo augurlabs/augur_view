@@ -1,0 +1,34 @@
+{% if repos %}
+    <div class="rounded" style="background-color: white; overflow-y: auto;">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Repo Name</th>
+                    <th scope="col">Group</th>
+                    <th scope="col">Reports</th>
+                    <th scope="col">Commits</th>
+                    <th scope="col">Issues</th>
+                    <th scope="col">Change Requests</th>
+                </tr>
+            </thead>
+            <tbody>
+        {% for repo in repos %}
+                <tr>
+                    <th scope="row">{{loop.index}}</th>
+                    <td><a href="https://{{ repo.url }}">{{ repo.repo_name }}</a></td>
+                    <td><a href="/groups?q={{ repo.repo_group_id }}">{{ repo.rg_name }}</a></td>
+                    <td>TODO</td>
+                    <td>{{ repo.commits_all_time }}</td>
+                    <td>{{ repo.issues_all_time }}</td>
+                    <td>TODO</td>
+                </tr>
+        {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% elif query_key %}
+    <h1>Your search did not match any repositories</h1>
+{% else %}
+    <h1>Unable to load repository information</h1>
+{% endif %}
