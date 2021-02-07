@@ -24,16 +24,11 @@
 <body>
     <!-- TOPNAV -->
     {% include 'navbar.html' %}
-
     <!-- body-content -->
     <div class="content">
         <p>Currently serving: {{api_url or 'api_url unspecified'}}</p>
-        {% if body == "repos-card" %}
-            {% include 'repos-card.html' %}
-        {% elif body == "repos-table" %}
-            {% include 'repos-table.html' %}
-        {% elif body == "groups-table" %}
-            {% include 'groups-table.html' %}
+        {% if body %}
+            {% include '%s.html' % body ignore missing %}
         {% else %}
             <h1>404 - Page Not Found</h1>
             <p>The page you were looking for isn't here, try clicking one of the navigation links above</p>

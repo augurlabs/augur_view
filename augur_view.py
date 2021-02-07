@@ -21,6 +21,18 @@ except Exception as err:
     print("Application root set to [/]")
     approot = "/"
 
+requested = []
+
+def cacheFileExists(filename):
+    cache_file = Path(filename)
+    if cache_file.is_file() or filename in requested:
+        return True
+    else:
+        return False
+
+def toCacheFilename(endpoint):
+    return cacheDir + endpoint.replace("/", ".") + '.json'
+
 """
 requestJson:
     Attempts to load JSON data from cache for the given endpoint.
@@ -40,11 +52,10 @@ requestJson:
         encountered.
 """
 def requestJson(endpoint):
-    filename = cacheDir + endpoint.replace("/", ".") + '.json'
+    filename = toCacheFilename(endpoint)
     requestURL = URL + "/" + endpoint
     try:
-        cache_file = Path(filename)
-        if cache_file.is_file():
+        if cacheFileExists(filename) and not filename in requested:
             with open(filename) as f:
                 data = json.load(f)
         else:
@@ -52,6 +63,8 @@ def requestJson(endpoint):
                 data = json.loads(url.read().decode())
                 with open(filename, 'w') as f:
                     json.dump(data, f)
+        if filename in requested:
+            requested.remove(filename)
         return data
     except Exception as err:
         print(err)
@@ -69,12 +82,22 @@ def renderRepos(view, query, data):
 
     return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, api_url=URL, root=approot)
 
-# ROUTES ----------------------------------------------------------------------
+def renderLoading(dest, query, request):
+    requested.append(request)
+    return render_template('index.html', body="loading", title="Loading", d=dest, query_key=query, api_url=URL, root=approot)
+
+
+
+# ROUTES -----------------------------------------------------------------------
 
 @app.route('/')
 @app.route('/repos/views/table')
 def repo_table_view():
     query = request.args.get('q')
+
+    if not cacheFileExists("repos.json"):
+        return renderLoading("repos/views/table", query, "repos.json")
+
     return renderRepos("table", query, requestJson("repos"))
 
 @app.route('/repos/views/card')
@@ -105,7 +128,7 @@ def repo_issues_view():
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('index.html', title='404', root=approot), 404
+    return render_template('index.html', title='404', api_url=URL, root=approot), 404
 
 @app.route('/cache/clear')
 def clear_cache():
