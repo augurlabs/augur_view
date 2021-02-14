@@ -1,5 +1,5 @@
 from flask import Flask, render_template, render_template_string, request, abort
-import urllib.request, json, os
+import urllib.request, json, os, math
 from pathlib import Path
 
 app = Flask(__name__)
@@ -7,6 +7,8 @@ app = Flask(__name__)
 # URL for all endpoint calls, probably won't be hardcoded for much longer
 URL = "http://science.osshealth.io:5008/api/unstable"
 cacheDir = "cache/"
+
+PaginationOffset = 25
 
 try:
     rootPath = Path(".app_root")
@@ -69,7 +71,7 @@ def requestJson(endpoint):
     except Exception as err:
         print(err)
 
-def renderRepos(view, query, data):
+def renderRepos(view, query, data, page = None):
     if(data is None):
         return render_template('index.html', body="repos-" + view, title="Repos")
 
@@ -80,7 +82,19 @@ def renderRepos(view, query, data):
                 results.append(repo)
         data = results
 
-    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, api_url=URL, root=approot)
+    pages = math.ceil(len(data) / PaginationOffset)
+
+    print(pages)
+
+    if page is not None:
+        page = int(page)
+    else:
+        page = 1
+
+    x = PaginationOffset * page
+    data = data[x: x + PaginationOffset]
+
+    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=PaginationOffset, api_url=URL, root=approot)
 
 def renderLoading(dest, query, request):
     requested.append(request)
@@ -94,11 +108,14 @@ def renderLoading(dest, query, request):
 @app.route('/repos/views/table')
 def repo_table_view():
     query = request.args.get('q')
+    page = request.args.get('p')
 
-    if not cacheFileExists("repos.json"):
-        return renderLoading("repos/views/table", query, "repos.json")
+    #if not cacheFileExists("repos.json"):
+    #    return renderLoading("repos/views/table", query, "repos.json")
 
-    return renderRepos("table", query, requestJson("repos"))
+    data = requestJson("repos")
+
+    return renderRepos("table", query, data, page)
 
 @app.route('/repos/views/card')
 def repo_card_view():
@@ -119,11 +136,13 @@ def repo_groups_view():
                 buffer.append(repo)
         return renderRepos("table", None, buffer)
     else:
-        return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url= URL, root=approot)
+        return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url=URL, root=approot)
 
-@app.route('/repo/view/pr')
-def repo_issues_view():
-    data = requestJson('collection_status/pull_requests')
+@app.route('/repos/views/repo/<id>')
+def repo_repo_view(id):
+    # data = requestJson('collection_status/pull_requests')
+
+    return render_template('index.html', body="repo-info", title="Repo", repo=id, api_url=URL, root=approot)
 
 
 @app.errorhandler(404)

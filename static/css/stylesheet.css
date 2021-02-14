@@ -34,3 +34,8 @@ body {
     width: 5px;
     height: 35px;
 }
+
+.paginationActive {
+    background-color: #6134b3;
+    color: white;
+}
