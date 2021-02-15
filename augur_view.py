@@ -125,6 +125,7 @@ def repo_card_view():
 @app.route('/groups')
 def repo_groups_view():
     query = request.args.get('q')
+    page = request.args.get('p')
 
     groups = requestJson("repo-groups")
 
@@ -134,7 +135,7 @@ def repo_groups_view():
         for repo in data:
             if query == str(repo["repo_group_id"]) or query in repo["rg_name"]:
                 buffer.append(repo)
-        return renderRepos("table", None, buffer)
+        return renderRepos("table", query, buffer, page)
     else:
         return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url=URL, root=approot)
 
