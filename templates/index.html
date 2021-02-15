@@ -24,10 +24,9 @@
 <body>
     <!-- TOPNAV -->
     {% include 'navbar.html' %}
-    
+
     <!-- body-content -->
     <div class="content">
-        <p>Currently serving: {{api_url or 'api_url unspecified'}}</p>
         {% if body %}
             {% include '%s.html' % body ignore missing %}
         {% else %}
@@ -41,6 +40,7 @@
         <div class="d-flex flex-fill align-content-between flex-wrap">
             <div class="order-1 flex-grow-1">
                 <p style="color: white;">This is a beta build of Augur-View. Experimental frontend features may not be fully functional.</p>
+                <p style="color: white;">Currently serving: {{api_url or 'api_url unspecified'}}</p>
             </div>
             <div class="order-2">
                 <a href="https://chaoss.community/">
