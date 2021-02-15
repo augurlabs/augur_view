@@ -37,5 +37,6 @@ body {
 
 .paginationActive {
     background-color: #6134b3;
+    border-color: #6134b3;
     color: white;
 }
