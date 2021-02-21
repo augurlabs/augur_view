@@ -78,21 +78,21 @@ def renderRepos(view, query, data, page = None):
     if(query is not None):
         results = []
         for repo in data:
-            if query in repo["repo_name"] or query in str(repo["repo_group_id"]) or query in repo["rg_name"]:
+            if (query in repo["repo_name"]) or (query == str(repo["repo_group_id"])) or (query in repo["rg_name"]):
                 results.append(repo)
         data = results
 
     pages = math.ceil(len(data) / PaginationOffset)
-
-    print(pages)
 
     if page is not None:
         page = int(page)
     else:
         page = 1
 
-    x = PaginationOffset * page
+    x = PaginationOffset * (page - 1)
     data = data[x: x + PaginationOffset]
+
+    print("Pages", pages, "Page", page, "Data", len(data))
 
     return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=PaginationOffset, api_url=URL, root=approot)
 
@@ -128,12 +128,13 @@ def repo_groups_view():
     page = request.args.get('p')
 
     if(query is not None):
-        buffer = []
+#        buffer = []
+#        data = requestJson("repos")
+#        for repo in data:
+#            if query == str(repo["repo_group_id"]) or query in repo["rg_name"]:
+#                buffer.append(repo)
         data = requestJson("repos")
-        for repo in data:
-            if query == str(repo["repo_group_id"]) or query in repo["rg_name"]:
-                buffer.append(repo)
-        return renderRepos("group", None, buffer, page)
+        return renderRepos("table", query, data, page)
     else:
         groups = requestJson("repo-groups")
         return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url=URL, root=approot)
