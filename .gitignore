@@ -3,3 +3,5 @@ __pycache__/
 .app_root
 cache/
 **tmp/
+gunicorn_config.py
+wsgi.py

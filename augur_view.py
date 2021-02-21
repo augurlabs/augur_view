@@ -33,7 +33,7 @@ def cacheFileExists(filename):
         return False
 
 def toCacheFilename(endpoint):
-    return cacheDir + endpoint.replace("/", ".") + '.json'
+    return cacheDir + endpoint.replace("/", ".") + '.agcache'
 
 """
 requestJson:
@@ -127,16 +127,15 @@ def repo_groups_view():
     query = request.args.get('q')
     page = request.args.get('p')
 
-    groups = requestJson("repo-groups")
-
     if(query is not None):
         buffer = []
         data = requestJson("repos")
         for repo in data:
             if query == str(repo["repo_group_id"]) or query in repo["rg_name"]:
                 buffer.append(repo)
-        return renderRepos("table", query, buffer, page)
+        return renderRepos("group", None, buffer, page)
     else:
+        groups = requestJson("repo-groups")
         return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url=URL, root=approot)
 
 @app.route('/repos/views/repo/<id>')
