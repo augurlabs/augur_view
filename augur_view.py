@@ -71,11 +71,22 @@ def requestJson(endpoint):
     except Exception as err:
         print(err)
 
-def renderRepos(view, query, data, page = None):
+"""
+renderRepos:
+    This function renders a list of repos using a given view, while passing query
+    data along. This function also processes pagination automatically for the
+    range of data provided. If a query is provided and filtering is enabled, the
+    data will be filtered using the 'repo_name', 'repo_group_id' or 'rg_name'.
+@PARAM:     view: String
+        A string representing the template to use for displaying the repos.
+@PARAM:     query: String
+        The query argument from the previous page.
+"""
+def renderRepos(view, query, data, page = None, filter = False, pageSource = "repos/views/table"):
     if(data is None):
         return render_template('index.html', body="repos-" + view, title="Repos")
 
-    if(query is not None):
+    if((query is not None) and filter):
         results = []
         for repo in data:
             if (query in repo["repo_name"]) or (query == str(repo["repo_group_id"])) or (query in repo["rg_name"]):
@@ -94,7 +105,7 @@ def renderRepos(view, query, data, page = None):
 
     print("Pages", pages, "Page", page, "Data", len(data))
 
-    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=PaginationOffset, api_url=URL, root=approot)
+    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=PaginationOffset, PS=pageSource, api_url=URL, root=approot)
 
 def renderLoading(dest, query, request):
     requested.append(request)
@@ -115,12 +126,12 @@ def repo_table_view():
 
     data = requestJson("repos")
 
-    return renderRepos("table", query, data, page)
+    return renderRepos("table", query, data, page, True)
 
 @app.route('/repos/views/card')
 def repo_card_view():
     query = request.args.get('q')
-    return renderRepos("card", query, requestJson("repos"))
+    return renderRepos("card", query, requestJson("repos"), True)
 
 @app.route('/groups')
 def repo_groups_view():
@@ -128,13 +139,12 @@ def repo_groups_view():
     page = request.args.get('p')
 
     if(query is not None):
-#        buffer = []
-#        data = requestJson("repos")
-#        for repo in data:
-#            if query == str(repo["repo_group_id"]) or query in repo["rg_name"]:
-#                buffer.append(repo)
+        buffer = []
         data = requestJson("repos")
-        return renderRepos("table", query, data, page)
+        for repo in data:
+            if query == str(repo["repo_group_id"]) or query in repo["rg_name"]:
+                buffer.append(repo)
+        return renderRepos("table", query, buffer, page, False, "groups")
     else:
         groups = requestJson("repo-groups")
         return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url=URL, root=approot)
