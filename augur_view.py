@@ -5,7 +5,7 @@ from pathlib import Path
 app = Flask(__name__)
 
 # URL for all endpoint calls, probably won't be hardcoded for much longer
-URL = "http://science.osshealth.io:5008/api/unstable"
+URL = "http://zephyr.osshealth.io:5222/api/unstable"
 cacheDir = "cache/"
 
 PaginationOffset = 25
