@@ -13,8 +13,10 @@ configFile = "config.yml"
 settings = { 'approot': "/augur/", 'caching': "cache/", 'serving': "default.osshealth.io", 'paginationOffset': 25 }
 
 def loadSettings():
-    with open(configFile) as file:
-        settings = yaml.load(file, Loader=yaml.FullLoader)
+    try:
+        with open(configFile) as file:
+            global settings
+            settings = yaml.load(file, Loader=yaml.FullLoader)
     except Exception as err:
         print("Error reading application settings from [" + configFile + "], default settings kept:")
         print(err)
@@ -22,6 +24,10 @@ def loadSettings():
 loadSettings()
 
 def getSetting(key):
+    if key == 'approot':
+        if settings[key] == "private":
+            with open(".app_root") as f:
+                settings[key] = f.readline()
     return settings[key]
 
 """
@@ -100,6 +106,7 @@ renderRepos:
         The query argument from the previous page.
 """
 def renderRepos(view, query, data, page = None, filter = False, pageSource = "repos/views/table"):
+    PaginationOffset = getSetting('paginationOffset')
     if(data is None):
         return render_template('index.html', body="repos-" + view, title="Repos")
 
@@ -182,7 +189,12 @@ def clear_cache():
     try:
         for f in os.listdir(getSetting('caching')):
             os.remove(os.path.join(getSetting('caching'), f))
-        return render_template_string('<meta http-equiv="refresh" content="5; URL=' + approot + '"/><p>Cache successfully cleared</p>')
+        return render_template_string('<meta http-equiv="refresh" content="5; URL=' + getSetting('approot') + '"/><p>Cache successfully cleared</p>')
     except Exception as err:
         print(err)
-        return render_template_string('<meta http-equiv="refresh" content="5; URL=' + approot + '"/><p>An error occurred while attempting to clear JSON cache</p>')
+        return render_template_string('<meta http-equiv="refresh" content="5; URL=' + getSetting('approot') + '"/><p>An error occurred while attempting to clear JSON cache</p>')
+
+@app.route('/settings/reload')
+def reload_settings():
+    loadSettings()
+    return renderLoading(getSetting('approot'), None, "repos.json")

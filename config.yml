@@ -1,4 +1,4 @@
-approot: "/augur/"
+approot: "private"
 serving: "http://vmware.osshealth.io:5033/api/unstable"
 caching: "cache/"
 paginationOffset: 25
