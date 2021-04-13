@@ -1,15 +1,30 @@
 from flask import Flask, render_template, render_template_string, request, abort
-import urllib.request, json, os, math
+import urllib.request, json, os, math, yaml
 from pathlib import Path
 
 app = Flask(__name__)
 
 # URL for all endpoint calls, probably won't be hardcoded for much longer
-URL = "http://zephyr.osshealth.io:5222/api/unstable"
-cacheDir = "cache/"
+# URL = "http://zephyr.osshealth.io:5222/api/unstable"
+# cacheDir = "cache/"
 
-PaginationOffset = 25
+configFile = "config.yml"
 
+settings = { 'approot': "/augur/", 'caching': "cache/", 'serving': "default.osshealth.io", 'paginationOffset': 25 }
+
+def loadSettings():
+    with open(configFile) as file:
+        settings = yaml.load(file, Loader=yaml.FullLoader)
+    except Exception as err:
+        print("Error reading application settings from [" + configFile + "], default settings kept:")
+        print(err)
+
+loadSettings()
+
+def getSetting(key):
+    return settings[key]
+
+"""
 try:
     rootPath = Path(".app_root")
     if rootPath.is_file():
@@ -22,6 +37,8 @@ except Exception as err:
     print(err)
     print("Application root set to [/]")
     approot = "/"
+"""
+
 
 requested = []
 
@@ -33,7 +50,7 @@ def cacheFileExists(filename):
         return False
 
 def toCacheFilename(endpoint):
-    return cacheDir + endpoint.replace("/", ".") + '.agcache'
+    return getSetting('caching') + endpoint.replace("/", ".") + '.agcache'
 
 """
 requestJson:
@@ -55,7 +72,7 @@ requestJson:
 """
 def requestJson(endpoint):
     filename = toCacheFilename(endpoint)
-    requestURL = URL + "/" + endpoint
+    requestURL = getSetting('serving') + "/" + endpoint
     try:
         if cacheFileExists(filename) and not filename in requested:
             with open(filename) as f:
@@ -105,11 +122,11 @@ def renderRepos(view, query, data, page = None, filter = False, pageSource = "re
 
     print("Pages", pages, "Page", page, "Data", len(data))
 
-    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=PaginationOffset, PS=pageSource, api_url=URL, root=approot)
+    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=PaginationOffset, PS=pageSource, api_url=getSetting('serving'), root=getSetting('approot'))
 
 def renderLoading(dest, query, request):
     requested.append(request)
-    return render_template('index.html', body="loading", title="Loading", d=dest, query_key=query, api_url=URL, root=approot)
+    return render_template('index.html', body="loading", title="Loading", d=dest, query_key=query, api_url=getSetting('serving'), root=getSetting('approot'))
 
 
 
@@ -147,24 +164,24 @@ def repo_groups_view():
         return renderRepos("table", query, buffer, page, False, "groups")
     else:
         groups = requestJson("repo-groups")
-        return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url=URL, root=approot)
+        return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url=getSetting('serving'), root=getSetting('approot'))
 
 @app.route('/repos/views/repo/<id>')
 def repo_repo_view(id):
     # data = requestJson('collection_status/pull_requests')
 
-    return render_template('index.html', body="repo-info", title="Repo", repo=id, api_url=URL, root=approot)
+    return render_template('index.html', body="repo-info", title="Repo", repo=id, api_url=getSetting('serving'), root=getSetting('approot'))
 
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('index.html', title='404', api_url=URL, root=approot), 404
+    return render_template('index.html', title='404', api_url=getSetting('serving'), root=getSetting('approot')), 404
 
 @app.route('/cache/clear')
 def clear_cache():
     try:
-        for f in os.listdir(cacheDir):
-            os.remove(os.path.join(cacheDir, f))
+        for f in os.listdir(getSetting('caching')):
+            os.remove(os.path.join(getSetting('caching'), f))
         return render_template_string('<meta http-equiv="refresh" content="5; URL=' + approot + '"/><p>Cache successfully cleared</p>')
     except Exception as err:
         print(err)

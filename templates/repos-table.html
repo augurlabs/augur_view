@@ -1,4 +1,5 @@
 {% if repos %}
+<!-- Pagination menu start -->
 <nav aria-label="Repository pagination menu" class="overflow-auto">
     <ul class="pagination justify-content-center">
         <li class="page-item {% if activePage == 1 %} disabled {% else %} w3-hover-purple {% endif %}">
@@ -14,8 +15,10 @@
         </li>
     </ul>
 </nav>
+<!-- Table start -->
 <div class="rounded w3-animate-opacity" style="background-color: white; overflow: auto;">
     <table class="table table-striped table-bordered">
+        <!-- Table header start -->
         <thead>
             <tr>
                 <th scope="col">#</th>
@@ -27,6 +30,7 @@
                 <th scope="col">Change Requests</th>
             </tr>
         </thead>
+        <!-- Table rows start -->
         <tbody>
             {% for repo in repos %}
             <tr>
