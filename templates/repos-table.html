@@ -1,5 +1,5 @@
 {% if repos %}
-<!-- Pagination menu start -->
+<!-- Top pagination menu start -->
 <nav aria-label="Repository pagination menu" class="overflow-auto">
     <ul class="pagination">
         <li class="page-item {% if activePage == 1 %} disabled {% else %} w3-hover-purple {% endif %}">
@@ -46,6 +46,21 @@
         </tbody>
     </table>
 </div>
+<!-- Bottom pagination menu start -->
+<br>
+<nav aria-label="Repository pagination menu" class="overflow-auto">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if activePage == 1 %} disabled {% else %} w3-hover-purple {% endif %}">
+            <a class="page-link" href="{{ root }}{{PS}}?{% if query_key %}q={{query_key}}&{% endif %}p={{ activePage - 1 }}" {% if activePage == 1 %} tabindex="-1" {% endif %}>Previous</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="#">{{activePage}}</a>
+        </li>
+        <li class="page-item {% if activePage == pages|int %} disabled {% endif %}">
+            <a class="page-link" href="{{ root }}{{PS}}?{% if query_key %}q={{query_key}}&{% endif %}p={{ activePage + 1 }}" {% if activePage == pages|int %} tabindex="-1" {% endif %}>Next</a>
+        </li>
+    </ul>
+</nav>
 {% elif query_key %}
 <h1>Your search did not match any repositories</h1>
 {% else %}

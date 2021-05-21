@@ -5,3 +5,4 @@ cache/
 **tmp/
 gunicorn_config.py
 wsgi.py
+*.log
