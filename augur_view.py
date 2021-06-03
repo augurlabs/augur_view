@@ -94,6 +94,23 @@ def requestJson(endpoint):
     except Exception as err:
         print(err)
 
+def requestPNG(endpoint):
+    filename = toCacheFilename(endpoint)
+    requestURL = getSetting('serving') + "/" + endpoint
+    try:
+        if cacheFileExists(filename) and not filename in requested:
+            return filename
+        else:
+            with urllib.request.urlopen(requestURL) as url:
+                # data = json.loads(url.read().decode())
+                with open(filename, 'w') as f:
+                    f.write(url.read())
+        if filename in requested:
+            requested.remove(filename)
+        return data
+    except Exception as err:
+        print(err)
+
 """
 renderRepos:
     This function renders a list of repos using a given view, while passing query
@@ -179,11 +196,13 @@ def repo_repo_view(id):
 
     return render_template('index.html', body="repo-info", title="Repo", repo=id, api_url=getSetting('serving'), root=getSetting('approot'))
 
-
+# Code 404 response page, for pages not found
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('index.html', title='404', api_url=getSetting('serving'), root=getSetting('approot')), 404
 
+# API endpoint to clear server cache
+# TODO: Add verification
 @app.route('/cache/clear')
 def clear_cache():
     try:
@@ -194,6 +213,7 @@ def clear_cache():
         print(err)
         return render_template_string('<meta http-equiv="refresh" content="5; URL=' + getSetting('approot') + '"/><p>An error occurred while attempting to clear JSON cache</p>')
 
+# API endpoint to reload settings from disk
 @app.route('/settings/reload')
 def reload_settings():
     loadSettings()

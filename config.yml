@@ -1,4 +1,4 @@
 approot: "private"
 serving: "http://vmware.osshealth.io:5033/api/unstable"
-caching: "cache/"
+caching: "static/cache/"
 paginationOffset: 25
