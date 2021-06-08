@@ -1,120 +1,41 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 <div class="container-fluid mt-4">
-    <div class="card h-100">
-        <div class="card-body" style="color: black;">
-            <a href="https://{{ repo.url }}"><h3 class="card-title">Repository: [ NAME ]</h3></a>
-            <p>This is a mockup of what a repo info page might look like</p>
-            <p>It uses Bootstrap flexible card rows to auto-arrange content between different screen sizes and resolutions</p>
+    <div class="row justify-content-center">
+        {% for image in images %}
+        <div class="row row-cols-1 col-auto g-3">
+            <div class="col">
+                <div class="card" style="width: 256px;">
+                    <img src="{{ url_for('static', filename=image) }}" class="img-fluid" alt="image">
+                </div>
+            </div>
         </div>
-        <div class="card-footer">
-            <small class="text-muted">Repository Report</small>
-        </div>
+        {% endfor %}
     </div>
-    <div class="row justify-content-left">
-        <div class="row row-cols-1 col-auto g-3">
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body" style="color: black;">
-                        <h3>Repository description or data information</h3>
-                        <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus et velit risus. Suspendisse fermentum interdum erat, eget rhoncus neque lobortis sed. Vestibulum sit amet dui aliquet, elementum erat eu, mattis metus. In leo orci, laoreet non lacus sed, vehicula ultricies ante. Sed lacinia ante nulla, sit amet iaculis nunc eleifend ac. Vestibulum diam ipsum, rutrum et nulla gravida, blandit interdum elit. Quisque aliquet turpis justo, eget feugiat lectus hendrerit eget. Nam hendrerit diam felis, vitae fringilla lacus euismod vel. Vivamus in mauris neque. Etiam id ultricies velit. Phasellus in faucibus nisi, at malesuada dolor. Quisque vel facilisis odio.
-                        </p>
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-muted">Repository information or description</small>
-                    </div>
+</div>
+</div>
+
+<div class="modal" id="viewImg" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="imgViewer" style="overflow-x: scroll;">
                 </div>
             </div>
-        </div>
-        <div class="row row-cols-1 col-auto g-3">
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body" style="color: black;">
-                        <h4>Chart Description</h4>
-                        <p>This description goes with the chart to the right</p>
-                        <p>On mobile, the chart will be below</p>
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-muted">Chart information</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row row-cols-1 col-auto g-3">
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body" style="color: black;">
-                        <img src="{{ url_for('static', filename= 'img/contributorReports_Outliers.png') }}" class="img-fluid float-center">
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-muted">Contributor Reports</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row row-cols-1 col-auto g-3">
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body" style="color: black;">
-                        <h4>Hidden Chart</h4>
-                        <p>This chart is hidden under an accordion element.</p>
-			<p>It can be expanded by clicking on the button below:</p>
-                        <div class="accordion accordion-flush" id="accordionFlushExample">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="flush-headingOne">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                        View Chart
-                                    </button>
-                                </h2>
-                                <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-                                    <div class="accordion-body"><img src="{{ url_for('static', filename= 'img/contributorReports_Stacked.png') }}" class="img-fluid float-center"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-muted">Chart information</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row row-cols-1 col-auto g-3">
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body" style="color: black;">
-                        <h4>Chart Description</h4>
-                        <p>This description goes with the chart to the right</p>
-                        <p>On smaller screens, the chart will be below</p>
-                        <p>On larger screens, these may all be on one row</p>
-                        <p>Sometimes the alignment isn't quite right :/</p>
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-muted">Chart information</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row row-cols-1 col-auto g-3">
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body" style="color: black;">
-                        <img src="{{ url_for('static', filename= 'img/contributorReports_Stacked.png') }}" class="img-fluid float-center">
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-muted">Contributor Reports</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row row-cols-1 col-auto g-3">
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body" style="color: black;">
-                        <img src="{{ url_for('static', filename= 'img/contributorReports_Month.png') }}" class="img-fluid float-center">
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-muted">Contributor Reports</small>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $('img').not('.nav-img').on('click', function(e) {
+        $('#imgViewer').html('').append( $(e.currentTarget).clone().removeClass('img-fluid').removeClass('img-thumbnail') )
+        $('#viewImg').modal('show')
+    })
+
+    $('img').not('.nav-img').each(function(i,e) {
+        $(e).wrap('<div class="img-wrapper"></div>')
+    })
+</script>

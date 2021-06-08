@@ -1,6 +1,8 @@
 from flask import Flask, render_template, render_template_string, request, abort
 import urllib.request, json, os, math, yaml
 from pathlib import Path
+import urllib3
+from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__)
 
@@ -21,14 +23,25 @@ def loadSettings():
         print("Error reading application settings from [" + configFile + "], default settings kept:")
         print(err)
 
-loadSettings()
-
 def getSetting(key):
     if key == 'approot':
         if settings[key] == "private":
             with open(".app_root") as f:
                 settings[key] = f.readline()
     return settings[key]
+
+def loadReports():
+    global reports
+    try:
+        with open(getSetting("reports")) as file:
+            reports = yaml.load(file, Loader=yaml.FullLoader)
+    except Exception as err:
+        print("Error reading reports endpoints from [" + getSetting("reports") + "]:")
+        print(err)
+
+loadSettings()
+
+loadReports()
 
 """
 try:
@@ -45,7 +58,6 @@ except Exception as err:
     approot = "/"
 """
 
-
 requested = []
 
 def cacheFileExists(filename):
@@ -55,8 +67,14 @@ def cacheFileExists(filename):
     else:
         return False
 
+def stripStatic(url):
+    return url.replace("static/", "")
+
 def toCacheFilename(endpoint):
-    return getSetting('caching') + endpoint.replace("/", ".") + '.agcache'
+    return getSetting('caching') + endpoint.replace("/", ".").replace("?", "_").replace("=", "_") + '.agcache'
+
+def toCacheURL(endpoint):
+    return stripStatic(getSetting('caching')) + endpoint.replace("/", ".").replace("?", "_").replace("=", "_") + '.agcache'
 
 """
 requestJson:
@@ -97,19 +115,49 @@ def requestJson(endpoint):
 def requestPNG(endpoint):
     filename = toCacheFilename(endpoint)
     requestURL = getSetting('serving') + "/" + endpoint
+    # print(requestURL)
     try:
         if cacheFileExists(filename) and not filename in requested:
-            return filename
+            return toCacheURL(endpoint)
         else:
-            with urllib.request.urlopen(requestURL) as url:
-                # data = json.loads(url.read().decode())
-                with open(filename, 'w') as f:
-                    f.write(url.read())
+            urllib.request.urlretrieve(requestURL, filename)
         if filename in requested:
             requested.remove(filename)
-        return data
+        return toCacheURL(endpoint)
     except Exception as err:
         print(err)
+
+def download(url, cmanager, filename):
+    if cacheFileExists(filename) and not filename in requested:
+        reportImages.append(stripStatic(filename))
+        return
+    response = cmanager.request('GET', url)
+    if "json" in response.headers['Content-Type']:
+        print("WARN: unexpected json response in image request for repo")
+        print(response.data.decode('utf-8'))
+        return
+    if response and response.status == 200:
+        reportImages.append(stripStatic(filename))
+        with open(filename, 'wb') as f:
+            f.write(response.data)
+
+def requestReports(repo_id):
+    threadPools = []
+    global reportImages
+    reportImages = []
+    for report in reports:
+        size = len(reports[report])
+        connection_mgr = urllib3.PoolManager(maxsize=size)
+        thread_pool = ThreadPoolExecutor(size)
+        threadPools.append(thread_pool)
+        for url in reports[report]:
+            filename = toCacheFilename(url + "?repo_id=" + str(repo_id))
+            url = getSetting('serving') + "/" + url + "?repo_id=" + str(repo_id)
+            thread_pool.submit(download, url, connection_mgr, filename)
+
+    # Wait for all connections to resolve, then clean up
+    for thread_pool in threadPools:
+        thread_pool.shutdown()
 
 """
 renderRepos:
@@ -192,9 +240,10 @@ def repo_groups_view():
 
 @app.route('/repos/views/repo/<id>')
 def repo_repo_view(id):
-    # data = requestJson('collection_status/pull_requests')
-
-    return render_template('index.html', body="repo-info", title="Repo", repo=id, api_url=getSetting('serving'), root=getSetting('approot'))
+    requestReports(id)
+    reportImages.sort()
+    # file=requestPNG("contributor_reports/new_contributors_stacked_bar/?repo_id=" + str(id))
+    return render_template('index.html', body="repo-info", images=reportImages, title="Repo", repo=id, api_url=getSetting('serving'), root=getSetting('approot'))
 
 # Code 404 response page, for pages not found
 @app.errorhandler(404)
@@ -211,10 +260,10 @@ def clear_cache():
         return render_template_string('<meta http-equiv="refresh" content="5; URL=' + getSetting('approot') + '"/><p>Cache successfully cleared</p>')
     except Exception as err:
         print(err)
-        return render_template_string('<meta http-equiv="refresh" content="5; URL=' + getSetting('approot') + '"/><p>An error occurred while attempting to clear JSON cache</p>')
+        return render_template_string('<meta http-equiv="refresh" content="5; URL=' + getSetting('approot') + '"/><p>An error occurred while attempting to clear cache</p>')
 
 # API endpoint to reload settings from disk
 @app.route('/settings/reload')
 def reload_settings():
     loadSettings()
-    return renderLoading(getSetting('approot'), None, "repos.json")
+    return render_template_string('<meta http-equiv="refresh" content="5; URL=' + getSetting('approot') + '"/><p>Settings reloaded</p>')
