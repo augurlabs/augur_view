@@ -11,4 +11,4 @@ To run as a local instance:
 3. Run the app
     - `./run.sh`
 
-For installation instructions on a server, see [installation](installation.md).
+For installation instructions on a server, see [installing](installing.md).
