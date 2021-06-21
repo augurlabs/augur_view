@@ -12,3 +12,5 @@ To run as a local instance:
     - `./run.sh`
 
 For installation instructions on a server, see [installing](installing.md).
+
+Copyright 2021 University of Missouri, and University of Nebraska-Omaha
