@@ -1,5 +1,0 @@
-approot: "private"
-serving: "http://vmware.osshealth.io:5033/api/unstable"
-caching: "static/cache/"
-paginationOffset: 25
-reports: "reports.yml"
