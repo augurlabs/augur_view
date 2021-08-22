@@ -1,3 +1,8 @@
+:root {
+    --color-bg: #252525;
+    --color-bg-light: #4a4651;
+    --color-fg: white;
+}
 
 html, body {
     /* IE 10-11 didn't like using min-height */
@@ -7,7 +12,7 @@ html, body {
 body {
     display: flex;
     flex-direction: column;
-    background-color: #252525;
+    background-color: var(--color-bg);
 }
 
 .content {
@@ -21,7 +26,7 @@ body {
 .footer {
     flex-shrink: 0; /* Prevent Chrome, Opera, and Safari from letting these items shrink to smaller than their content's default minimum size. */
     padding: 5px;
-    background-color: #4a4651;
+    background-color: var(--color-bg-light);
     width: 100%;
 }
 

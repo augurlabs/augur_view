@@ -12,7 +12,9 @@ app = Flask(__name__)
 
 configFile = "config.yml"
 
-settings = { 'approot': "/augur/", 'caching': "cache/", 'serving': "default.osshealth.io", 'paginationOffset': 25 }
+settings = { 'approot': "/", 'caching': "static/cache/", 'serving': "default.osshealth.io", 'paginationOffset': 25, 'reports': "reports.yml" }
+
+reports = None;
 
 def loadSettings():
     try:
@@ -22,6 +24,13 @@ def loadSettings():
     except Exception as err:
         print("Error reading application settings from [" + configFile + "], default settings kept:")
         print(err)
+        try:
+            with open(configFile, 'w') as file:
+                print("Attempting to generate default config.yml")
+                yaml.dump(settings, file)
+        except Exception as ioErr:
+            print("Error creating default config:")
+            print(ioErr)
 
 def getSetting(key):
     if key == 'approot':
@@ -142,6 +151,8 @@ def download(url, cmanager, filename):
             f.write(response.data)
 
 def requestReports(repo_id):
+    if reports is None:
+        return
     threadPools = []
     global reportImages
     reportImages = []
@@ -240,6 +251,8 @@ def repo_groups_view():
 
 @app.route('/repos/views/repo/<id>')
 def repo_repo_view(id):
+    if reports is None:
+        return render_template('index.html', body="notice", title="Error", messageTitle="Report Definitions Missing", messageBody="You requested a report for a repo on this instance, but a definition for the report layout was not found.", api_url=getSetting('serving'))
     requestReports(id)
     reportImages.sort()
     # file=requestPNG("contributor_reports/new_contributors_stacked_bar/?repo_id=" + str(id))
