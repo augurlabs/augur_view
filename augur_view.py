@@ -1,8 +1,7 @@
-from flask import Flask, render_template, render_template_string, request, abort
-import urllib.request, json, os, math, yaml
+from flask import Flask, render_template, render_template_string, request, abort, jsonify
 from pathlib import Path
-import urllib3
 from concurrent.futures import ThreadPoolExecutor
+import urllib.request, json, os, math, yaml, urllib3, time, asyncio
 
 app = Flask(__name__)
 
@@ -14,7 +13,9 @@ configFile = "config.yml"
 
 settings = { 'approot': "/", 'caching': "static/cache/", 'serving': "default.osshealth.io", 'paginationOffset': 25, 'reports': "reports.yml" }
 
-reports = None;
+reports = None
+
+report_requests = {}
 
 def loadSettings():
     try:
@@ -67,11 +68,11 @@ except Exception as err:
     approot = "/"
 """
 
-requested = []
+cache_files_requested = []
 
 def cacheFileExists(filename):
     cache_file = Path(filename)
-    if cache_file.is_file() or filename in requested:
+    if cache_file.is_file() or filename in cache_files_requested:
         return True
     else:
         return False
@@ -107,7 +108,7 @@ def requestJson(endpoint):
     filename = toCacheFilename(endpoint)
     requestURL = getSetting('serving') + "/" + endpoint
     try:
-        if cacheFileExists(filename) and not filename in requested:
+        if cacheFileExists(filename) and not filename in cache_files_requested:
             with open(filename) as f:
                 data = json.load(f)
         else:
@@ -115,8 +116,8 @@ def requestJson(endpoint):
                 data = json.loads(url.read().decode())
                 with open(filename, 'w') as f:
                     json.dump(data, f)
-        if filename in requested:
-            requested.remove(filename)
+        if filename in cache_files_requested:
+            cache_files_requested.remove(filename)
         return data
     except Exception as err:
         print(err)
@@ -126,18 +127,18 @@ def requestPNG(endpoint):
     requestURL = getSetting('serving') + "/" + endpoint
     # print(requestURL)
     try:
-        if cacheFileExists(filename) and not filename in requested:
+        if cacheFileExists(filename) and not filename in cache_files_requested:
             return toCacheURL(endpoint)
         else:
             urllib.request.urlretrieve(requestURL, filename)
-        if filename in requested:
-            requested.remove(filename)
+        if filename in cache_files_requested:
+            cache_files_requested.remove(filename)
         return toCacheURL(endpoint)
     except Exception as err:
         print(err)
 
 def download(url, cmanager, filename):
-    if cacheFileExists(filename) and not filename in requested:
+    if cacheFileExists(filename) and not filename in cache_files_requested:
         reportImages.append(stripStatic(filename))
         return
     response = cmanager.request('GET', url)
@@ -150,12 +151,13 @@ def download(url, cmanager, filename):
         with open(filename, 'wb') as f:
             f.write(response.data)
 
-def requestReports(repo_id):
+async def requestReports(repo_id):
     if reports is None:
         return
     threadPools = []
     global reportImages
     reportImages = []
+    report_requests[repo_id] = True
     for report in reports:
         size = len(reports[report])
         connection_mgr = urllib3.PoolManager(maxsize=size)
@@ -170,6 +172,9 @@ def requestReports(repo_id):
     for thread_pool in threadPools:
         thread_pool.shutdown()
 
+    # Remove the request from the queue when completed
+    report_requests.remove(repo_id)
+
 """
 renderRepos:
     This function renders a list of repos using a given view, while passing query
@@ -180,6 +185,14 @@ renderRepos:
         A string representing the template to use for displaying the repos.
 @PARAM:     query: String
         The query argument from the previous page.
+@PARAM:     data: Dictionary
+        The repo data to display on the page
+@PARAM:     page: String = None
+        The current page to use within pagination
+@PARAM:     filter: Boolean = False
+        Filter data using query
+@PARAM:     pageSource: String = "repos/views/table"
+        The base url to use for the page links
 """
 def renderRepos(view, query, data, page = None, filter = False, pageSource = "repos/views/table"):
     PaginationOffset = getSetting('paginationOffset')
@@ -207,8 +220,9 @@ def renderRepos(view, query, data, page = None, filter = False, pageSource = "re
 
     return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=PaginationOffset, PS=pageSource, api_url=getSetting('serving'), root=getSetting('approot'))
 
+# My attempt at a loading page
 def renderLoading(dest, query, request):
-    requested.append(request)
+    cache_files_requested.append(request)
     return render_template('index.html', body="loading", title="Loading", d=dest, query_key=query, api_url=getSetting('serving'), root=getSetting('approot'))
 
 
@@ -253,7 +267,7 @@ def repo_groups_view():
 def repo_repo_view(id):
     if reports is None:
         return render_template('index.html', body="notice", title="Error", messageTitle="Report Definitions Missing", messageBody="You requested a report for a repo on this instance, but a definition for the report layout was not found.", api_url=getSetting('serving'))
-    requestReports(id)
+    asyncio.run(requestReports(id))
     reportImages.sort()
     # file=requestPNG("contributor_reports/new_contributors_stacked_bar/?repo_id=" + str(id))
     return render_template('index.html', body="repo-info", images=reportImages, title="Repo", repo=id, api_url=getSetting('serving'), root=getSetting('approot'))
@@ -280,3 +294,12 @@ def clear_cache():
 def reload_settings():
     loadSettings()
     return render_template_string('<meta http-equiv="refresh" content="5; URL=' + getSetting('approot') + '"/><p>Settings reloaded</p>')
+
+@app.route('/requests/wait/<id>')
+def wait_for_request(id):
+    if report_requests[id] is not None:
+        while report_requests[id]:
+            time.sleep(0.1)
+        return jsonify({"exists": True, "completed": True})
+    else:
+        return jsonify({"exists": False})
