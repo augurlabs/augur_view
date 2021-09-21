@@ -173,7 +173,7 @@ async def requestReports(repo_id):
         thread_pool.shutdown()
 
     # Remove the request from the queue when completed
-    report_requests.remove(repo_id)
+    report_requests.pop(repo_id)
 
 """
 renderRepos:
