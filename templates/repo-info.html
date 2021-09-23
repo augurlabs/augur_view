@@ -13,7 +13,13 @@
         {% endfor %}
     </div>
 </div>
-</div>
+
+<script type="text/javascript">
+    var script = document.createElement("script");
+    script.src = "{{ root }}requests/wait/{{ repo }}";
+
+    document.body.appendChild(script);
+</script>
 
 <div class="modal" id="viewImg" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-fullscreen">
