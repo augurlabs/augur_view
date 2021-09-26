@@ -1,5 +1,5 @@
 # Running on a server
-To run Augur-View headless on a server, we'll install it as a system service under systemd and proxy it through your web server of choice. The WSGI server will be run under Gunicorn for performance reasons, we'll provide proxy instructions for Apache and NGINX. These instructions assume you have a working web server (such as Apache or NGINX) already installed.
+To run Augur-View headless on a server, we'll install it as a system service under systemd and proxy it through your web server of choice. The WSGI server will be run under Gunicorn for performance reasons. we'll provide proxy instructions for Apache and NGINX. These instructions assume you have a working web server (such as Apache or NGINX) already installed.
 
 ---
 
@@ -82,4 +82,27 @@ errorlog = 'error.log'
 
 ## Proxy with Apache
 
+To proxy with Apache, you need to edit an existing virtualhost or create a new one. The proxy you create should direct traffic to localhost, using the port you chose above (such as `8000`). You can replace the Location below with any relative address of your choice (such as "/").
+
+If you are using the `000-default.conf` site file, you can edit the http virtualhost by appending the following proxy and location blocks to the end of the `*:80` entry:
+```
+    <Proxy *>
+        Order deny,allow
+        Allow from all
+    </Proxy>
+    ProxyPreserveHost On
+    <Location "/augur">
+          ProxyPass "http://127.0.0.1:8000/"
+          ProxyPassReverse "http://127.0.0.1:8000/"
+    </Location>
+```
+Remember to restart Apache after saving your changes. 
+
 ## Proxy with NGINX
+
+To proxy with NGINX, you need to add a reverse proxy location to the NGINX config file your server is using. The location block should direct traffic to localhost, using the port you chose above (such as `8000`). You can replace the Location below with any relative address of your choice (such as "/").
+```
+location /augur {
+    proxy_pass http://127.0.0.1:8000;
+}
+```
