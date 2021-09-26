@@ -78,7 +78,11 @@ reload = True
 accesslog = 'access.log'
 errorlog = 'error.log'
 ```
+### Starting the service
 
+To start the service, you need to run `sudo systemctl start augur_view` (or whatever you called your service file).
+
+If you want the service to run on startup, you can run `sudo systemctl enable augur_view`.
 
 ## Proxy with Apache
 
