@@ -2,23 +2,55 @@
 
 <div class="container-fluid mt-4">
     <div class="row justify-content-center">
-        {% for image in images %}
-        <div class="row row-cols-1 col-auto g-3">
+        {% for report in reports %}
+        <h1>{{ report }}</h1>
+        {% for image in images[report] %}
+        <div class="row row-cols-1 col-auto g-3" style="margin-bottom: 30px;">
             <div class="col">
-                <div class="card" style="width: 256px;">
-                    <img src="{{ url_for('static', filename=image) }}" class="img-fluid" alt="image">
+                <div class="card img_placeholder d-flex justify-content-center align-items-center">
+                    <div class="dot-flashing" id="{{ image['id'] }}"></div>
+                </div>
+                <div class="card-footer card-footer-wrap">
+                    <small class="text-muted">{{ image['description'] }}</small>
                 </div>
             </div>
         </div>
+        {% endfor %}
         {% endfor %}
     </div>
 </div>
 
 <script type="text/javascript">
-    var script = document.createElement("script");
-    script.src = "{{ root }}requests/wait/{{ repo }}";
-
-    document.body.appendChild(script);
+    /* Wait for cache response:
+        This method queries the server from the client, asking for confirmation
+        of which images are available on the server. The server will asynchronously
+        download the requested images as the page is loading, then once the page
+        loads, the client will query a locking endpoint on the server and wait
+        for a response.
+    */
+    $.getJSON("{{ root }}requests/wait/{{ repo }}", function(image_data) {
+        // var reports = JSON.parse('\{\{ reports | tojson \}\}');
+        var image_placeholders = document.getElementsByClassName("img_placeholder");
+        for(let index = 0; index < image_placeholders.length; ++index) {
+            let div = image_placeholders[index].children[0];
+            if(typeof div != "object") {
+                continue;
+            }
+            div.classList.remove("dot-flashing");
+            var backup = document.createElement("img");
+            backup.setAttribute("src", "{{ url_for('static', filename= 'img/auggie_shrug.png') }}");
+            backup.setAttribute("class", "img-fluid");
+            if(image_data['images'][div.id]['exists']) {
+                var image = document.createElement("img");
+                image_path = "{{ root }}static/" + image_data['images'][div.id]['path'];
+                image.setAttribute("src", image_path);
+                image.setAttribute("class", "img-fluid");
+                div.appendChild(image);
+            } else {
+                div.appendChild(backup);
+            }
+        }
+    });
 </script>
 
 <div class="modal" id="viewImg" tabindex="-1" role="dialog">
