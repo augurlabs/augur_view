@@ -11,6 +11,23 @@ configFile = "config.yml"
 
 settings = { 'approot': "/", 'caching': "static/cache/", 'serving': "default.osshealth.io", 'paginationOffset': 25, 'reports': "reports.yml" }
 
+reportsString = """pull_request_reports:
+    - pull_request_reports/average_commits_per_PR/
+    - pull_request_reports/average_comments_per_PR/
+    - pull_request_reports/PR_counts_by_merged_status/
+    - pull_request_reports/mean_response_times_for_PR/
+    - pull_request_reports/mean_days_between_PR_comments/
+    - pull_request_reports/PR_time_to_first_response/
+    - pull_request_reports/average_PR_events_for_closed_PRs/
+    - pull_request_reports/Average_PR_duration/
+contributor_reports:
+    - contributor_reports/new_contributors_bar/
+    - contributor_reports/returning_contributors_pie_chart/
+contributor_reports_stacked:
+    - contributor_reports/new_contributors_stacked_bar/
+    - contributor_reports/returning_contributors_stacked_bar/
+"""
+
 reports = None
 
 report_requests = {}
@@ -50,6 +67,14 @@ def loadReports():
     except Exception as err:
         print("Error reading reports endpoints from [" + getSetting("reports") + "]:")
         print(err)
+        try:
+            with open(getSetting("reports"), 'w') as file:
+                print("Attempting to generate default reports.yml")
+                file.write(reportsString)
+                loadReports()
+        except Exception as ioErr:
+            print("Error creating default report configuration:")
+            print(ioErr)
 
 loadSettings()
 
