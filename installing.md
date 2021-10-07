@@ -41,7 +41,7 @@ python3 -m venv env
 
 Then run `source env/bin/activate` to activate the virtual environment.
 
-At this point, if you need to install flask and Gunicorn, run `pip install flask gunicorn`
+At this point, if you need to install the requirements, run `sudo pip3 install flask pyyaml urllib3`
 
 ## Installing the service
 
@@ -100,7 +100,7 @@ If you are using the `000-default.conf` site file, you can edit the http virtual
           ProxyPassReverse "http://127.0.0.1:8000/"
     </Location>
 ```
-Remember to restart Apache after saving your changes. 
+Remember to restart Apache after saving your changes.
 
 ## Proxy with NGINX
 
