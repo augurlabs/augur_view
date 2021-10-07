@@ -2,6 +2,8 @@
     --color-bg: #252525;
     --color-bg-light: #4a4651;
     --color-fg: white;
+    --color-accent: #6f42c1;
+    --color-accent-dark: #6134b3;
 }
 
 html, body {
@@ -19,7 +21,7 @@ body {
     flex: 1 0 auto; /* Prevent Chrome, Opera, and Safari from letting these items shrink to smaller than their content's default minimum size. */
     padding: 20px;
     padding-top: 100px;
-    color: white;
+    color: var(--color-fg);
     text-align: center;
 }
 
@@ -35,15 +37,15 @@ body {
 }
 
 .nav-separator {
-    background-color: #6134b3;
+    background-color: var(--color-accent-dark);
     width: 5px;
     height: 35px;
 }
 
 .paginationActive {
-    background-color: #6134b3;
-    border-color: #6134b3;
-    color: white;
+    background-color: var(--color-accent-dark);
+    border-color: var(--color-accent-dark);
+    color: var(--color-fg);
 }
 
 .img-wrapper::after {
@@ -60,4 +62,66 @@ body {
     border-radius: 5px;
     background-color: rgba(0,0,0,.5);
     box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+.img_placeholder {
+    width: 256px;
+    height: 256px;
+}
+
+.card-footer-wrap {
+    width: 256px;
+    
+}
+
+/* Loading Animation */
+
+.dot-flashing {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dotFlashing 1s infinite linear alternate;
+  animation-delay: .5s;
+}
+
+.dot-flashing::before, .dot-flashing::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+
+.dot-flashing::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 0s;
+}
+
+.dot-flashing::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 1s;
+}
+
+@keyframes dotFlashing {
+  0% {
+    background-color: #9880ff;
+  }
+  50%,
+  100% {
+    background-color: #ebe6ff;
+  }
 }

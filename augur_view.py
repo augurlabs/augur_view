@@ -43,13 +43,13 @@ def repo_groups_view():
 @app.route('/repos/views/repo/<id>')
 def repo_repo_view(id):
     if reports is None:
-        return render_template('index.html', body="notice", title="Error", messageTitle="Report Definitions Missing", messageBody="You requested a report for a repo on this instance, but a definition for the report layout was not found.", api_url=getSetting('serving'))
+        return renderMessage("Report Definitions Missing", "You requested a report for a repo on this instance, but a definition for the report layout was not found.")
     download_thread = threading.Thread(target=requestReports, args=(id,))
     download_thread.start()
     # reportImages.sort()
     # file=requestPNG("contributor_reports/new_contributors_stacked_bar/?repo_id=" + str(id))
-    reportImages = []
-    return render_template('index.html', body="repo-info", images=reportImages, title="Repo", repo=id, api_url=getSetting('serving'), root=getSetting('approot'))
+
+    return render_template('index.html', body="repo-info", reports=reports.keys(), images=reports, title="Repo", repo=id, api_url=getSetting('serving'), root=getSetting('approot'))
 
 # Code 404 response page, for pages not found
 @app.errorhandler(404)
@@ -63,18 +63,18 @@ def clear_cache():
     try:
         for f in os.listdir(getSetting('caching')):
             os.remove(os.path.join(getSetting('caching'), f))
-        return render_template_string('<meta http-equiv="refresh" content="5; URL=' + getSetting('approot') + '"/><p>Cache successfully cleared</p>')
+        return renderMessage("Cache Cleared", "Server cache was successfully cleared", None, getSetting('approot'))
     except Exception as err:
         print(err)
-        return render_template_string('<meta http-equiv="refresh" content="5; URL=' + getSetting('approot') + '"/><p>An error occurred while attempting to clear cache</p>')
+        return renderMessage("Error", "An error occurred while clearing server cache.", None, getSetting('approot'), 5)
 
 # API endpoint to reload settings from disk
 @app.route('/settings/reload')
 def reload_settings():
     loadSettings()
-    return render_template_string('<meta http-equiv="refresh" content="5; URL=' + getSetting('approot') + '"/><p>Settings reloaded</p>')
+    return renderMessage("Settings Reloaded", "Server settings were successfully reloaded.", None, getSetting('approot'), 5)
 
-"""
+""" ----------------------------------------------------------------
 Locking request loop:
     This route will lock the current request until the
     report request completes (returns instantly if it
@@ -85,6 +85,6 @@ def wait_for_request(id):
     if id in report_requests.keys():
         while not report_requests[id]['complete']:
             time.sleep(0.1)
-        return jsonify(report_requests.pop(id))
+        return jsonify(report_requests[id])
     else:
         return jsonify({"exists": False})
