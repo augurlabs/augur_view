@@ -3,7 +3,7 @@ To run Augur-View headless on a server, we'll install it as a system service und
 
 ---
 
-Make sure you have the proxy modules enabled in your web server. In Apache, this can be done with:
+Make sure you have the proxy modules enabled in your web server. With NGINX, proxy will already be enabled, but in Apache, this can be done with:
 
 ```
 a2enmod
@@ -41,11 +41,26 @@ python3 -m venv env
 
 Then run `source env/bin/activate` to activate the virtual environment.
 
-At this point, if you need to install the requirements, run `sudo pip3 install flask pyyaml urllib3`
+#### Installing requirements
+
+Once you have your virtual environment created and activated, make sure you have the requirements installed
+```
+pip3 install python3-venv flask pyyaml urllib3
+```
 
 ## Installing the service
 
 To install the service, create the following file at `/etc/systemd/system/augur_view.service`
+
+You'll need to modify the file to your environment parameters.
+- The `User` parameter defines the user which will be used to run the service. This can be your user account, the root user (not recommended), or a new user you create specifically for this app.
+- The `Group` parameter optionally specifies the group to run the process as. It's not required for operation.
+- The `WorkingDirectory` parameter describes where the service working directory is. This parameter should be set to the root directory where the `augur_view` executables are located.
+- The `ExecStart` parameter describes the program to run when the service is started. For `augur_view`, we want Gunicorn to run on startup. In this instance, we need to break up this parameter into multiple parts:
+    - First, we need the absolute or relative (to the `WorkingDirectory`) path to the Gunicorn executable. In this case, because our virtual environment is in the `augur_view` root directory, we are using the relative path to the executable.
+    - Second, using the `-c` option, we specify the Gunicorn config file (which we demonstrate creating below), using its absolute or relative path.
+    - Third, using the `-b` option, we specify the address for Gunicorn to bind to. In this case, we are using the local loopback address at port `8000`.
+    - Finally, we specify the wsgi driver module we created earlier in `wsgi.py`, using its absolute or relative path.
 
 ```
 [Unit]
@@ -62,9 +77,7 @@ ExecStart=env/bin/gunicorn -c gunicorn.conf -b 0.0.0.0:8000 wsgi:app
 WantedBy=multi-user.target
 ```
 
-We're using port `8000` here for the frontend.
-
-Now create the `gunicorn.conf` file in the augur_view directory:
+Now create the `gunicorn.conf` file in the augur_view directory. You probably don't need to adjust any of the parameters in this file, but you may wish to specify different paths for the log files:
 
 ```
 import multiprocessing
@@ -86,7 +99,7 @@ If you want the service to run on startup, you can run `sudo systemctl enable au
 
 ## Proxy with Apache
 
-To proxy with Apache, you need to edit an existing virtualhost or create a new one. The proxy you create should direct traffic to localhost, using the port you chose above (such as `8000`). You can replace the Location below with any relative address of your choice (such as "/").
+To proxy with Apache, you need to edit an existing virtualhost or create a new one. The proxy you create should direct traffic to localhost, using the port you chose above (such as `8000`). You can replace the Location below with any relative address of your choice (such as "/augur").
 
 If you are using the `000-default.conf` site file, you can edit the http virtualhost by appending the following proxy and location blocks to the end of the `*:80` entry:
 ```
@@ -95,7 +108,7 @@ If you are using the `000-default.conf` site file, you can edit the http virtual
         Allow from all
     </Proxy>
     ProxyPreserveHost On
-    <Location "/augur">
+    <Location "/">
           ProxyPass "http://127.0.0.1:8000/"
           ProxyPassReverse "http://127.0.0.1:8000/"
     </Location>
@@ -104,9 +117,11 @@ Remember to restart Apache after saving your changes.
 
 ## Proxy with NGINX
 
-To proxy with NGINX, you need to add a reverse proxy location to the NGINX config file your server is using. The location block should direct traffic to localhost, using the port you chose above (such as `8000`). You can replace the Location below with any relative address of your choice (such as "/").
+To proxy with NGINX, you need to add a reverse proxy location to the NGINX config file your server is using. The location block should direct traffic to localhost, using the port you chose above (such as `8000`). You can replace the Location below with any relative address of your choice (such as "/augur").
 ```
-location /augur {
+location / {
     proxy_pass http://127.0.0.1:8000;
 }
 ```
+### Note
+Whatever location you set your proxy to, you'll need to update the `approot` parameter of the default config. The default `approot` is `"/"`.

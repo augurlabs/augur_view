@@ -6,25 +6,10 @@ import urllib.request, json, os, math, yaml, urllib3, time, logging
 # load configuration files and initialize globals
 configFile = "config.yml"
 settings = { 'approot': "/", 'caching': "static/cache/", 'cache_expiry': 172800, 'serving': "default.osshealth.io", 'paginationOffset': 25, 'reports': "reports.yml" }
-reports = None
-report_requests = {}
+# default reports definition
+reports = {'pull_request_reports': [{'url': 'pull_request_reports/average_commits_per_PR/', 'description': 'Average commits per pull request'}, {'url': 'pull_request_reports/average_comments_per_PR/', 'description': 'Average comments per pull request'}, {'url': 'pull_request_reports/PR_counts_by_merged_status/', 'description': 'Pull request counts by merged status'}, {'url': 'pull_request_reports/mean_response_times_for_PR/', 'description': 'Mean response times for pull requests'}, {'url': 'pull_request_reports/mean_days_between_PR_comments/', 'description': 'Mean days between pull request comments'}, {'url': 'pull_request_reports/PR_time_to_first_response/', 'description': 'Pull request time until first response'}, {'url': 'pull_request_reports/average_PR_events_for_closed_PRs/', 'description': 'Average pull request events for closed pull requests'}, {'url': 'pull_request_reports/Average_PR_duration/', 'description': 'Average pull request duration'}], 'contributor_reports': [{'url': 'contributor_reports/new_contributors_bar/', 'description': 'New contributors bar graph'}, {'url': 'contributor_reports/returning_contributors_pie_chart/', 'description': 'Returning contributors pie chart'}], 'contributor_reports_stacked': [{'url': 'contributor_reports/new_contributors_stacked_bar/', 'description': 'New contributors stacked bar chart'}, {'url': 'contributor_reports/returning_contributors_stacked_bar/', 'description': 'Returning contributors stacked bar chart'}]}
 
-reportsString = """pull_request_reports:
-    - pull_request_reports/average_commits_per_PR/
-    - pull_request_reports/average_comments_per_PR/
-    - pull_request_reports/PR_counts_by_merged_status/
-    - pull_request_reports/mean_response_times_for_PR/
-    - pull_request_reports/mean_days_between_PR_comments/
-    - pull_request_reports/PR_time_to_first_response/
-    - pull_request_reports/average_PR_events_for_closed_PRs/
-    - pull_request_reports/Average_PR_duration/
-contributor_reports:
-    - contributor_reports/new_contributors_bar/
-    - contributor_reports/returning_contributors_pie_chart/
-contributor_reports_stacked:
-    - contributor_reports/new_contributors_stacked_bar/
-    - contributor_reports/returning_contributors_stacked_bar/
-"""
+report_requests = {}
 
 # Initialize logging
 format = "%(asctime)s: %(message)s"
@@ -44,6 +29,7 @@ def loadSettings():
             with open(configFile, 'w') as file:
                 logging.info("Attempting to generate default config.yml")
                 yaml.dump(settings, file)
+                logging.info("Default settings file successfully generated.")
         except Exception as ioErr:
             logging.error("Error creating default config:")
             logging.error(ioErr)
@@ -66,19 +52,26 @@ def loadReports():
             for report in reports:
                 for image in reports[report]:
                     image['id'] = id = id + 1
+        return True
     except Exception as err:
         logging.error(f"An exception occurred reading reports endpoints from [{getSetting('reports')}]:")
         logging.error(err)
         try:
             with open(getSetting("reports"), 'w') as file:
                 logging.info("Attempting to generate default reports.yml")
-                file.write(reportsString)
-                loadReports()
+                yaml.dump(reports, file)
+                logging.info("Default reports file successfully generated.")
         except Exception as ioErr:
             logging.error("Error creating default report configuration:")
             logging.error(ioErr)
+        return False
 
-loadReports()
+# Reports are dynamically assigned IDs during startup, which the default
+# template does not have, therefore once we create the default reports.yml file,
+# we must reload the reports.
+if not loadReports():
+    # We try once more, and then give up
+    loadReports()
 
 cache_files_requested = []
 
