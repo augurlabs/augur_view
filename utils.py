@@ -13,7 +13,7 @@ report_requests = {}
 
 # Initialize logging
 format = "%(asctime)s: %(message)s"
-logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
+logging.basicConfig(filename="augur_view.log", filemode='a', format=format, level=logging.INFO, datefmt="%H:%M:%S")
 
 """ ----------------------------------------------------------------
 """
