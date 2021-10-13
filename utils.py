@@ -128,6 +128,7 @@ requestJson:
 def requestJson(endpoint):
     filename = toCacheFilename(endpoint)
     requestURL = getSetting('serving') + "/" + endpoint
+    logging.info('requesting json')
     try:
         if cacheFileExists(filename):
             with open(filename) as f:
