@@ -42,14 +42,23 @@ def repo_groups_view():
 
 @app.route('/repos/views/repo/<id>')
 def repo_repo_view(id):
+    # For some reason, there is no reports definition (shouldn't be possible)
     if reports is None:
         return renderMessage("Report Definitions Missing", "You requested a report for a repo on this instance, but a definition for the report layout was not found.")
-    download_thread = threading.Thread(target=requestReports, args=(id,))
-    download_thread.start()
-    # reportImages.sort()
-    # file=requestPNG("contributor_reports/new_contributors_stacked_bar/?repo_id=" + str(id))
+    data = requestJson("repos")
+    repo = {}
+    # Need to convert the repo id parameter to int so it's comparable
+    try:
+        id = int(id)
+    except:
+        pass
+    # Finding the report object in the data so the name is accessible on the page
+    for item in data:
+        if item['repo_id'] == id:
+            repo = item
+            break
 
-    return render_template('index.html', body="repo-info", reports=reports.keys(), images=reports, title="Repo", repo=id, api_url=getSetting('serving'), root=getSetting('approot'))
+    return render_template('index.html', body="repo-info", reports=reports.keys(), images=reports, title="Repo", repo=repo, repo_id=id, api_url=getSetting('serving'), root=getSetting('approot'))
 
 # Code 404 response page, for pages not found
 @app.errorhandler(404)
@@ -77,14 +86,17 @@ def reload_settings():
 """ ----------------------------------------------------------------
 Locking request loop:
     This route will lock the current request until the
-    report request completes (returns instantly if it
-    does not exist). A json response is guaranteed.
+    report request completes. A json response is guaranteed.
 """
 @app.route('/requests/wait/<id>')
 def wait_for_request(id):
-    if id in report_requests.keys():
-        while not report_requests[id]['complete']:
-            time.sleep(0.1)
-        return jsonify(report_requests[id])
-    else:
-        return jsonify({"exists": False})
+    download_thread = threading.Thread(target=requestReports, args=(id,))
+    download_thread.start()
+    download_thread.join()
+    return jsonify(report_requests[id])
+    # if id in report_requests.keys():
+    #     while not report_requests[id]['complete']:
+    #         time.sleep(0.1)
+    #     return jsonify(report_requests[id])
+    # else:
+    #     return jsonify({"exists": False})

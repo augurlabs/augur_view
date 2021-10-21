@@ -2,8 +2,10 @@
 
 <div class="container-fluid mt-4">
     <div class="row justify-content-center">
+        {% if repo.repo_id %}
+        <h1 id="message">{{ 'Report for: name'|replace("name", repo.repo_name) }}</h1>
         {% for report in reports %}
-        <h1>{{ report }}</h1>
+        <h2>{{ report|replace("_", " ")|title }}</h2>
         {% for image in images[report] %}
         <div class="row row-cols-1 col-auto g-3" style="margin-bottom: 30px;">
             <div class="col">
@@ -11,15 +13,18 @@
                     <div class="dot-flashing" id="{{ image['id'] }}"></div>
                 </div>
                 <div class="card-footer card-footer-wrap">
-                    <small class="text-muted">{{ image['description'] }}</small>
+                    <small class="text-muted" id="desc_report_image_{{ image['id'] }}">{{ image['description'] }}</small>
                 </div>
             </div>
         </div>
         {% endfor %}
         {% endfor %}
+        {% else %}
+        <h1 id="message">{{ 'Repository id not found'|replace("id", repo_id) }}<h1>
+        {% endif %}
     </div>
 </div>
-
+{% if repo.repo_id %}
 <script type="text/javascript">
     /* Wait for cache response:
         This method queries the server from the client, asking for confirmation
@@ -28,7 +33,7 @@
         loads, the client will query a locking endpoint on the server and wait
         for a response.
     */
-    $.getJSON("{{ root }}requests/wait/{{ repo }}", function(image_data) {
+    $.getJSON("{{ root }}requests/wait/{{ repo_id }}", function(image_data) {
         // var reports = JSON.parse('\{\{ reports | tojson \}\}');
         var image_placeholders = document.getElementsByClassName("img_placeholder");
         for(let index = 0; index < image_placeholders.length; ++index) {
@@ -45,6 +50,8 @@
                 image_path = "{{ root }}static/" + image_data['images'][div.id]['path'];
                 image.setAttribute("src", image_path);
                 image.setAttribute("class", "img-fluid");
+                image.setAttribute("onclick", "displayModal(\"report_image_" + div.id + "\")")
+                image.setAttribute("id", "report_image_" + div.id)
                 div.appendChild(image);
             } else {
                 div.appendChild(backup);
@@ -52,7 +59,7 @@
         }
     });
 </script>
-
+{% endif %}
 <div class="modal" id="viewImg" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
@@ -67,13 +74,35 @@
     </div>
 </div>
 
-<script>
-    $('img').not('.nav-img').on('click', function(e) {
-        $('#imgViewer').html('').append( $(e.currentTarget).clone().removeClass('img-fluid').removeClass('img-thumbnail') )
-        $('#viewImg').modal('show')
-    })
+<!-- The Modal -->
+<div id="imageModal" class="modal">
+  <!-- <span class="close">&times;</span> -->
+  <img class="modal-content" id="img01">
+  <div id="caption"></div>
+</div>
 
-    $('img').not('.nav-img').each(function(i,e) {
-        $(e).wrap('<div class="img-wrapper"></div>')
-    })
+<script>
+    function displayModal(id) {
+        // Get the modal
+        var modal = document.getElementById("imageModal");
+        console.log(id)
+        // Get the image and insert it inside the modal - use its "alt" text as a caption
+        var img = document.getElementById(id);
+        var modalImg = document.getElementById("img01");
+        var captionText = document.getElementById("caption");
+
+        var description = document.getElementById("desc_" + id)
+
+        modal.style.display = "block";
+        modalImg.src = img.src;
+        captionText.innerHTML = description.innerHTML;
+
+        // Get the <span> element that closes the modal
+        // var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        modal.onclick = function() {
+          modal.style.display = "none";
+        }
+    }
 </script>
