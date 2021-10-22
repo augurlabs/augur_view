@@ -77,8 +77,7 @@ img[id^="report_image_"]:hover {filter: brightness(50%);}
 .modal-content {
     margin: auto;
     display: block;
-    width: 80%;
-    max-width: 700px;
+    width: 70%;
 }
 
 /* Caption of Modal Image */

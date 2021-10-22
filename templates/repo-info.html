@@ -85,7 +85,7 @@
     function displayModal(id) {
         // Get the modal
         var modal = document.getElementById("imageModal");
-        console.log(id)
+
         // Get the image and insert it inside the modal - use its "alt" text as a caption
         var img = document.getElementById(id);
         var modalImg = document.getElementById("img01");
@@ -105,4 +105,11 @@
             modal.style.display = "none";
         }
     }
+    window.addEventListener("keydown", function(event) {
+	if(document.getElementById("imageModal").style.display == "block") {
+	    if(event.code == "Escape") {
+		document.getElementById("imageModal").style.display = "none"
+	    }
+	}
+    }, true);
 </script>
