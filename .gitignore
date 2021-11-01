@@ -7,3 +7,4 @@ gunicorn_config.py
 wsgi.py
 *.log
 *.yml
+*.conf
