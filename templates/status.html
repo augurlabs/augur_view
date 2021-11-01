@@ -9,7 +9,10 @@
         <div class="row row-cols-1 col-auto g-3" style="margin-bottom: 30px; min-width: 80%;">
             <div class="col">
                 <div class="card d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
-                    <div id="pull_requests_div_1" style="min-width: 90%; min-height: 300px"></div>
+                    <div id="pull_requests_dashboard_div_1" style="min-width: 100%; color: black;">
+                        <div id="pull_requests_filter_div_1"></div>
+                        <div id="pull_requests_div_1" style="min-width: 90%; min-height: 300px"></div>
+                    </div>
                 </div>
                 <div class="card d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
                     <div id="pull_requests_div_2" style="min-width: 90%; min-height: 300px"></div>
@@ -52,11 +55,19 @@
         $.getJSON("{{ api_url }}/collection_status/pull_requests", function(response) {
             // ------------------------------------------------- PRS COUNT CHART
             var data = new google.visualization.DataTable();
+            var dashboard = new google.visualization.Dashboard(document.getElementById('pull_requests_dashboard_div_1'));
             data.addColumn('string', 'Repo Name');
             data.addColumn('number', 'Pull Request Count');
             data.addColumn('number', 'Pull Requests Collected');
-            // data.addColumn({type:'string', role:'annotation'});
-            // data.addColumn({type:'string', role:'annotation'});
+
+            var rangeSlider = new google.visualization.ControlWrapper({
+                'controlType': 'NumberRangeFilter',
+                'containerId': 'pull_requests_filter_div_1',
+                'options': {
+                    'filterColumnLabel': 'Pull Request Count',
+                    'ui': {'labelStacking': 'vertical'}
+                }
+            });
 
             for(let i = 0; i < response.length; ++i) {
                 let repo = response[i];
@@ -66,18 +77,24 @@
             }
 
             var options = {
-              chart: {
-                title: 'Pull request collection status'
-              },
-              hAxis: {
-                title: 'Repos'
-              },
-              vAxis: {
-                title: 'Number of datapoints'
-              }
+                chart: {
+                    title: 'Pull request collection status'
+                },
+                hAxis: {
+                    title: 'Repos'
+                },
+                vAxis: {
+                    title: 'Number of datapoints'
+                }
             };
-            var materialChart = new google.charts.Bar(document.getElementById('pull_requests_div_1'));
-            materialChart.draw(data, options);
+            // var materialChart = new google.charts.Bar(document.getElementById('pull_requests_div_1'));
+            var materialChart  = new google.visualization.ChartWrapper({
+                'chartType': 'Bar',
+                'containerId': 'pull_requests_div_1',
+                options
+            });
+            dashboard.bind(rangeSlider, materialChart);
+            dashboard.draw(data);
 
             // ----------------------------------------------- PRS MISSING CHART
             data = new google.visualization.DataTable();
@@ -92,15 +109,15 @@
             }
 
             options = {
-              chart: {
-                title: 'Missing pull requests'
-              },
-              hAxis: {
-                title: 'Repos'
-              },
-              vAxis: {
-                title: 'Number of Missing PRS'
-              }
+                chart: {
+                    title: 'Missing pull requests'
+                },
+                hAxis: {
+                    title: 'Repos'
+                },
+                vAxis: {
+                    title: 'Number of Missing PRS'
+                }
             };
             materialChart = new google.charts.Bar(document.getElementById('pull_requests_div_2'));
             materialChart.draw(data, options);
@@ -116,18 +133,18 @@
             }
 
             options = {
-              chart: {
-                title: 'Ratio of collected to total pull requests'
-              },
-              hAxis: {
-                title: 'Repos'
-              },
-              vAxis: {
-                title: 'Ratio',
-                format:'#%',
-                min:0,
-                max:1
-              }
+                chart: {
+                    title: 'Ratio of collected to total pull requests'
+                },
+                hAxis: {
+                    title: 'Repos'
+                },
+                vAxis: {
+                    title: 'Ratio',
+                    format:'#%',
+                    min:0,
+                    max:1
+                }
             };
             materialChart = new google.charts.Bar(document.getElementById('pull_requests_div_3'));
             materialChart.draw(data, options);
@@ -144,15 +161,15 @@
             }
 
             var options = {
-              chart: {
-                title: 'Number of issues collected'
-              },
-              hAxis: {
-                title: 'Repos'
-              },
-              vAxis: {
-                title: 'Number of datapoints'
-              }
+                chart: {
+                    title: 'Number of issues collected'
+                },
+                hAxis: {
+                    title: 'Repos'
+                },
+                vAxis: {
+                    title: 'Number of datapoints'
+                }
             };
             var materialChart = new google.charts.Bar(document.getElementById('issues_div'));
             materialChart.draw(data, options);
@@ -185,6 +202,7 @@
 
         });
         $.getJSON("{{ api_url }}/collection_status/commits", function(response) {
+            // ----------------------------- COMMITS COMPLETION STATUS PIE CHART
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Completion status');
             data.addColumn('number', 'Number of repos');
@@ -209,6 +227,7 @@
             chart.draw(data, options);
         });
     }
-    google.charts.load('current', {packages: ['corechart', 'bar', 'timeline']});
+    // Load Gchart packages and render charts
+    google.charts.load('current', {packages: ['corechart', 'bar', 'timeline', 'controls']});
     google.charts.setOnLoadCallback(loadCharts);
 </script>
