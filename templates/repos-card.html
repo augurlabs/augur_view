@@ -8,8 +8,8 @@
                         <div class="card-body" style="color: black;">
                             <a href="https://{{ repo.url }}"><h5 class="card-title">{{ repo.repo_name }}</h5></a>
                             <p class="card-text">Repository Status: {{ repo.repo_status }}</p>
-                            <p class="card-text">All Time Commits: {{ repo.commits_all_time }}</p>
-                            <p class="card-text">All Time Issues: {{ repo.issues_all_time }}</p>
+                            <p class="card-text">All Time Commits: {{ repo.commits_all_time|int }}</p>
+                            <p class="card-text">All Time Issues: {{ repo.issues_all_time|int }}</p>
                         </div>
                         <div class="card-footer">
                             <small class="text-muted">Repository ID: {{ repo.repo_id }}</small>

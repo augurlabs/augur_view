@@ -40,6 +40,10 @@ def repo_groups_view():
         groups = requestJson("repo-groups")
         return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url=getSetting('serving'), root=getSetting('approot'))
 
+@app.route('/status')
+def status_view():
+    return render_template('index.html', body="status", title="Status", api_url=getSetting('serving'), root=getSetting('approot'))
+
 @app.route('/repos/views/repo/<id>')
 def repo_repo_view(id):
     # For some reason, there is no reports definition (shouldn't be possible)
@@ -87,6 +91,7 @@ def reload_settings():
 Locking request loop:
     This route will lock the current request until the
     report request completes. A json response is guaranteed.
+    Assumes that the requested repo exists.
 """
 @app.route('/requests/wait/<id>')
 def wait_for_request(id):
