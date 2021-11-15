@@ -87,14 +87,15 @@ def stripStatic(url):
     return url.replace("static/", "")
 
 """ ----------------------------------------------------------------
-toCacheFilename:
-    Takes an endpoint string or
 """
 def toCacheFilename(endpoint):
-    return getSetting('caching') + endpoint.replace("/", ".").replace("?", "_").replace("=", "_") + '.agcache'
+    return endpoint.replace("/", ".").replace("?", "_").replace("=", "_") + '.agcache'
+
+def toCacheFilepath(endpoint):
+    return getSetting('caching') + toCacheFilename(endpoint)
 
 def toCacheURL(endpoint):
-    return stripStatic(getSetting('caching')) + endpoint.replace("/", ".").replace("?", "_").replace("=", "_") + '.agcache'
+    return getSetting('approot') + toCacheFilepath(endpoint)
 
 """ ----------------------------------------------------------------
 requestJson:
@@ -115,7 +116,7 @@ requestJson:
         encountered.
 """
 def requestJson(endpoint):
-    filename = toCacheFilename(endpoint)
+    filename = toCacheFilepath(endpoint)
     requestURL = getSetting('serving') + "/" + endpoint
     logging.info('requesting json')
     try:
@@ -137,7 +138,7 @@ def requestJson(endpoint):
 """ ----------------------------------------------------------------
 """
 def requestPNG(endpoint):
-    filename = toCacheFilename(endpoint)
+    filename = toCacheFilepath(endpoint)
     requestURL = getSetting('serving') + "/" + endpoint
     try:
         if cacheFileExists(filename):
@@ -155,7 +156,8 @@ def requestPNG(endpoint):
 """
 def download(url, cmanager, filename, image_cache, image_id, repo_id = None):
     image_cache[image_id] = {}
-    image_cache[image_id]['path'] = stripStatic(filename)
+    image_cache[image_id]['filename'] = filename
+    filename = toCacheFilepath(filename)
     if cacheFileExists(filename):
         image_cache[image_id]['exists'] = True
         return

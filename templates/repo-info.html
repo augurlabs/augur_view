@@ -26,16 +26,17 @@
 </div>
 {% if repo.repo_id %}
 <script type="text/javascript">
-    /* Wait for cache response:
+    {# Wait for cache response:
         This method queries the server from the client, asking for confirmation
         of which images are available on the server. The server will asynchronously
         download the requested images as the page is loading, then once the page
         loads, the client will query a locking endpoint on the server and wait
         for a response.
-    */
-    $.getJSON("{{ root }}requests/wait/{{ repo_id }}", function(image_data) {
+    #}
+    $.getJSON("{{ url_for('wait_for_request', id=repo_id) }}", function(image_data) {
         // var reports = JSON.parse('\{\{ reports | tojson \}\}');
         var image_placeholders = document.getElementsByClassName("img_placeholder");
+        var cache = "{{ url_for('cache') }}"
         for(let index = 0; index < image_placeholders.length; ++index) {
             let div = image_placeholders[index].children[0];
             if(typeof div != "object") {
@@ -47,7 +48,8 @@
             backup.setAttribute("class", "img-fluid");
             if(image_data['images'][div.id]['exists']) {
                 var image = document.createElement("img");
-                image_path = "{{ root }}static/" + image_data['images'][div.id]['path'];
+                image_path = cache + image_data['images'][div.id]['filename'];
+                console.log(image_path);
                 image.setAttribute("src", image_path);
                 image.setAttribute("class", "img-fluid");
                 image.setAttribute("onclick", "displayModal(\"report_image_" + div.id + "\")")
