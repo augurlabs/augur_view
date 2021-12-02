@@ -3,15 +3,15 @@
 <nav aria-label="Repository pagination menu" class="overflow-auto">
     <ul class="pagination">
         <li class="page-item {% if activePage == 1 %} disabled {% else %} w3-hover-purple {% endif %}">
-            <a class="page-link" href="{{ root }}{{PS}}?{% if query_key %}q={{query_key}}&{% endif %}p={{ activePage - 1 }}" {% if activePage == 1 %} tabindex="-1" {% endif %}>Previous</a>
+            <a class="page-link" href="{{ url_for(PS, q=query_key, p=(activePage - 1))}}" {% if activePage == 1 %} tabindex="-1" {% endif %}>Previous</a>
         </li>
         {% for page in range(1, pages|int + 1) %}
         <li class="page-item">
-            <a class="page-link {% if page == activePage %} paginationActive {% else %} w3-hover-blue {% endif %}" href="{{ root }}{{PS}}?{% if query_key %}q={{query_key}}&{% endif %}p={{page}}">{{page}}</a>
+            <a class="page-link {% if page == activePage %} paginationActive {% else %} w3-hover-blue {% endif %}" href="{{ url_for(PS, q=query_key, p=page)}}">{{page}}</a>
         </li>
         {% endfor %}
         <li class="page-item {% if activePage == pages|int %} disabled {% endif %}">
-            <a class="page-link" href="{{ root }}{{PS}}?{% if query_key %}q={{query_key}}&{% endif %}p={{ activePage + 1 }}" {% if activePage == pages|int %} tabindex="-1" {% endif %}>Next</a>
+            <a class="page-link" href="{{ url_for(PS, q=query_key, p=(activePage + 1))}}" {% if activePage == pages|int %} tabindex="-1" {% endif %}>Next</a>
         </li>
     </ul>
 </nav>
@@ -35,8 +35,8 @@
             {% for repo in repos %}
             <tr>
                 <th scope="row">{{loop.index + (activePage - 1) * offset}}</th>
-                <td><a href="{{ root }}repos/views/repo/{{ repo.repo_id }}">{{ repo.repo_name }}</a></td>
-                <td><a href="{{root}}groups?q={{ repo.repo_group_id }}">{{ repo.rg_name }}</a></td>
+                <td><a href="{{ url_for('repo_repo_view', id=repo.repo_id) }}">{{ repo.repo_name }}</a></td>
+                <td><a href="{{ url_for('repo_groups_view', group=repo.repo_group_id) }}">{{ repo.rg_name }}</a></td>
                 <td>TODO</td>
                 <td>{{ repo.commits_all_time|int }}</td>
                 <td>{{ repo.issues_all_time|int }}</td>
@@ -51,13 +51,13 @@
 <nav aria-label="Repository pagination menu" class="overflow-auto">
     <ul class="pagination justify-content-center">
         <li class="page-item {% if activePage == 1 %} disabled {% else %} w3-hover-purple {% endif %}">
-            <a class="page-link" href="{{ root }}{{PS}}?{% if query_key %}q={{query_key}}&{% endif %}p={{ activePage - 1 }}" {% if activePage == 1 %} tabindex="-1" {% endif %}>Previous</a>
+            <a class="page-link" href="{{ url_for(PS, q=query_key, p=(activePage - 1))}}" {% if activePage == 1 %} tabindex="-1" {% endif %}>Previous</a>
         </li>
         <li class="page-item">
             <a class="page-link" href="#">{{activePage}}</a>
         </li>
         <li class="page-item {% if activePage == pages|int %} disabled {% endif %}">
-            <a class="page-link" href="{{ root }}{{PS}}?{% if query_key %}q={{query_key}}&{% endif %}p={{ activePage + 1 }}" {% if activePage == pages|int %} tabindex="-1" {% endif %}>Next</a>
+            <a class="page-link" href="{{ url_for(PS, q=query_key, p=(activePage + 1))}}" {% if activePage == pages|int %} tabindex="-1" {% endif %}>Next</a>
         </li>
     </ul>
 </nav>

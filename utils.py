@@ -224,7 +224,7 @@ renderRepos:
 @PARAM:     pageSource: String = "repos/views/table"
         The base url to use for the page links
 """
-def renderRepos(view, query, data, page = None, filter = False, pageSource = "repos/views/table"):
+def renderRepos(view, query, data, page = None, filter = False, pageSource = "repo_table_view"):
     PaginationOffset = getSetting('paginationOffset')
     if(data is None):
         return render_template('index.html', body="repos-" + view, title="Repos")

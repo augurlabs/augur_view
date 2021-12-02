@@ -68,9 +68,13 @@ groups:
     groups in the backend
 """
 @app.route('/groups')
-def repo_groups_view():
+@app.route('/groups/<group>')
+def repo_groups_view(group=None):
     query = request.args.get('q')
     page = request.args.get('p')
+
+    if(group is not None):
+        query = group
 
     if(query is not None):
         buffer = []
@@ -78,7 +82,7 @@ def repo_groups_view():
         for repo in data:
             if query == str(repo["repo_group_id"]) or query in repo["rg_name"]:
                 buffer.append(repo)
-        return renderRepos("table", query, buffer, page, False, "groups")
+        return renderRepos("table", query, buffer, page, False, "repo_groups_view")
     else:
         groups = requestJson("repo-groups")
         return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url=getSetting('serving'), root=getSetting('approot'))
@@ -92,6 +96,9 @@ status:
 def status_view():
     return render_template('index.html', body="status", title="Status", api_url=getSetting('serving'), root=getSetting('approot'))
 
+@app.route('/login')
+def user_login():
+    return render_template('index.html', body='login', title="Login", api_url=getSetting('serving'))
 """ ----------------------------------------------------------------
 report page:
     This route returns a report view of the requested repo (by ID).

@@ -36,7 +36,6 @@
     $.getJSON("{{ url_for('wait_for_request', id=repo_id) }}", function(image_data) {
         // var reports = JSON.parse('\{\{ reports | tojson \}\}');
         var image_placeholders = document.getElementsByClassName("img_placeholder");
-        var cache = "{{ url_for('cache') }}"
         for(let index = 0; index < image_placeholders.length; ++index) {
             let div = image_placeholders[index].children[0];
             if(typeof div != "object") {
@@ -48,7 +47,7 @@
             backup.setAttribute("class", "img-fluid");
             if(image_data['images'][div.id]['exists']) {
                 var image = document.createElement("img");
-                image_path = cache + image_data['images'][div.id]['filename'];
+                image_path = "{{ url_for('cache') }}" + image_data['images'][div.id]['filename'];
                 console.log(image_path);
                 image.setAttribute("src", image_path);
                 image.setAttribute("class", "img-fluid");

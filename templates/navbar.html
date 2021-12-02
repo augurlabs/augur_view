@@ -20,17 +20,17 @@
                         Repos
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{{ url_for('root', path='repos/views/table') }}">Table View</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('root', path='repos/views/card') }}">Card View</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('repo_table_view') }}">Table View</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('repo_card_view') }}">Card View</a></li>
                     </ul>
                 </li>
 
                 <!-- STATIC NAVBAR SECTION -->
                 <li class="nav-item">
-                    <a class="nav-link {% if title == 'Groups' %} active {% endif %}" aria-current="page" href=" {{ url_for('root', path='groups') }}">Groups</a>
+                    <a class="nav-link {% if title == 'Groups' %} active {% endif %}" aria-current="page" href=" {{ url_for('repo_groups_view') }}">Groups</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if title == 'Status' %} active {% endif %}" aria-current="page" href="{{ url_for('root', path='status') }}">Collection Status</a>
+                    <a class="nav-link {% if title == 'Status' %} active {% endif %}" aria-current="page" href="{{ url_for('status_view') }}">Collection Status</a>
                 </li>
                 <!-- .junk->NAVBAR_EXTRAS -->
             </ul>
