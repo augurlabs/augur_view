@@ -127,6 +127,10 @@ The Server port will be used to proxy the API served by that instance, which is 
 
 `proxy_pass` for `location /api/unstable/` is the full domain that you have augur\_view resolving to, with an additional port specification that matches the server port specification in your running instance of augur.
 
+**Create this file where your operating system keeps its `sites-enabled` directory. On Ubuntu, that is `/etc/nginx/sites-enabled`.** 
+
+**After adding this file, execute `sudo nginx -t` to make sure it is configured correctly, and `sudo systemctl restart nginx` to have it take effect immediately** 
+
 ```
 server {
         listen 80;
