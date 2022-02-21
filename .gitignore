@@ -8,3 +8,4 @@ wsgi.py
 *.log
 *.yml
 *.conf
+!*/static/cache/README.md
