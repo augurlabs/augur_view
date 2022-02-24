@@ -3,7 +3,8 @@
 <div class="container-fluid mt-4">
     <div class="row justify-content-center">
         {% if repo.repo_id %}
-        <h1 id="message">{{ 'Report for: name'|replace("name", repo.repo_name) }}</h1>
+        <h1 id="message">Report for: {{ repo.repo_name|title }}</h1>
+        <p><a href="https://{{ repo.url }}" target="_blank" data-toggle="tooltip" title="opens in new tab">https://{{ repo.url }}</a></p>
         {% for report in reports %}
         <h2>{{ report|replace("_", " ")|title }}</h2>
         {% for image in images[report] %}
@@ -51,8 +52,10 @@
                 console.log(image_path);
                 image.setAttribute("src", image_path);
                 image.setAttribute("class", "img-fluid");
-                image.setAttribute("onclick", "displayModal(\"report_image_" + div.id + "\")")
-                image.setAttribute("id", "report_image_" + div.id)
+                image.setAttribute("onclick", "displayModal(\"report_image_" + div.id + "\")");
+                image.setAttribute("id", "report_image_" + div.id);
+                image.setAttribute("data-toggle", "tooltip");
+                image.setAttribute("title", "Click to expand");
                 div.appendChild(image);
             } else {
                 div.appendChild(backup);
@@ -78,8 +81,9 @@
 <!-- The Modal -->
 <div id="imageModal" class="modal">
   <!-- <span class="close">&times;</span> -->
+  <h1 id="caption"></h1>
   <img class="modal-content" id="img01">
-  <div id="caption"></div>
+  <div id="close-caption">press ESC to close</div>
 </div>
 
 <script>
@@ -106,11 +110,12 @@
             modal.style.display = "none";
         }
     }
+
     window.addEventListener("keydown", function(event) {
-	if(document.getElementById("imageModal").style.display == "block") {
-	    if(event.code == "Escape") {
-		document.getElementById("imageModal").style.display = "none"
-	    }
-	}
+    	if(document.getElementById("imageModal").style.display == "block") {
+    	    if(event.code == "Escape") {
+    		document.getElementById("imageModal").style.display = "none"
+    	    }
+    	}
     }, true);
 </script>

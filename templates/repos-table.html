@@ -22,10 +22,25 @@
         <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Repo Name</th>
-                <th scope="col">Group</th>
+                <th scope="col"><a class="sorting-link" href="{% if sorting and sorting == "repo_name" %}
+                    {{url_for('repo_table_view', s='repo_name', r= not reverse)}}
+                    {% else %}
+                    {{url_for('repo_table_view', s='repo_name')}}
+                    {% endif %}">
+                    Repo Name {% if sorting and sorting == "repo_name" %}{% if reverse %} ▲ {% else %} ▼ {% endif %}{% endif %} </a></th>
+                <th scope="col"><a class="sorting-link" href="{% if sorting and sorting == "rg_name" %}
+                    {{url_for('repo_table_view', s='rg_name', r= not reverse)}}
+                    {% else %}
+                    {{url_for('repo_table_view', s='rg_name')}}
+                    {% endif %}">
+                    Group {% if sorting and sorting == "rg_name" %}{% if reverse %} ▲ {% else %} ▼ {% endif %}{% endif %}</a></th>
                 <th scope="col">Reports</th>
-                <th scope="col">Commits</th>
+                <th scope="col"><a class="sorting-link" href="{% if sorting and sorting == "commits_all_time" %}
+                    {{url_for('repo_table_view', s='commits_all_time', r= not reverse)}}
+                    {% else %}
+                    {{url_for('repo_table_view', s='commits_all_time')}}
+                    {% endif %}">
+                    Commits {% if sorting and sorting == "commits_all_time" %}{% if reverse %} ▲ {% else %} ▼ {% endif %}{% endif %}</th>
                 <th scope="col">Issues</th>
                 <th scope="col">Change Requests</th>
             </tr>

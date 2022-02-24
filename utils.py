@@ -179,27 +179,46 @@ def download(url, cmanager, filename, image_cache, image_id, repo_id = None):
 """ ----------------------------------------------------------------
 """
 def requestReports(repo_id):
+    # If this request has already been fulfilled, no need to process it again
     if(repo_id in report_requests.keys()):
         return
+
+    # initialize a new request entry to hold the resulting data
     report_requests[repo_id] = {}
     report_requests[repo_id]['complete'] = False
+
+    """ ----------
+        If the report definition could not be loaded, we cannot determine what
+        files to request from the backend to compose the report. Returning here
+        causes the completion status of the request to be False, which will
+        display an error message when sent to the frontend.
+    """
     if reports is None:
         return
+
     threadPools = []
     reportImages = {}
     for report in reports:
+        # Reports is a dictionary of lists, so we get the size of each list
         size = len(reports[report])
+
+        # Set up various threading components to manage image downloading
         connection_mgr = urllib3.PoolManager(maxsize=size)
         thread_pool = ThreadPoolExecutor(size)
         threadPools.append(thread_pool)
+
         for image in reports[report]:
+            # Where should the downloaded image be stored (in cache)
             filename = toCacheFilename(f"{image['url']}?repo_id={repo_id}")
+            # Where are we downloading the image from
             image_url = f"{getSetting('serving')}/{image['url']}?repo_id={repo_id}"
+            # Add a request for this image to the thread pool using the download function
             thread_pool.submit(download, image_url, connection_mgr, filename, reportImages, image['id'], repo_id)
 
     # Wait for all connections to resolve, then clean up
     for thread_pool in threadPools:
         thread_pool.shutdown()
+
     report_requests[repo_id]['images'] = reportImages
 
     # Remove the request from the queue when completed
@@ -217,6 +236,10 @@ renderRepos:
         The query argument from the previous page.
 @PARAM:     data: Dictionary
         The repo data to display on the page
+@PARAM:     sorting: String = None
+        The key in the data to sort by
+@PARAM:     rev: Boolean = False
+        Determines if the sorted data should be displayed in descending order
 @PARAM:     page: String = None
         The current page to use within pagination
 @PARAM:     filter: Boolean = False
@@ -224,11 +247,17 @@ renderRepos:
 @PARAM:     pageSource: String = "repos/views/table"
         The base url to use for the page links
 """
-def renderRepos(view, query, data, page = None, filter = False, pageSource = "repo_table_view"):
+def renderRepos(view, query, data, sorting = None, rev = False, page = None, filter = False, pageSource = "repo_table_view", sortBasis = None):
     PaginationOffset = getSetting('paginationOffset')
+
+    """ ----------
+        If the data does not exist, we cannot construct the table to display on
+        site. Rendering the table module without data displays an error message
+    """
     if(data is None):
         return render_template('index.html', body="repos-" + view, title="Repos")
 
+    # If a query exists and filtering is set to true, attempt to filter the data
     if((query is not None) and filter):
         results = []
         for repo in data:
@@ -236,6 +265,7 @@ def renderRepos(view, query, data, page = None, filter = False, pageSource = "re
                 results.append(repo)
         data = results
 
+    # Determine the maximum number of pages which can be displayed from the data
     pages = math.ceil(len(data) / PaginationOffset)
 
     if page is not None:
@@ -243,11 +273,30 @@ def renderRepos(view, query, data, page = None, filter = False, pageSource = "re
     else:
         page = 1
 
+    """ ----------
+        Caller requested sorting of the data. The data is a list of dictionaries
+        with numerous sortable elements, and the "sorting" parameter is assumed
+        to be the key of the desired element in the dictionary by which to sort
+    """
+    if sorting is not None:
+        data = sorted(data, key = lambda i: i[sorting] or 0, reverse = rev)
+
+    """ ----------
+        Here we extract a subset of the data for display on the site. First we
+        calculate the start index within the data of our current "page" (x),
+        then we index to that position plus the pagination offset (or page size)
+        defined above. The result is a list which contains *at most* a number of
+        entries equal to the pagination offset
+    """
     x = PaginationOffset * (page - 1)
     data = data[x: x + PaginationOffset]
 
-    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=PaginationOffset, PS=pageSource, api_url=getSetting('serving'), root=getSetting('approot'))
+    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=PaginationOffset, PS=pageSource, api_url=getSetting('serving'), reverse = rev, sorting = sorting)
 
+""" ----------------------------------------------------------------
+    Renders a simple page with the given message information, and optional page
+    title and redirect
+"""
 def renderMessage(messageTitle, messageBody, title = None, redirect = None, pause = None):
     return render_template('index.html', body="notice", title=title, messageTitle=messageTitle, messageBody=messageBody, api_url=getSetting('serving'), redirect=redirect, pause=pause)
 
@@ -257,4 +306,4 @@ def renderMessage(messageTitle, messageBody, title = None, redirect = None, paus
 # My attempt at a loading page
 def renderLoading(dest, query, request):
     cache_files_requested.append(request)
-    return render_template('index.html', body="loading", title="Loading", d=dest, query_key=query, api_url=getSetting('serving'), root=getSetting('approot'))
+    return render_template('index.html', body="loading", title="Loading", d=dest, query_key=query, api_url=getSetting('serving'))
