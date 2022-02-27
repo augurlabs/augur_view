@@ -301,6 +301,14 @@ def renderMessage(messageTitle, messageBody, title = None, redirect = None, paus
     return render_template('index.html', body="notice", title=title, messageTitle=messageTitle, messageBody=messageBody, api_url=getSetting('serving'), redirect=redirect, pause=pause)
 
 """ ----------------------------------------------------------------
+"""
+def renderModule(module, **args):
+    args.setdefault("title", "Augur View")
+    args.setdefault("api_url", getSetting("serving"))
+    args.setdefault("body", module)
+    return render_template('index.html', **args)
+
+""" ----------------------------------------------------------------
     No longer used
 """
 # My attempt at a loading page

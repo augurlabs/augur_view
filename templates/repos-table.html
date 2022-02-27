@@ -3,46 +3,52 @@
 <nav aria-label="Repository pagination menu" class="overflow-auto">
     <ul class="pagination">
         <li class="page-item {% if activePage == 1 %} disabled {% else %} w3-hover-purple {% endif %}">
-            <a class="page-link" href="{{ url_for(PS, q=query_key, p=(activePage - 1))}}" {% if activePage == 1 %} tabindex="-1" {% endif %}>Previous</a>
+            <a class="page-link" href="{{ url_for(PS, q=query_key, p=(activePage - 1), s=sorting, r=reverse)}}" {% if activePage == 1 %} tabindex="-1" {% endif %}>Previous</a>
         </li>
         {% for page in range(1, pages|int + 1) %}
         <li class="page-item">
-            <a class="page-link {% if page == activePage %} paginationActive {% else %} w3-hover-blue {% endif %}" href="{{ url_for(PS, q=query_key, p=page)}}">{{page}}</a>
+            <a class="page-link {% if page == activePage %} paginationActive {% else %} w3-hover-blue {% endif %}" href="{{ url_for(PS, q=query_key, p=page, s=sorting, r=reverse)}}">{{page}}</a>
         </li>
         {% endfor %}
         <li class="page-item {% if activePage == pages|int %} disabled {% endif %}">
-            <a class="page-link" href="{{ url_for(PS, q=query_key, p=(activePage + 1))}}" {% if activePage == pages|int %} tabindex="-1" {% endif %}>Next</a>
+            <a class="page-link" href="{{ url_for(PS, q=query_key, p=(activePage + 1), s=sorting, r=reverse)}}" {% if activePage == pages|int %} tabindex="-1" {% endif %}>Next</a>
         </li>
     </ul>
 </nav>
 <!-- Table start -->
+{# Create the header row for the repo table:
+    Here we dynamically generate the header row by defining a dictionary list
+    which contains the titles of each column, accompanied by an optional "key"
+    item. If a column definition contains a "key" item, that column is assumed
+    to be sortable, sorting links for that data are generated using the given
+    key. It is done this way because the client does not receive the full data
+    each time they load the page, and instead the server sorts the full data.
+#}
+{%- set tableHeaders =
+    [{"title" : "#"},
+    {"title" : "Repo Name", "key" : "repo_name"},
+    {"title" : "Group", "key" : "rg_name"},
+    {"title" : "Reports"},
+    {"title" : "Commits", "key" : "commits_all_time"},
+    {"title" : "Issues", "key" : "issues_all_time"},
+    {"title" : "Change Requests"}] -%}
 <div class="rounded w3-animate-opacity" style="background-color: white; overflow: auto;">
     <table class="table table-striped table-bordered">
         <!-- Table header start -->
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col"><a class="sorting-link" href="{% if sorting and sorting == "repo_name" %}
-                    {{url_for('repo_table_view', s='repo_name', r= not reverse)}}
-                    {% else %}
-                    {{url_for('repo_table_view', s='repo_name')}}
-                    {% endif %}">
-                    Repo Name {% if sorting and sorting == "repo_name" %}{% if reverse %} ▲ {% else %} ▼ {% endif %}{% endif %} </a></th>
-                <th scope="col"><a class="sorting-link" href="{% if sorting and sorting == "rg_name" %}
-                    {{url_for('repo_table_view', s='rg_name', r= not reverse)}}
-                    {% else %}
-                    {{url_for('repo_table_view', s='rg_name')}}
-                    {% endif %}">
-                    Group {% if sorting and sorting == "rg_name" %}{% if reverse %} ▲ {% else %} ▼ {% endif %}{% endif %}</a></th>
-                <th scope="col">Reports</th>
-                <th scope="col"><a class="sorting-link" href="{% if sorting and sorting == "commits_all_time" %}
-                    {{url_for('repo_table_view', s='commits_all_time', r= not reverse)}}
-                    {% else %}
-                    {{url_for('repo_table_view', s='commits_all_time')}}
-                    {% endif %}">
-                    Commits {% if sorting and sorting == "commits_all_time" %}{% if reverse %} ▲ {% else %} ▼ {% endif %}{% endif %}</th>
-                <th scope="col">Issues</th>
-                <th scope="col">Change Requests</th>
+                {%- for header in tableHeaders -%}
+                {% if header.key %}
+                    {%- if sorting == header.key -%}
+                        {%- set sorting_link = url_for(PS, q=query_key, p=activePage, s=header.key, r= not reverse) -%}
+                    {%- else -%}
+                        {%- set sorting_link = url_for(PS, q=query_key, p=activePage, s=header.key) -%}
+                    {%- endif -%}
+                <th scope="col"><a class="sorting-link" href="{{ sorting_link }}"> {{ header.title }}
+                    {%- if sorting == header.key and reverse %} ▲ {% elif sorting == header.key %} ▼ {% endif %}</a></th>
+                {% else -%}
+                <th scope="col">{{ header.title }}</th>
+                {% endif %} {%- endfor -%}
             </tr>
         </thead>
         <!-- Table rows start -->
@@ -66,13 +72,13 @@
 <nav aria-label="Repository pagination menu" class="overflow-auto">
     <ul class="pagination justify-content-center">
         <li class="page-item {% if activePage == 1 %} disabled {% else %} w3-hover-purple {% endif %}">
-            <a class="page-link" href="{{ url_for(PS, q=query_key, p=(activePage - 1))}}" {% if activePage == 1 %} tabindex="-1" {% endif %}>Previous</a>
+            <a class="page-link" href="{{ url_for(PS, q=query_key, p=(activePage - 1), s=sorting, r=reverse)}}" {% if activePage == 1 %} tabindex="-1" {% endif %}>Previous</a>
         </li>
         <li class="page-item">
             <a class="page-link" href="#">{{activePage}}</a>
         </li>
         <li class="page-item {% if activePage == pages|int %} disabled {% endif %}">
-            <a class="page-link" href="{{ url_for(PS, q=query_key, p=(activePage + 1))}}" {% if activePage == pages|int %} tabindex="-1" {% endif %}>Next</a>
+            <a class="page-link" href="{{ url_for(PS, q=query_key, p=(activePage + 1), s=sorting, r=reverse)}}" {% if activePage == pages|int %} tabindex="-1" {% endif %}>Next</a>
         </li>
     </ul>
 </nav>

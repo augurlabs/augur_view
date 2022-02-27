@@ -105,7 +105,7 @@ status:
 """
 @app.route('/status')
 def status_view():
-    return render_template('index.html', body="status", title="Status", api_url=getSetting('serving'))
+    return renderModule("status", title="Status")
 
 @app.route('/login')
 def user_login():
@@ -137,7 +137,7 @@ def repo_repo_view(id):
 # Code 404 response page, for pages not found
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('index.html', title='404', api_url=getSetting('serving'))
+    return render_template('index.html', title='404', api_url=getSetting('serving')), 404
 
 @app.route('/cache/file/')
 @app.route('/cache/file/<path:file>')
