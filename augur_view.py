@@ -1,9 +1,11 @@
-from flask import Flask, render_template, render_template_string, request, abort, jsonify, redirect, url_for
+from flask import Flask, render_template, render_template_string, request, abort, jsonify, redirect, url_for, session, flash
 from utils import *
 from url_converters import *
 import threading
 
 app = Flask(__name__)
+
+app.secret_key = getSetting("session_key")
 
 app.url_map.converters['list'] = ListConverter
 app.url_map.converters['bool'] = BoolConverter
@@ -107,9 +109,30 @@ status:
 def status_view():
     return renderModule("status", title="Status")
 
-@app.route('/login')
+""" ----------------------------------------------------------------
+login:
+    Under development
+"""
+@app.route('/login', methods=['GET', 'POST'])
 def user_login():
+    if request.method == 'POST':
+        if request.form.get('userID') is None:
+            flash("Form error")
+            return renderModule("login", title="Login");
+        session['userID'] = request.form.get('userID')
+        flash("Login successful")
+        return redirect(url_for('root'))
     return render_template('index.html', body='login', title="Login", api_url=getSetting('serving'))
+
+""" ----------------------------------------------------------------
+logout:
+    Under development
+"""
+@app.route('/logout')
+def user_logout():
+    session.pop('userID', None)
+    return redirect(url_for('root'))
+
 """ ----------------------------------------------------------------
 report page:
     This route returns a report view of the requested repo (by ID).

@@ -43,6 +43,10 @@ body {
     height: 35px;
 }
 
+.submitContainer {
+    background-color: var(--color-accent);
+}
+
 .paginationActive {
     background-color: var(--color-accent-dark);
     border-color: var(--color-accent-dark);
