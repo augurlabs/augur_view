@@ -107,9 +107,6 @@ status:
 def status_view():
     return renderModule("status", title="Status")
 
-@app.route('/login')
-def user_login():
-    return render_template('index.html', body='login', title="Login", api_url=getSetting('serving'))
 """ ----------------------------------------------------------------
 report page:
     This route returns a report view of the requested repo (by ID).
