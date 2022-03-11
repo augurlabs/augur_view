@@ -39,12 +39,27 @@ body {
 
 .nav-separator {
     background-color: var(--color-accent-dark);
-    width: 5px;
+    max-width: 5px;
     height: 35px;
 }
 
 .submitContainer {
     background-color: var(--color-accent);
+}
+
+.toast-container {
+    top: 80px !important;
+    right: 16px !important;
+}
+
+.toast {
+    background-color: var(--color-accent);
+    color: var(--color-fg);
+}
+
+.display-table {
+    background-color: white !important;
+    overflow: auto;
 }
 
 .paginationActive {

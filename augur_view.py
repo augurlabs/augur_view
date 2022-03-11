@@ -63,7 +63,9 @@ def repo_table_view():
 
     #if not cacheFileExists("repos.json"):
     #    return renderLoading("repos/views/table", query, "repos.json")
-
+    flash("Testing")
+    flash("Testing")
+    flash("Testing")
     return renderRepos("table", query, requestJson("repos"), sorting, rev, page, True)
 
 """ ----------------------------------------------------------------
