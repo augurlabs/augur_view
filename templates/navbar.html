@@ -7,14 +7,30 @@
         </button>
 
         <!-- DECORATIVE SEPARATOR (hidden on mobile) -->
-        <div class="rounded nav-separator collapse navbar-collapse d-flex">&nbsp;</div>
+        <div class="rounded nav-separator collapse navbar-collapse">&nbsp;</div>
         <span class="collapse navbar-collapse" style="max-width: 10px;"></span>
 
         <!-- NAVBAR CONTENT -->
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
                 <!-- COLLAPSABLE NAVBAR SECTION -->
+
+                {% if session['userID'] %}
+                <li class="nav-item dropdown user_dropdown">
+                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ session['userID'] }}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('repo_table_view') }}">Settings</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('user_logout') }}">Logout</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('user_login') }}">Login</a>
+                </li>
+                {% endif %}
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle {% if title == 'Repos' %} active {% endif %}" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Repos
@@ -34,7 +50,6 @@
                 </li>
                 <!-- .junk->NAVBAR_EXTRAS -->
             </ul>
-            {% if session['userID'] %} <p style="color: white">Welcome, {{session['userID']}} &nbsp;&nbsp;&nbsp;&nbsp;</p> {% endif %}
             <form class="d-flex" method="get" action="?">
                 <input class="form-control me-2" name="q" type="search" placeholder="Filter Repos" aria-label="Search" value="{{query_key or ''}}">
                 <button class="btn btn-outline-dark" type="submit" style="color: white;">Search</button>

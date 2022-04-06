@@ -63,9 +63,7 @@ def repo_table_view():
 
     #if not cacheFileExists("repos.json"):
     #    return renderLoading("repos/views/table", query, "repos.json")
-    flash("Testing")
-    flash("Testing")
-    flash("Testing")
+
     return renderRepos("table", query, requestJson("repos"), sorting, rev, page, True)
 
 """ ----------------------------------------------------------------
@@ -133,6 +131,7 @@ logout:
 @app.route('/logout')
 def user_logout():
     session.pop('userID', None)
+    flash("You have been logged out")
     return redirect(url_for('root'))
 
 """ ----------------------------------------------------------------

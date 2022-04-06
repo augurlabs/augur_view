@@ -5,6 +5,8 @@
     --color-fg-contrast: black;
     --color-accent: #6f42c1;
     --color-accent-dark: #6134b3;
+    --color-notice: #00ddff;
+    --color-notice-contrast: #006979;
 }
 
 html, body {
@@ -43,6 +45,10 @@ body {
     height: 35px;
 }
 
+.user_dropdown {
+    border-right: 2px solid var(--color-fg);
+}
+
 .submitContainer {
     background-color: var(--color-accent);
 }
@@ -53,7 +59,7 @@ body {
 }
 
 .toast {
-    background-color: var(--color-accent);
+    background-color: var(--color-notice);
     color: var(--color-fg);
 }
 
