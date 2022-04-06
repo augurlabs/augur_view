@@ -42,11 +42,8 @@ body {
 .nav-separator {
     background-color: var(--color-accent-dark);
     max-width: 5px;
+    min-width: 5px;
     height: 35px;
-}
-
-.user_dropdown {
-    border-right: 2px solid var(--color-fg);
 }
 
 .submitContainer {
