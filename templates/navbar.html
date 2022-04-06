@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #6f42c1;">
     <div class="container-fluid">
         <!-- BRAND LOGO -->
-        <a class="navbar-brand nav-image" href="{{root}}"><img src="{{ url_for('static', filename= 'img/augur_logo.png') }}" class="img-fluid nav-img" alt="augur Logo"></a>
+        <a class="navbar-brand nav-image" href="{{ url_for('root') }}"><img src="{{ url_for('logo') }}" class="img-fluid nav-img" alt="augur Logo"></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -20,17 +20,17 @@
                         Repos
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{{root}}repos/views/table">Table View</a></li>
-                        <li><a class="dropdown-item" href="{{root}}repos/views/card">Card View</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('repo_table_view') }}">Table View</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('repo_card_view') }}">Card View</a></li>
                     </ul>
                 </li>
 
                 <!-- STATIC NAVBAR SECTION -->
                 <li class="nav-item">
-                    <a class="nav-link {% if title == 'Groups' %} active {% endif %}" aria-current="page" href="{{root}}groups">Groups</a>
+                    <a class="nav-link {% if title == 'Groups' %} active {% endif %}" aria-current="page" href=" {{ url_for('repo_groups_view') }}">Groups</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if title == 'Status' %} active {% endif %}" aria-current="page" href="{{root}}status">Collection Status</a>
+                    <a class="nav-link {% if title == 'Status' %} active {% endif %}" aria-current="page" href="{{ url_for('status_view') }}">Collection Status</a>
                 </li>
                 <!-- .junk->NAVBAR_EXTRAS -->
             </ul>

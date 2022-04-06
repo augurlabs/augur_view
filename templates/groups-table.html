@@ -15,7 +15,7 @@
         {% for group in groups %}
                 <tr>
                     <th scope="row">{{loop.index}}</th>
-                    <td><a href="{{root}}groups?q={{ group.repo_group_id }}">{{ group.rg_name }}</a></td>
+                    <td><a href="{{ url_for('repo_groups_view', group=group.repo_group_id) }}">{{ group.rg_name }}</a></td>
                     <td>{{ group.repo_group_id }}</td>
                     <td>{{ group.rg_description }}</td>
                     <td>{{ group.rg_last_modified }}</td>

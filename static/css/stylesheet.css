@@ -2,6 +2,7 @@
     --color-bg: #252525;
     --color-bg-light: #4a4651;
     --color-fg: white;
+    --color-fg-contrast: black;
     --color-accent: #6f42c1;
     --color-accent-dark: #6134b3;
 }
@@ -48,6 +49,11 @@ body {
     color: var(--color-fg);
 }
 
+.sorting-link {
+    color: var(--color-fg-contrast);
+    text-decoration: none;
+}
+
 /* Image Zoom */
 
 img[id^="report_image_"] {
@@ -89,7 +95,18 @@ img[id^="report_image_"]:hover {filter: brightness(50%);}
     text-align: center;
     color: #ccc;
     padding: 10px 0;
-    height: 150px;
+    height: 80px;
+}
+
+#close-caption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+    height: 50px;
 }
 
 /* Add Animation */

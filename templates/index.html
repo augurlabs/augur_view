@@ -25,7 +25,7 @@
     {% endif %}
 
     {% if redirect %}
-        <meta http-equiv="refresh" content="{{ pause or 0}}; URL='{{ root }}{{ redirect }}'"/>
+        <meta http-equiv="refresh" content="{{ pause or 0 }}; URL='{{ url_for('root', path=redirect) }}'"/>
     {% endif %}
 </head>
 
@@ -52,7 +52,7 @@
             </div>
             <div class="order-2">
                 <a href="https://chaoss.community/">
-                    <img src="{{ url_for('static', filename= 'img/Chaoss_Logo_white.png') }}" class="img-fluid float-center" alt="Chaos Logo" style="width: 50%;">
+                    <img src="{{ url_for('logo', brand='chaoss') }}" class="img-fluid float-center" alt="Chaos Logo" style="width: 50%;">
                 </a>
             </div>
         </div>
