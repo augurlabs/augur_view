@@ -16,4 +16,8 @@ Once the server is running, you can change the default `serving` url in `config.
 
 For installation instructions on a server, see [installing](installing.md).
 
+## Contributing
+
+To get started with developing for augur_view, see [modules](modules.md).
+
 Copyright 2021 University of Missouri, and University of Nebraska-Omaha
