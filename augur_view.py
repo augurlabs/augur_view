@@ -105,7 +105,7 @@ status:
 """
 @app.route('/status')
 def status_view():
-    return renderModule("status", title="Status")
+    return render_module("status", title="Status")
 
 """ ----------------------------------------------------------------
 report page:

@@ -316,7 +316,7 @@ def renderMessage(messageTitle, messageBody, title = None, redirect = None, paus
 
 """ ----------------------------------------------------------------
 """
-def renderModule(module, **args):
+def render_module(module, **args):
     args.setdefault("title", "Augur View")
     args.setdefault("api_url", getSetting("serving"))
     args.setdefault("body", module)
