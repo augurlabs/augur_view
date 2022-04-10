@@ -16,6 +16,18 @@ Once the server is running, you can change the default `serving` url in `config.
 
 For installation instructions on a server, see [installing](installing.md).
 
+## Deployed Server
+
+1. [Backend](http://ec2-3-138-116-248.us-east-2.compute.amazonaws.com:5000/)
+2. [Frontend](http://ec2-3-138-116-248.us-east-2.compute.amazonaws.com:8000/)
+
+## Sprint 1
+
+1. [Use Cases](use-cases.pdf)
+2. [Requirements](requirements.pdf)
+3. [Progress Report](progress-report.pdf)
+4. [Obstacles & Reflections & Goals](obstacles-reflections-goals.pdf)
+
 ## Contributing
 
 To get started with developing for augur_view, see [modules](modules.md).
