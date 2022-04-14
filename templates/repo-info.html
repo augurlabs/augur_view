@@ -7,8 +7,10 @@
         <h1 id="message">Report for: {{ repo.repo_name|title }}</h1>
         <p><a href="https://{{ repo.url }}" target="_blank" data-toggle="tooltip" title="opens in new tab">https://{{ repo.url }}</a></p>
         <h2>Contributor Reports</h2>
-        <div id="pie_chart" style="width: 900px; height: 500px;"></div>
-        <div id="pie_chart_caption" style="width: 900px; height: 500px;"></div>
+        <div style="width: 50%;">
+            <div id="pie_chart" ></div>
+            <div id="pie_chart_caption"></div>
+        </div>
         {% else %}
         <h1 id="message">Repository {{ repo_id }} not found<h1>
         {% endif %}
@@ -65,7 +67,13 @@
 
             // Set the table options
             var options = {
-            title: title
+                title: title,
+                    titleTextStyle: {
+                        fontSize: 15, // 12, 18 whatever you want (don't specify px)
+                        bold: true,    // true or false
+                        italic: false   // true of false
+                    },
+                is3D: true
             };
 
             // Define the piechart object and where it needs to go in the html
@@ -78,6 +86,10 @@
             var caption = "This pie chart shows the percentage of new contributors who were fly-by or repeat contributors. Fly by contributors are contributors who make less than the required " + required_contributions + " contributions in " + required_time + " days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made " + required_contributions + " or more contributions in " + required_time + " days and their first contribution is in the specified time period."
 
             document.getElementById("pie_chart_caption").innerHTML = caption;
+
+            window.addEventListener('resize', function () {
+                chart.draw(table_data, options);
+            }, false);
         });
     }
 
@@ -86,6 +98,9 @@
         var repo_id = url_array[url_array.length - 1];
         return repo_id
     }
+
+
+
     // Load Gchart packages and render charts
     google.charts.load('current', { packages: ['corechart', 'bar', 'timeline', 'controls'] });
     google.charts.setOnLoadCallback(loadCharts);
