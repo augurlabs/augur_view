@@ -8,6 +8,7 @@
         <p><a href="https://{{ repo.url }}" target="_blank" data-toggle="tooltip" title="opens in new tab">https://{{ repo.url }}</a></p>
         <h2>Contributor Reports</h2>
         <div id="pie_chart" style="width: 900px; height: 500px;"></div>
+        <div id="pie_chart_caption" style="width: 900px; height: 500px;"></div>
         {% else %}
         <h1 id="message">Repository {{ repo_id }} not found<h1>
         {% endif %}
@@ -31,10 +32,15 @@
 
         $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", pie_chart_params, function (response) {
 
+            console.log(response)
+
             // extract values from response into logical data names
             let data = response["data"]
             let start_date = response["start_date"]
             let end_date = response["end_date"]
+
+            let required_time = response["required_time"]
+            let required_contributions = response["required_contributions"]
 
             // Get a list of keys for the data
             let keys = Object.keys(data)
@@ -67,6 +73,11 @@
 
             // Draw the data onto the pie chart with the given options
             chart.draw(table_data, options);
+
+            // Add a caption to the table
+            var caption = "This pie chart shows the percentage of new contributors who were fly-by or repeat contributors. Fly by contributors are contributors who make less than the required " + required_contributions + " contributions in " + required_time + " days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made " + required_contributions + " or more contributions in " + required_time + " days and their first contribution is in the specified time period."
+
+            document.getElementById("pie_chart_caption").innerHTML = caption;
         });
     }
 
