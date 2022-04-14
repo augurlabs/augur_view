@@ -31,28 +31,42 @@
 
         $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", pie_chart_params, function (response) {
 
+            // extract values from response into logical data names
             let data = response["data"]
+            let repo_name = response["repo_name"]
+            let start_date = response["start_date"]
+            let end_date = response["end_date"]
 
+            // Get a list of keys for the data
             let keys = Object.keys(data)
 
-            console.log(data)
-
+            // Create a data table for the chart and add the two valyes each piece of data has
             var table_data = new google.visualization.DataTable();
 
             table_data.addColumn('string', 'Contributor Type');
             table_data.addColumn('number', 'Percentage');
 
+            // compute the total number of contributors, and add each piece of data to the table object
+            total_contributors = 0
             for (var i = 0; i < keys.length; i++) {
                 key = keys[i]
                 table_data.addRow([key, data[key]])
+
+                total_contributors+= data[key]
             }
 
+            // Create title from reponse values
+            var title = repo_name + ": " + "Number of Returning Contributors out of " + total_contributors + " from " + start_date + " to " + end_date
+
+            // Set the table options
             var options = {
-            title: 'Returning Contributors Pie Chart'
+            title: title
             };
 
+            // Define the piechart object and where it needs to go in the html
             var chart = new google.visualization.PieChart(document.getElementById('pie_chart'));
 
+            // Draw the data onto the pie chart with the given options
             chart.draw(table_data, options);
         });
     }
