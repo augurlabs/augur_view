@@ -33,7 +33,6 @@
 
             // extract values from response into logical data names
             let data = response["data"]
-            let repo_name = response["repo_name"]
             let start_date = response["start_date"]
             let end_date = response["end_date"]
 
@@ -56,7 +55,7 @@
             }
 
             // Create title from reponse values
-            var title = repo_name + ": " + "Number of Returning Contributors out of " + total_contributors + " from " + start_date + " to " + end_date
+            var title = "Number of Returning Contributors out of " + total_contributors + " from " + start_date + " to " + end_date
 
             // Set the table options
             var options = {
