@@ -11,7 +11,7 @@ def init_settings():
     settings["approot"] = "/"
     settings["caching"] = "static/cache"
     settings["cache_expiry"] = 604800
-    settings["serving"] = "default.osshealth.io"
+    settings["serving"] = "augur.chaoss.io"
     settings["pagination_offset"] = 25
     settings["reports"] = "reports.yml"
 
