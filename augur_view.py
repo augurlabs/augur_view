@@ -131,6 +131,14 @@ def repo_repo_view(id):
 
     return render_template('index.html', body="repo-info", reports=reports.keys(), images=reports, title="Repo", repo=repo, repo_id=id, api_url=getSetting('serving'))
 
+""" ----------------------------------------------------------------
+Dynamic Visualization Page:
+    This is route shows nice visualizations of selected repos
+"""
+@app.route('/visualizer')
+def dynamic_visualizer_view():
+    return render_template('index.html', body="dynamic-visualizer", title="Visualizer",api_url=getSetting('serving'))
+
 # Code 404 response page, for pages not found
 @app.errorhandler(404)
 def page_not_found(error):
@@ -179,3 +187,5 @@ def wait_for_request(id):
     #     return jsonify(report_requests[id])
     # else:
     #     return jsonify({"exists": False})
+
+
