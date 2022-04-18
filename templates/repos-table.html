@@ -61,7 +61,7 @@
                 <td>TODO</td>
                 <td>{{ repo.commits_all_time|int }}</td>
                 <td>{{ repo.issues_all_time|int }}</td>
-                <td>TODO</td>
+                <td>{{ repo.pull_request_count|int }}</td>
             </tr>
             {% endfor %}
         </tbody>

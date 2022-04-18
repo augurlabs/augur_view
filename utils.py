@@ -257,7 +257,7 @@ renderRepos:
 @PARAM:     pageSource: String = "repos/views/table"
         The base url to use for the page links
 """
-def renderRepos(view, query, data, sorting = None, rev = False, page = None, filter = False, pageSource = "repo_table_view", sortBasis = None):
+def renderRepos(view, query, data, repo_info, sorting = None, rev = False, page = None, filter = False, pageSource = "repo_table_view", sortBasis = None):
     pagination_offset = getSetting('pagination_offset')
 
     """ ----------
@@ -266,6 +266,14 @@ def renderRepos(view, query, data, sorting = None, rev = False, page = None, fil
     """
     if(data is None):
         return render_template('index.html', body="repos-" + view, title="Repos")
+
+    for repo in data:
+        repo["pull_request_count"] = 0
+        if repo_info is not None:
+            for info in repo_info:
+                if repo["repo_id"] == info["repo_id"]:
+                    repo["pull_request_count"] = info["pull_request_count"]
+                    break
 
     # If a query exists and filtering is set to true, attempt to filter the data
     if((query is not None) and filter):

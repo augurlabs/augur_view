@@ -62,7 +62,7 @@ def repo_table_view():
     #if not cacheFileExists("repos.json"):
     #    return renderLoading("repos/views/table", query, "repos.json")
 
-    return renderRepos("table", query, requestJson("repos"), sorting, rev, page, True)
+    return renderRepos("table", query, requestJson("repos"), requestJson("metadata/repo_info"), sorting, rev, page, True)
 
 """ ----------------------------------------------------------------
 card:
@@ -71,7 +71,7 @@ card:
 @app.route('/repos/views/card')
 def repo_card_view():
     query = request.args.get('q')
-    return renderRepos("card", query, requestJson("repos"), filter = True)
+    return renderRepos("card", query, requestJson("repos"), requestJson("metadata/repo_info"), filter = True)
 
 """ ----------------------------------------------------------------
 groups:
@@ -93,7 +93,7 @@ def repo_groups_view(group=None):
         for repo in data:
             if query == str(repo["repo_group_id"]) or query in repo["rg_name"]:
                 buffer.append(repo)
-        return renderRepos("table", query, buffer, page = page, pageSource = "repo_groups_view")
+        return renderRepos("table", query, buffer, requestJson("metadata/repo_info"), page = page, pageSource = "repo_groups_view")
     else:
         groups = requestJson("repo-groups")
         return render_template('index.html', body="groups-table", title="Groups", groups=groups, query_key=query, api_url=getSetting('serving'))
@@ -179,3 +179,11 @@ def wait_for_request(id):
     #     return jsonify(report_requests[id])
     # else:
     #     return jsonify({"exists": False})
+
+""" ----------------------------------------------------------------
+Hello World example:
+    This is an example demonstrating the use of modules.
+"""
+@app.route('/hello-world')
+def hello_world():
+    return render_module("hello-world", title="Hello, World!")
