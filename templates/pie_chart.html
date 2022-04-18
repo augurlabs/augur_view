@@ -2,7 +2,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 
-<div id="pie_chart"></div>
+<div id="pie_chart">
+    <div id="spinner" class="spinner-border" role="status"></div>
+</div>
 <div id="pie_chart_caption"></div>
 
 
@@ -62,6 +64,8 @@
             // Define the piechart object and where it needs to go in the html
             var chart = new google.visualization.PieChart(document.getElementById('pie_chart'));
 
+            var div = document.getElementById('spinner');
+            div.remove();
             // Draw the data onto the pie chart with the given options
             chart.draw(table_data, options);
 
