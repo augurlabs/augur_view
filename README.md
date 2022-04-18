@@ -1,5 +1,18 @@
 # augur_view
 
+1. [Backend](http://ec2-3-138-116-248.us-east-2.compute.amazonaws.com:5000/)
+2. [Frontend](http://ec2-3-138-116-248.us-east-2.compute.amazonaws.com:8000/)
+
+## Documentation
+
+1. [Use Cases](use-cases.pdf)
+2. [Requirements](requirements.pdf)
+3. [Progress Report](progress-report.pdf)
+4. [Design Document](design-document.pdf)
+5. [Obstacles & Reflections & Goals](obstacles-reflections-goals.pdf)
+
+## Development
+
 HTML frontend for Chaoss/Augur, written with Bootstrap and served by Flask
 
 To run as a local instance:
@@ -15,18 +28,6 @@ To run as a local instance:
 Once the server is running, you can change the default `serving` url in `config.yml` and either restart the app or navigate to `[approot]/settings/reload` in the browser to connect to the desired augur instance.
 
 For installation instructions on a server, see [installing](installing.md).
-
-## Deployed Server
-
-1. [Backend](http://ec2-3-138-116-248.us-east-2.compute.amazonaws.com:5000/)
-2. [Frontend](http://ec2-3-138-116-248.us-east-2.compute.amazonaws.com:8000/)
-
-## Sprint 1
-
-1. [Use Cases](use-cases.pdf)
-2. [Requirements](requirements.pdf)
-3. [Progress Report](progress-report.pdf)
-4. [Obstacles & Reflections & Goals](obstacles-reflections-goals.pdf)
 
 ## Contributing
 
