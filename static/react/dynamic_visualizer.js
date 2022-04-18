@@ -1,26 +1,31 @@
-'use strict';
 
-const e = React.createElement;
-
-class DynamicVisualizer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { liked: false };
+const {useEffect, useState} = React;
+const {Line, LineChart} = Recharts;
+function DynamicVisualizer(){
+  const [myData, setMyData] = useState(null)
+  useEffect(() => {
+    fetch('http://augur.chaoss.io/api/unstable/repo-groups')
+    .then(function(response) {
+      return response.json();
+    }).then(function(data) {
+      console.log(data)
+      setMyData(data);
+    });
+  }, [])
+  if(myData){
+    return(
+      <div>
+        {myData[0].rg_name}
+      </div>
+    )
   }
+  return (
+    <div>
 
-  render() {
-    if (this.state.liked) {
-      return 'You liked this.';
-    }
-
-    return e(
-      'button',
-      { onClick: () => this.setState({ liked: true }) },
-      'Like'
-    );
-  }
+    </div>
+  )
 }
 
 const domContainer = document.querySelector('.content');
 const root = ReactDOM.createRoot(domContainer);
-root.render(e(DynamicVisualizer));
+root.render(<DynamicVisualizer />);
