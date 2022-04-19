@@ -21,3 +21,18 @@ For installation instructions on a server, see [installing](installing.md).
 To get started with developing for augur_view, see [modules](modules.md).
 
 Copyright 2021 University of Missouri, and University of Nebraska-Omaha
+
+!-----------------------------------------------------------------------------!
+
+## Sprint 3 
+
+Where we left off -
+
+We currently have two graphs displaying default data. The first graph displays the star count over time for the default project 'lodash' and the second graph displays forks over time for the default project. 
+
+Progress - 
+
+
+Goals - 
+
+
