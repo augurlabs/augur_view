@@ -67,10 +67,10 @@ function DynamicVisualizer(){
   if( myData){
     return(
     //   This is for all the data
-    <div style={{width:"100%", justifyContent:"center", display:"flex", "flex-flow":"row"}}>
+    <div style={{width:"100%", justifyContent:"center", display:"flex", "flex-flow":"column"}}>
       <div id="graph1">
         <h1>Stars over time for {myData[0].repo_name}</h1>
-          <LineChart width={500} height={500} data={myData} style={{margin:"100px auto"}} >
+          <LineChart width={1000} height={500} data={myData} style={{margin:"100px auto"}} >
 
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" tickFormatter={(tickS) => {return stringDate(tickS)}}/>
@@ -82,7 +82,7 @@ function DynamicVisualizer(){
         </div>
         <div id="graph2">
         <h1>Forks over time for {myData[0].repo_name}</h1>
-          <LineChart width={500} height={500} data={forkData} style={{margin:"100px auto"}} >
+          <LineChart width={1000} height={500} data={forkData} style={{margin:"100px auto"}} >
 
             <CartesianGrid />
             <XAxis dataKey="date"/>
