@@ -1,3 +1,6 @@
+# Sprint 2
+See [write up](4320 Semester Project - Sprint 2.pdf) for more information!
+
 # augur_view
 
 HTML frontend for Chaoss/Augur, written with Bootstrap and served by Flask
