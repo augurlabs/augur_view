@@ -91,8 +91,8 @@ function DynamicVisualizer(){
 
     //   This is for all the data
     <div style={{width:"100%", justifyContent:"center", display:"flex", "flex-flow":"column"}}>
-      
-        <div style={{justifyContent:"left",display:"flex"}}>
+      <div>
+      <div style={{justifyContent:"left",display:"flex"}}>
           <p>Select data to be displayed:
             <select onChange={e => handleChange(e)} id="data select" style={{margin:"10px"}}>
               <option> -- Select data -- </option>
@@ -126,10 +126,14 @@ function DynamicVisualizer(){
             </select>
           </p>
         </div>
-    
+
+      </div>
+      
+  
+    <div id="graphContainer" style={{width:"100%", justifyContent:"center", display:"flex", "flex-flow":"row", "justify-content":"space-around"}}>
       <div id="graph1">
         <h1>Stars over time for {myData[0].repo_name}</h1>
-          <LineChart width={750} height={500} data={myData} style={{margin:"100px auto"}} >
+          <LineChart width={500} height={500} data={myData} style={{margin:"100px auto"}} >
 
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}/>
@@ -139,9 +143,10 @@ function DynamicVisualizer(){
             <Line type="monotone" dataKey="stars" stroke="#8884d8" />
         </LineChart>
         </div>
+
         <div id="graph2">
         <h1>Forks over time for {myData[0].repo_name}</h1>
-          <LineChart width={750} height={500} data={forkData} style={{margin:"100px auto"}} >
+          <LineChart width={500} height={500} data={forkData} style={{margin:"100px auto"}} >
 
             <CartesianGrid />
             <XAxis dataKey="date" angle={-28} textAnchor="end"/>
@@ -152,6 +157,9 @@ function DynamicVisualizer(){
         </LineChart>
         </div>
     </div>
+
+    </div>
+      
     )
   }
   return (
