@@ -32,6 +32,10 @@ We currently have two graphs displaying default data. The first graph displays t
 
 Progress - 
 
+Day 1 Tuesday April 19th:
+
+    Created drop down selectors for the desired data to be displayed and two repository selections. Allocated them dynamically based on api. Also reformatted the graphs for data display.
+
 
 Goals - 
 
