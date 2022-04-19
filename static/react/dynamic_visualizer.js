@@ -19,6 +19,8 @@ function DynamicVisualizer(){
 
   const [forkData, setForkData] = useState(null);
 
+  const [repoNames, setRepoNames] = useState(null);
+
   function getStarDataForRepoWithDates(){
     fetch('http://augur.chaoss.io/api/unstable/repo-groups/25000/stars')
     .then(function(response) {
@@ -45,7 +47,19 @@ function DynamicVisualizer(){
     });
   }
 
-
+  function getRepoNames(){
+    fetch("http://augur.chaoss.io/api/unstable/repos").then(function(res){
+      return res.json()
+    }).then(function(data){
+      var tempRepoNames = [];
+      for(var i =0; i < data.length; i ++){
+        if(data[i].repo_name != null || data[i].repo_name !== ''){
+          tempRepoNames.push(data[i].repo_name);
+        }
+      }
+      setRepoNames(tempRepoNames)
+    })
+  }
 
 
   useEffect(() => {
@@ -56,6 +70,7 @@ function DynamicVisualizer(){
     //   console.log(data)
     //   setMyData(data);
     // });
+    getRepoNames()
     getStarDataForRepoWithDates()
     getForkData();
   }, [])
@@ -84,11 +99,23 @@ function DynamicVisualizer(){
           <p>Repository 1:
             <select id="repository_1_select" style={{margin:"10px"}}>
               <option> -- Select Repository 1 -- </option>
+              {
+                repoNames != null && repoNames.length != 0?
+                repoNames.map(data =>
+                  <option value={data}>{data}</option>
+                ): <option></option>
+              }
             </select>
           </p>
           <p>Repository 2:
-            <select id="repository_2_select" style={{margin:"10px"}}>
+            <select id="repository_2_select" style={{margin:"10px"}} onChange={(e) => console.log(e.target.value)}>
               <option> -- Select Repository 2 -- </option>
+              {
+                repoNames != null && repoNames.length != 0?
+                repoNames.map(data =>
+                  <option value={data}>{data}</option>
+                ): <option></option>
+              }
             </select>
           </p>
         </div>
