@@ -179,3 +179,11 @@ def wait_for_request(id):
     #     return jsonify(report_requests[id])
     # else:
     #     return jsonify({"exists": False})
+    
+""" ----------------------------------------------------------------
+Hello World example:
+    This is an example demonstrating the use of modules.
+"""
+@app.route('/hello-world')
+def hello_world():
+    return render_module("hello-world")
