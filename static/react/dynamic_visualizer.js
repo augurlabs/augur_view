@@ -73,7 +73,7 @@ function DynamicVisualizer(){
           <LineChart width={1000} height={500} data={myData} style={{margin:"100px auto"}} >
 
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" tickFormatter={(tickS) => {return stringDate(tickS)}}/>
+            <XAxis dataKey="date" angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}/>
             <YAxis />
             <Tooltip />
             <Legend />
@@ -85,7 +85,7 @@ function DynamicVisualizer(){
           <LineChart width={1000} height={500} data={forkData} style={{margin:"100px auto"}} >
 
             <CartesianGrid />
-            <XAxis dataKey="date"/>
+            <XAxis dataKey="date" angle={-28} textAnchor="end"/>
             <YAxis />
             <Tooltip />
             <Legend />
