@@ -74,9 +74,14 @@ function DynamicVisualizer(){
     getStarDataForRepoWithDates()
     getForkData();
   }, [])
+
+  function handleChange(e) {
+    setDataType(e.target.value);
+    console.log(e.target.value);
+    getGraphData(e.target.value);
+  }
   function stringDate(dateS){
     var tempD = new Date(dateS);
-    console.log(tempD.getFullYear().toString())
     return tempD.getFullYear().toString() +"-" + tempD.getMonth() + "-" + tempD.getDate();
   }
   if( myData){
@@ -89,8 +94,10 @@ function DynamicVisualizer(){
       
         <div style={{justifyContent:"left",display:"flex"}}>
           <p>Select data to be displayed:
-            <select id="data select" style={{margin:"10px"}}>
+            <select onChange={e => handleChange(e)} id="data select" style={{margin:"10px"}}>
               <option> -- Select data -- </option>
+              <option value="forks">Forks</option>
+              <option value="stars">Stars</option>
             </select>
           </p>
         </div>
