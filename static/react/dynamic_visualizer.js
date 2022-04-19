@@ -66,8 +66,20 @@ function DynamicVisualizer(){
   }
   if( myData){
     return(
+
+      
+
     //   This is for all the data
     <div style={{width:"100%", justifyContent:"center", display:"flex", "flex-flow":"column"}}>
+      
+        <div style={{justifyContent:"left",display:"flex"}}>
+          <p>Select data to be displayed:
+            <select id="data select" style={{margin:"10px"}}>
+              <option> -- Select data -- </option>
+            </select>
+          </p>
+        </div>
+    
       <div id="graph1">
         <h1>Stars over time for {myData[0].repo_name}</h1>
           <LineChart width={1000} height={500} data={myData} style={{margin:"100px auto"}} >
