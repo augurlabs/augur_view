@@ -19,6 +19,29 @@ function DynamicVisualizer(){
 
   const [forkData, setForkData] = useState(null);
 
+  const [dataType, setDataType] = useState(null);
+
+  function getGraphData() {
+    dataType ?
+    fetch('http://augur.chaoss.io/api/unstable/repo-groups/25000/' + dataType)
+    .then(function(response) {
+      return response.json();
+    }).then(function(data) {
+      console.log(data);
+      var tempData = [];
+      for(var i = 0; i < data.length; i ++){
+        tempData.push(data[i]);
+      }
+      setMyData(tempData);
+    }): getDefaultGraph();
+
+  }
+
+  function getDefaultGraph() {
+    getForkData();
+    getStarDataForRepoWithDates();
+  }
+
   function getStarDataForRepoWithDates(){
     fetch('http://augur.chaoss.io/api/unstable/repo-groups/25000/stars')
     .then(function(response) {
@@ -46,22 +69,21 @@ function DynamicVisualizer(){
   }
 
 
-
+  useEffect(() => {
+    getGraphData();
+  },[dataType])
 
   useEffect(() => {
-    // fetch('http://augur.chaoss.io/api/unstable/repos')
-    // .then(function(response) {
-    //   return response.json();
-    // }).then(function(data) {
-    //   console.log(data)
-    //   setMyData(data);
-    // });
-    getStarDataForRepoWithDates()
-    getForkData();
+    getGraphData();
   }, [])
+
+  function handleChange(e) {
+    setDataType(e.target.value);
+    console.log(e.target.value);
+    getGraphData(e.target.value);
+  }
   function stringDate(dateS){
     var tempD = new Date(dateS);
-    console.log(tempD.getFullYear().toString())
     return tempD.getFullYear().toString() +"-" + tempD.getMonth() + "-" + tempD.getDate();
   }
   if( myData){
@@ -74,8 +96,10 @@ function DynamicVisualizer(){
       
         <div style={{justifyContent:"left",display:"flex"}}>
           <p>Select data to be displayed:
-            <select id="data select" style={{margin:"10px"}}>
+            <select onChange={e => handleChange(e)} id="data select" style={{margin:"10px"}}>
               <option> -- Select data -- </option>
+              <option value="forks">Forks</option>
+              <option value="stars">Stars</option>
             </select>
           </p>
         </div>
