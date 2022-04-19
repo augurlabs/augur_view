@@ -1,0 +1,94 @@
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<div id="pie_chart">
+    <div id="spinner" class="spinner-border" role="status"></div>
+</div>
+<div id="pie_chart_caption"></div>
+
+
+<script type="text/javascript">
+    function loadCharts() {
+
+        let repo_id = get_repo_id()
+        var pie_chart_params = {
+            "repo_id": repo_id,
+            "return_data": "true"
+        }
+
+        $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", pie_chart_params, function (response) {
+
+            console.log(response)
+
+            // extract values from response into logical data names
+            let data = response["data"]
+            let start_date = response["start_date"]
+            let end_date = response["end_date"]
+
+            let required_time = response["required_time"]
+            let required_contributions = response["required_contributions"]
+
+            // Get a list of keys for the data
+            let keys = Object.keys(data)
+
+            // Create a data table for the chart and add the two valyes each piece of data has
+            var table_data = new google.visualization.DataTable();
+
+            table_data.addColumn('string', 'Contributor Type');
+            table_data.addColumn('number', 'Percentage');
+
+            // compute the total number of contributors, and add each piece of data to the table object
+            total_contributors = 0
+            for (var i = 0; i < keys.length; i++) {
+                key = keys[i]
+                table_data.addRow([key, data[key]])
+
+                total_contributors += data[key]
+            }
+
+            // Create title from reponse values
+            var title = "Number of Returning Contributors out of " + total_contributors + " from " + start_date + " to " + end_date
+
+            // Set the table options
+            var options = {
+                title: title,
+                titleTextStyle: {
+                    fontSize: 15, // 12, 18 whatever you want (don't specify px)
+                    bold: true,    // true or false
+                    italic: false   // true of false
+                },
+                is3D: true
+            };
+
+            // Define the piechart object and where it needs to go in the html
+            var chart = new google.visualization.PieChart(document.getElementById('pie_chart'));
+
+            var div = document.getElementById('spinner');
+            div.remove();
+            // Draw the data onto the pie chart with the given options
+            chart.draw(table_data, options);
+
+            // Add a caption to the table
+            var caption = "This pie chart shows the percentage of new contributors who were fly-by or repeat contributors. Fly by contributors are contributors who make less than the required " + required_contributions + " contributions in " + required_time + " days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made " + required_contributions + " or more contributions in " + required_time + " days and their first contribution is in the specified time period."
+
+            document.getElementById("pie_chart_caption").innerHTML = caption;
+
+            window.addEventListener('resize', function () {
+                chart.draw(table_data, options);
+            }, false);
+        });
+    }
+
+    function get_repo_id() {
+        var url_array = window.location.href.split("/");
+        var repo_id = url_array[url_array.length - 1];
+        return repo_id
+    }
+
+
+
+    // Load Gchart packages and render charts
+    google.charts.load('current', { packages: ['corechart', 'bar', 'timeline', 'controls'] });
+    google.charts.setOnLoadCallback(loadCharts);
+</script>
