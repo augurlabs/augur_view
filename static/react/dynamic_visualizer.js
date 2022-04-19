@@ -103,10 +103,23 @@ function DynamicVisualizer(){
             </select>
           </p>
         </div>
+
+        <div style={{justifyContent:"space-around",display:"flex"}}>
+          <p>Repository 1:
+            <select id="repository_1_select" style={{margin:"10px"}}>
+              <option> -- Select Repository 1 -- </option>
+            </select>
+          </p>
+          <p>Repository 2:
+            <select id="repository_2_select" style={{margin:"10px"}}>
+              <option> -- Select Repository 2 -- </option>
+            </select>
+          </p>
+        </div>
     
       <div id="graph1">
         <h1>Stars over time for {myData[0].repo_name}</h1>
-          <LineChart width={1000} height={500} data={myData} style={{margin:"100px auto"}} >
+          <LineChart width={750} height={500} data={myData} style={{margin:"100px auto"}} >
 
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}/>
@@ -118,7 +131,7 @@ function DynamicVisualizer(){
         </div>
         <div id="graph2">
         <h1>Forks over time for {myData[0].repo_name}</h1>
-          <LineChart width={1000} height={500} data={forkData} style={{margin:"100px auto"}} >
+          <LineChart width={750} height={500} data={forkData} style={{margin:"100px auto"}} >
 
             <CartesianGrid />
             <XAxis dataKey="date" angle={-28} textAnchor="end"/>
