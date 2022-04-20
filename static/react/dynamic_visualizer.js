@@ -17,35 +17,43 @@ function formatDate(date) {
 function DynamicVisualizer(){
   const [myData, setMyData] = useState(null)
 
-  const [forkData, setForkData] = useState(null);
+  const [firstGraph, setFirstGraph] = useState(null);
 
+  const [secondGraph, setSecondGraph] = useState(null);
+  
   const [repoNames, setRepoNames] = useState(null);
 
-  function getStarDataForRepoWithDates(){
-    fetch('http://augur.chaoss.io/api/unstable/repo-groups/25000/stars')
-    .then(function(response) {
-      return response.json();
-    }).then(function(data) {
-      console.log(data)
-      var tempData = []
-      for(var i = 0; i < data.length; i ++){
-        tempData.push(data[i])
-      }
-      setMyData(tempData)
-    });
-  }
-  function getForkData(){
-    fetch('http://augur.chaoss.io/api/unstable/repo-groups/25000/forks')
-    .then(function(response) {
-      return response.json();
-    }).then(function(data) {
-      console.log(data)
-      for(var i =0;i<data.length;i++){
-        data[i].date = formatDate(data[i].date);
-      }
-      setForkData(data)
-    });
-  }
+  const [firstRepoId, setFirstRepoId] = useState(null);
+
+  const [secondRepoId, setSecondRepoId] = useState(null);
+
+  const [dataType, setDataType] = useState(null);
+
+  // function getStarDataForRepoWithDates(){
+  //   fetch('http://augur.chaoss.io/api/unstable/repo-groups/25000/stars')
+  //   .then(function(response) {
+  //     return response.json();
+  //   }).then(function(data) {
+  //     console.log(data)
+  //     var tempData = []
+  //     for(var i = 0; i < data.length; i ++){
+  //       tempData.push(data[i])
+  //     }
+  //     setMyData(tempData)
+  //   });
+  // }
+  // function getForkData(){
+  //   fetch('http://augur.chaoss.io/api/unstable/repo-groups/25000/forks')
+  //   .then(function(response) {
+  //     return response.json();
+  //   }).then(function(data) {
+  //     console.log(data)
+  //     for(var i =0;i<data.length;i++){
+  //       data[i].date = formatDate(data[i].date);
+  //     }
+  //     setForkData(data)
+  //   });
+  // }
 
   function getRepoNames(){
     fetch("http://augur.chaoss.io/api/unstable/repos").then(function(res){
@@ -54,7 +62,7 @@ function DynamicVisualizer(){
       var tempRepoNames = [];
       for(var i =0; i < data.length; i ++){
         if(data[i].repo_name != null || data[i].repo_name !== ''){
-          tempRepoNames.push(data[i].repo_name);
+          tempRepoNames.push({"name" : data[i].repo_name, "id" : data[i].repo_id});
         }
       }
       setRepoNames(tempRepoNames)
@@ -63,38 +71,51 @@ function DynamicVisualizer(){
 
 
   useEffect(() => {
-    // fetch('http://augur.chaoss.io/api/unstable/repos')
-    // .then(function(response) {
-    //   return response.json();
-    // }).then(function(data) {
-    //   console.log(data)
-    //   setMyData(data);
-    // });
     getRepoNames()
-    getStarDataForRepoWithDates()
-    getForkData();
   }, [])
 
-  function handleChange(e) {
+  function getGraphDataForRepos(){
+    if(dataType != null && firstRepoId != null && secondRepoId != null){
+      fetch("http://augur.chaoss.io/api/unstable/repos/"+ firstRepoId+ "/" + dataType)
+      .then(function(res){
+        return res.json()
+      }).then(function(data){
+        if(data != null && data.length > 0){
+          setFirstGraph(data)
+        }
+      })
+      fetch("http://augur.chaoss.io/api/unstable/repos/"+ secondRepoId+"/" + dataType)
+      .then(function(res){
+        return res.json()
+      }).then(function(data){
+        if(data != null){
+          setSecondGraph(data)
+        }
+      })
+    }
+  }
+
+  useEffect(() => {
+    getGraphDataForRepos()
+    console.log("ran")
+  }, [dataType, firstRepoId, secondRepoId])
+
+  function handleDataChange(e) {
     setDataType(e.target.value);
-    console.log(e.target.value);
-    getGraphData(e.target.value);
+    // getGraphData(e.target.value);
   }
   function stringDate(dateS){
     var tempD = new Date(dateS);
     return tempD.getFullYear().toString() +"-" + tempD.getMonth() + "-" + tempD.getDate();
   }
-  if( myData){
+  if( repoNames){
     return(
-
-      
-
     //   This is for all the data
     <div style={{width:"100%", justifyContent:"center", display:"flex", "flex-flow":"column"}}>
       <div>
       <div style={{justifyContent:"left",display:"flex"}}>
           <p>Select data to be displayed:
-            <select onChange={e => handleChange(e)} id="data select" style={{margin:"10px"}}>
+            <select onChange={e => handleDataChange(e)} id="data select" style={{margin:"10px"}}>
               <option> -- Select data -- </option>
               <option value="forks">Forks</option>
               <option value="stars">Stars</option>
@@ -104,23 +125,23 @@ function DynamicVisualizer(){
 
         <div style={{justifyContent:"space-around",display:"flex"}}>
           <p>Repository 1:
-            <select id="repository_1_select" style={{margin:"10px"}}>
+            <select id="repository_1_select" style={{margin:"10px"}} onChange={(e) => setFirstRepoId(e.target.value)}>
               <option> -- Select Repository 1 -- </option>
               {
                 repoNames != null && repoNames.length != 0?
                 repoNames.map(data =>
-                  <option value={data}>{data}</option>
+                  <option value={data.id}>{data.name}</option>
                 ): <option></option>
               }
             </select>
           </p>
           <p>Repository 2:
-            <select id="repository_2_select" style={{margin:"10px"}} onChange={(e) => console.log(e.target.value)}>
+            <select id="repository_2_select" style={{margin:"10px"}} onChange={(e) => setSecondRepoId(e.target.value)}>
               <option> -- Select Repository 2 -- </option>
               {
                 repoNames != null && repoNames.length != 0?
                 repoNames.map(data =>
-                  <option value={data}>{data}</option>
+                  <option value={data.id}>{data.name}</option>
                 ): <option></option>
               }
             </select>
@@ -129,33 +150,35 @@ function DynamicVisualizer(){
 
       </div>
       
-  
     <div id="graphContainer" style={{width:"100%", justifyContent:"center", display:"flex", "flex-flow":"row", "justify-content":"space-around"}}>
+      {firstGraph? 
       <div id="graph1">
-        <h1>Stars over time for {myData[0].repo_name}</h1>
-          <LineChart width={500} height={500} data={myData} style={{margin:"100px auto"}} >
-
+        <h1>{dataType} over time for {firstGraph[0].repo_name}</h1>
+          <LineChart width={500} height={500} data={firstGraph} style={{margin:"100px auto"}} >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}/>
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="stars" stroke="#8884d8" />
+            <Line type="monotone" dataKey={dataType? dataType : "stars"} stroke="#8884d8" />
         </LineChart>
         </div>
-
+        : <div></div>
+      }
+      {secondGraph?
         <div id="graph2">
-        <h1>Forks over time for {myData[0].repo_name}</h1>
-          <LineChart width={500} height={500} data={forkData} style={{margin:"100px auto"}} >
-
+        <h1>{dataType} over time for {secondGraph[0].repo_name}</h1>
+          <LineChart width={500} height={500} data={secondGraph} style={{margin:"100px auto"}} >
             <CartesianGrid />
-            <XAxis dataKey="date" angle={-28} textAnchor="end"/>
+            <XAxis dataKey="date" angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}/>
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="forks" stroke="#8884d8" />
+            <Line type="monotone" dataKey={dataType? dataType: "stars"} stroke="#8884d8" />
         </LineChart>
         </div>
+        :<div></div>
+      }
     </div>
 
     </div>
