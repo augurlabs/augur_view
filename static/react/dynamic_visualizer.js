@@ -108,6 +108,23 @@ function DynamicVisualizer(){
     var tempD = new Date(dateS);
     return tempD.getFullYear().toString() +"-" + tempD.getMonth() + "-" + tempD.getDate();
   }
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      console.log(payload[0].payload)
+      return (
+        <div style={{backgroundColor: "white"}}>
+        { payload[0].payload ?
+          <p style={{color:"black"}} className="desc">{dataType} :  {payload[0].payload[dataType]}</p>:
+          <p></p>
+        }
+          <p style={{color:"black"}} className="label">{'Date :' + stringDate(payload[0].value)}</p>
+        </div>
+      );
+    }
+  
+    return null;
+  };
   if( repoNames){
     return(
     //   This is for all the data
@@ -158,7 +175,7 @@ function DynamicVisualizer(){
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}/>
             <YAxis />
-            <Tooltip />
+            <Tooltip content={CustomTooltip} />
             <Legend />
             <Line type="monotone" dataKey={dataType? dataType : "stars"} stroke="#8884d8" />
         </LineChart>
@@ -172,7 +189,7 @@ function DynamicVisualizer(){
             <CartesianGrid />
             <XAxis dataKey="date" angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}/>
             <YAxis />
-            <Tooltip />
+            <Tooltip content={CustomTooltip}/>
             <Legend />
             <Line type="monotone" dataKey={dataType? dataType: "stars"} stroke="#8884d8" />
         </LineChart>
