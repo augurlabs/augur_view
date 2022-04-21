@@ -130,19 +130,24 @@
             }
 
             options = {
-                chart: {
-                    title: 'Missing pull requests'
-                },
+			  title: "Missing pull requests",
                 hAxis: {
-                    title: 'Repos'
+                    title: 'Number of Missing PRS',
+					scaleType: 'log',
+					ticks: [0, 25, 75, 200, 400]
                 },
                 vAxis: {
-                    title: 'Number of Missing PRS'
+                    title: 'Repos',
+					//scaleType: 'log',
+					//ticks: [0, 25, 75, 200, 400]
                 }
             };
-            materialChart = new google.charts.Bar(document.getElementById('pull_requests_div_2'));
-            materialChart.draw(data, options);
-
+			
+			var logChart = new google.visualization.BarChart(document.getElementById('pull_requests_div_2'));
+			logChart.draw(data, options);
+            //materialChart = new google.charts.Bar(document.getElementById('pull_requests_div_2'));
+            //materialChart.draw(data, options);
+            
             // ------------------------------------------------- PRS RATIO CHART
             data = new google.visualization.DataTable();
             data.addColumn('string', 'Repo Name');
