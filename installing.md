@@ -5,6 +5,7 @@ To run Augur-View headless on a server, we'll install it as a system service und
 
 Make sure you have the proxy modules enabled in your web server. With NGINX, proxy will already be enabled, but in Apache, this can be done with:
 
+
 ```
 a2enmod
 ```
