@@ -17,14 +17,15 @@
                 <div class="card d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
                     <div id="pull_requests_div_2" style="min-width: 90%; min-height: 300px"></div>
                 </div>
-                <div class="card d-flex justify-content-center align-items-center" style="padding: 10px;">
-                    <div id="pull_requests_div_3" style="min-width: 90%; min-height: 300px"></div>
-                </div>
             </div>
         </div>
         <h2>Issues</h2>
         <div class="row row-cols-1 col-auto g-3" style="margin-bottom: 30px; min-width: 80%;">
             <div class="col">
+                <div class="card d-flex justify-content-center align-items-center" style="padding: 10px;">
+                    <div id="pull_requests_div_3" style="min-width: 90%; min-height: 300px"></div>
+                </div>
+                <br><br>
                 <div class="card d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
                     <div id="issues_div" style="min-width: 90%; min-height: 300px"></div>
                 </div>
@@ -43,6 +44,26 @@
             <div class="col">
                 <div class="card d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
                     <div id="commits_div" style="min-width: 90%; min-height: 300px"></div>
+                </div>
+            </div>
+        </div>
+        <h2>Single Repo Overview</h2>
+        <div class="row row-cols-1 col-auto g-3" style="margin-bottom: 30px; min-width: 80%;">
+            <div class="col">
+                <label for="singleRepo">Enter the repo you want: </label>
+                <input type="text" id="singleRepo" name="fname" list = "repoDataList"><button class="block" id = "singleRepoSubmit">Search</button><br><br>
+                <datalist id = "repoDataList">
+                </datalist>  
+                <div class="container-fluid d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
+                    <div id="singleRepo_div" style="min-width: 90%; min-height: 300px">
+                        <h1>Single Repo Name: </h1>
+                        <h3>Issue Request Amount:</h3>
+                        <h3>Missing Pull Request:</h3>
+                        <h3>Issue Collected Ratio:</h3>
+                        <h3>Number of issues collected:</h3>
+                        <h3>time between:</h3>
+                        <h3>link:</h3>
+                    </div>
                 </div>
             </div>
         </div>
@@ -129,7 +150,10 @@
 
             for(let i = 0; i < response.length; ++i) {
                 let repo = response[i];
-                data.addRow([repo['repo_name'], repo['ratio_issues']]);
+                if(repo['ratio_issues'] < 1)
+                {
+                    data.addRow([repo['repo_name'], 1 - repo['ratio_issues']]);
+                }
             }
 
             options = {
@@ -148,6 +172,18 @@
             };
             materialChart = new google.charts.Bar(document.getElementById('pull_requests_div_3'));
             materialChart.draw(data, options);
+
+            //----------------------------------------------------- Single Repo Stats
+
+            //fill the datalist (suggestion box) with the list of repos found
+            var reposDataList='';
+            for(let i = 0; i < response.length; ++i) 
+            {
+                let repo = response[i];
+                reposDataList += '<option value="'+[repo['repo_name']]+'" />';
+            }
+            document.getElementById("repoDataList").innerHTML = reposDataList;
+            //console.log(reposDataList);
         });
         $.getJSON("{{ api_url }}/collection_status/issues", function(response) {
             // ---------------------------------------------------- ISSUES CHART
@@ -226,7 +262,17 @@
 
             chart.draw(data, options);
         });
+
+        document.getElementById("singleRepoSubmit").addEventListener("click", singleRepoFill)
     }
+
+    function singleRepoFill()
+    {
+        var repoName = (document.getElementById("singleRepo").value);
+        document.getElementById("singleRepo").value = "";
+        console.log(repoName);
+    }
+
     // Load Gchart packages and render charts
     google.charts.load('current', {packages: ['corechart', 'bar', 'timeline', 'controls']});
     google.charts.setOnLoadCallback(loadCharts);
