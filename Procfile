@@ -1,1 +1,1 @@
-web: gunicorn app:augur_view
+web: gunicorn app:dynamic-visualizer
