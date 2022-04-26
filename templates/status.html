@@ -96,6 +96,8 @@
                     data.addRow([repo['repo_name'], repo['pull_request_count'], repo['pull_requests_collected']]);
                 }
             }
+		
+	    data.sort({column: 1});
 
             var options = {
                 chart: {
@@ -202,13 +204,17 @@
                 let repo = response[i];
                 data.addRow([repo['repo_name'], repo['issues_count']]);
             }
+		
+	    data.sort({column: 1});
 
             var options = {
                 chart: {
                     title: 'Number of issues collected'
                 },
                 hAxis: {
-                    title: 'Repos'
+                    title: 'Repos',
+		    scaleType: 'log',
+		    ticks: [0, 25, 400, 1000, 12000]
                 },
                 vAxis: {
                     title: 'Number of datapoints'
