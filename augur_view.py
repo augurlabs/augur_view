@@ -111,6 +111,11 @@ status:
 def status_view():
     return render_module("status", title="Status")
 
+
+@app.route('/reports')
+def show_reports():
+    return render_template('index.html', body="reports.html", title = "Reports")
+
 """ ----------------------------------------------------------------
 report page:
     This route returns a report view of the requested repo (by ID).
