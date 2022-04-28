@@ -169,7 +169,7 @@
                 }
             }
 		
-	    data.sort({column: 1});
+	        data.sort({column: 1});
 
             options = {
                 chart: {
@@ -197,6 +197,7 @@
                     data.addRow([repo['repo_name'], 1 - repo['ratio_issues']]);
                 }
             }
+            data.sort({column: 1});
 
             options = {
                 chart: {
