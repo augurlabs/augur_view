@@ -1,0 +1,118 @@
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<div id="column_chart1">
+    <div id="spinner1" class="spinner-border" role="status"></div>
+</div>
+<div id="column_chart2">
+    <div id="spinner2" class="spinner-border" role="status"></div>
+</div>
+<div id="column_chart3">
+    <div id="spinner3" class="spinner-border" role="status"></div>
+</div>
+<div id="column_chart4">
+    <div id="spinner4" class="spinner-border" role="status"></div>
+</div>
+
+<div id="column_chart_caption"></div>
+
+
+<script type="text/javascript">
+    function loadCharts() {
+
+        let repo_id = get_repo_id()
+        var params = {
+            "repo_id": repo_id,
+            "return_data": "true"
+        }
+        //need to get data here 
+       // $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", params, function (response) {
+
+            console.log(response)
+
+            // extract values from response into logical data names
+                
+            
+
+            // Set the table options
+            let options = {
+                    title: "",
+                    titleTextStyle: {
+                    fontSize: 15, // 12, 18 whatever you want (don't specify px)
+                    bold: true,    // true or false
+                    italic: false   // true of false
+                },
+                     width: 800,
+                     height: 450,
+                     legend: { position: 'top', maxLines: 3 },
+                     bar: { groupWidth: '70%' },
+                     isStacked: true,
+                 };
+
+                 
+                let repo_name = response["repo_name"];
+                var table_num = 1;
+                let data = [response["1_All"],response["1_repeat"],response["1_drive_by"],response["2_All"]];
+                let titles = [repo_name +": All First Time Contributors Per Quarter",
+                 repo_name +": Repeat First Time Contributors Per Quarter", 
+                 repo_name +": Drive_by First Time Contributors Per Quarter", 
+                 repo_name +": All Second Time Contributors Per Quarter"];
+
+                 for(const i in data){
+                    var table_data = [['quarter','Open Pull Requests','Pull Request Comments', 'Commits', 'Issues Closed','Issues Opened','Issue Comments', { role: 'annotation' }]];
+                    for(const j in data[i]){
+                        var date = data[i][j]["date"];
+                        var open_pull_request_count = data[i][j]["open_pull_request_count"];
+                        var pull_request_comment_count = data[i][j]["pull_request_comment_count"];
+                        var commit_count = data[i][j]["commit_count"];
+                        var issue_closed_count = data[i][j]["issue_closed_count"];
+                        var issue_opened_count = data[i][j]["issue_opened_count"];
+                        var issue_comment_count = data[i][j]["issue_comment_count"];
+                        table_data.push([date,open_pull_request_count,pull_request_comment_count,commit_count,issue_closed_count,issue_opened_count,issue_comment_count, '']);
+                    }
+                    console.log(table_data);
+
+                    var table_view = google.visualization.arrayToDataTable(table_data);
+                    
+                    var data_view = new google.visualization.DataView(table_view);
+                    var chart = new google.visualization.ColumnChart(document.getElementById("column_chart"+table_num));
+                    options["title"] = titles[table_num-1];
+                    var div = document.getElementById('spinner'+table_num);
+                    div.remove();
+                    chart.draw(data_view, options);
+                    table_num++;
+                    
+
+
+                    window.addEventListener('resize', function () {
+                        chart.draw(data_view, options);
+                    }, false);
+
+                 }
+
+
+            
+            // Draw the data onto the pie chart with the given options
+            
+
+            // Add a caption to the table
+             
+            //var caption = " This graph shows the number of new contributors in the specified time period, and indicates how many were fly-by and repeat contributors. Fly by contributors are contributors who make less than the required"+required_contributions+ "contributions in"+ required_time +"days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made" + required_contributions+"or more contributions in" +required_time+ "days and their first contribution is in the specified time period.";
+
+           // document.getElementById("column_chart_caption").innerHTML = caption;
+        //});
+    }
+
+    function get_repo_id() {
+        var url_array = window.location.href.split("/");
+        var repo_id = url_array[url_array.length - 1];
+        return repo_id
+    }
+
+
+
+    // Load Gchart packages and render charts
+    google.charts.load('current', { packages: ['corechart', 'bar', 'timeline', 'controls'] });
+    google.charts.setOnLoadCallback(loadCharts);
+</script>
