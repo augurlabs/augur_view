@@ -1,0 +1,85 @@
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<div id="column_chart">
+    <div id="spinner" class="spinner-border" role="status"></div>
+</div>
+<div id="column_chart_caption"></div>
+
+
+<script type="text/javascript">
+    function loadCharts() {
+
+        let repo_id = get_repo_id()
+        var params = {
+            "repo_id": repo_id,
+            "return_data": "true"
+        }
+       $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", params, function (response) {
+
+            console.log(response)
+
+            // extract values from response into logical data names
+                let data = response["data"];
+                var table = [['quarter','Fly By', 'Repeat', { role: 'annotation' }]];
+                for(var i = 0; i < data.length; i++){
+                    var fly_by = data[i]["fly_by"];
+                    var repeat = data[i]["repeat"];
+                    table.push([data[i]["date"], fly_by , repeat, fly_by+repeat]);
+                }
+                var chart_table = google.visualization.arrayToDataTable(table);
+                var view = new google.visualization.DataView(chart_table);
+
+
+            // Create a data table for the chart and add the two valyes each piece of data has
+            var chart = new google.visualization.ColumnChart(document.getElementById("column_chart"));
+            
+
+            // Set the table options
+            var options = {
+                    title: response["repo_name"]+": Fly By and Repeat Contributor Counts per Quarter",
+                    titleTextStyle: {
+                    fontSize: 15, // 12, 18 whatever you want (don't specify px)
+                    bold: true,    // true or false
+                    italic: false   // true of false
+                },
+                    width: 800,
+                    height: 450,
+                    legend: { position: 'top', maxLines: 3 },
+                    bar: { groupWidth: '70%' },
+                    isStacked: true,
+                };
+
+
+            var div = document.getElementById('spinner');
+            div.remove();
+            // Draw the data onto the pie chart with the given options
+            chart.draw(view, options);
+
+            // Add a caption to the table
+             let required_contributions = response["required_contributions"];
+             let required_time = response["required_time"];
+            var caption = " This graph shows the number of new contributors in the specified time period, and indicates how many were fly-by and repeat contributors. Fly by contributors are contributors who make less than the required"+required_contributions+ "contributions in"+ required_time +"days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made" + required_contributions+"or more contributions in" +required_time+ "days and their first contribution is in the specified time period.";
+
+            document.getElementById("column_chart_caption").innerHTML = caption;
+
+            window.addEventListener('resize', function () {
+                chart.draw(view, options);
+            }, false);
+
+        });
+    }
+
+    function get_repo_id() {
+        var url_array = window.location.href.split("/");
+        var repo_id = url_array[url_array.length - 1];
+        return repo_id
+    }
+
+
+
+    // Load Gchart packages and render charts
+    google.charts.load('current', { packages: ['corechart', 'bar', 'timeline', 'controls'] });
+    google.charts.setOnLoadCallback(loadCharts);
+</script>
