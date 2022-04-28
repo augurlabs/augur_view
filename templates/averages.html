@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        //function to load select drop down with repo options
+        function loadSelections() {
+            var select1 = document.getElementById('repo1');
+            var select2 = document.getElementById('repo2');
+
+            $.getJSON("http://augur.chaoss.io/api/unstable/repos",function(data){
+                var select1 = document.getElementById('repo1');
+                var select2 = document.getElementById('repo2');
+
+                for(let i=0; i < data.length; ++i ){
+                    var repo = data[i];
+                    var repoName = repo['repo_name'];
+                    var el = document.createElement('option');
+                    el.textContent = repoName;
+                    el.value = repoName;
+                    select1.appendChild(el);       
+                }
+
+                for(let i=0; i < data.length; ++i ){
+                    var repo = data[i];
+                    var repoName = repo['repo_name'];
+                    var el = document.createElement('option');
+                    el.textContent = repoName;
+                    el.value = repoName;
+                    select2.appendChild(el);        
+                }
+            });
+
+
+        }
+        loadSelections();
+    </script>
+    <select name="repo1" id="repo1">
+        <option value=null>Select Repo 1</option>
+    </select>
+    <select name="repo2" id="repo2">
+        <option value=null>Select Repo 2</option>
+    </select>
+    <button>Clear</button>
+    <div>
+        
+    </div>
+    <p>Test</p>
+</body>
+
+</html>

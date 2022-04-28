@@ -179,3 +179,9 @@ def wait_for_request(id):
     #     return jsonify(report_requests[id])
     # else:
     #     return jsonify({"exists": False})
+
+
+
+@app.route('/averages')
+def averages():   
+    return render_module("averages", title="Average")
