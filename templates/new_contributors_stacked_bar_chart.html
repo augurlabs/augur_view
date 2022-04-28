@@ -26,12 +26,7 @@
             "repo_id": repo_id,
             "return_data": "true"
         }
-<<<<<<< HEAD
         $.getJSON("{{ api_url }}/contributor_reports/new_contributors_stacked_bar/", params, function (response) {
-=======
-        //need to get data here 
-       // $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", params, function (response) {
->>>>>>> 3bfd4857b9fe8f11fdaf167d5a96a0797c0b4744
 
             console.log(response)
 
@@ -105,11 +100,7 @@
             //var caption = " This graph shows the number of new contributors in the specified time period, and indicates how many were fly-by and repeat contributors. Fly by contributors are contributors who make less than the required"+required_contributions+ "contributions in"+ required_time +"days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made" + required_contributions+"or more contributions in" +required_time+ "days and their first contribution is in the specified time period.";
 
            // document.getElementById("column_chart_caption").innerHTML = caption;
-<<<<<<< HEAD
         });
-=======
-        //});
->>>>>>> 3bfd4857b9fe8f11fdaf167d5a96a0797c0b4744
     }
 
     function get_repo_id() {
