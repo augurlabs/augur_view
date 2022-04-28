@@ -36,6 +36,8 @@
             <div class="col">
                 <div class="card d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
                     <div id="issues_timeline_div" style="min-width: 90%; min-height: 300px"></div>
+		    <button id="expand_button" onclick="expandTimeline()">Expand List</button>
+                    <button id="reduce_button" onclick="reduceTimeline()">Reduce List</button>
                 </div>
             </div>
         </div>
@@ -263,31 +265,59 @@
             materialChart.draw(data, options);
 
             // ------------------------------------------------- ISSUES TIMELINE
+             function daysBetween(end, start) {
+  				return Math.round(Math.abs((+end) - (+start))/8.64e7);
+			}
             var container = document.getElementById('issues_timeline_div');
             var chart = new google.visualization.Timeline(container);
             var dataTable = new google.visualization.DataTable();
-
             dataTable.addColumn({ type: 'string', id: 'Repo Name' });
             dataTable.addColumn({ type: 'date', id: 'Start' });
             dataTable.addColumn({ type: 'date', id: 'End' });
-            for(let i = 0; i < response.length; ++i) {
-                let repo = response[i];
-                var start = new Date(repo['most_recently_collected_issue']);
-                var end = new Date(repo['last_collected']);
-                if(start < end) {
-                    dataTable.addRow([repo['repo_name'], start, end]);
-                } else {
-                    // currently being collected, invalid date range
-                    console.log(repo);
-                }
+
+
+            if(reduceButton.style.display == "none"){
+            	const dateDifferences = []
+	            for(let i = 0; i < response.length; ++i) {
+	                let repo = response[i];
+	                var start = new Date(repo['most_recently_collected_issue']);
+	                var end = new Date(repo['last_collected']);
+	                dateDifferences[i] = daysBetween(end, start);
+	            }
+	            amountToDisplay = Math.round(dateDifferences.length * 0.25);
+	            const largestDifferences = dateDifferences.sort((a,b) => b-a).slice(0, amountToDisplay);
+	            var count = 0;
+	            for(let i = 0; i < response.length; ++i){
+	            	let repo = response[i];
+	            	var start = new Date(repo['most_recently_collected_issue']);
+	            	var end = new Date(repo['last_collected']);
+	                if(start < end && largestDifferences.includes(daysBetween(end, start)) && count < amountToDisplay) {
+	                	count++;
+	                    dataTable.addRow([repo['repo_name'], start, end]);
+	                    console.log(count);
+	                }
+	            }
+		    dataTable.sort({column:1});
+	            var height = amountToDisplay * 47;
+	            options = {'height':height};
+	            chart.draw(dataTable, options);
             }
-            // apparently 41 is *usually* the height of a "row" in Gcharts
-            // but 43 works better for spacing in this case
-            var height = response.length * 43;
-            options = {'height':height};
-
-            chart.draw(dataTable, options);
-
+            else{
+                var displayCount = 0;
+            	for(let i = 0; i < response.length; ++i){
+            	let repo = response[i];
+            	var start = new Date(repo['most_recently_collected_issue']);
+            	var end = new Date(repo['last_collected']);
+	                if(start < end) {
+                        displayCount++;
+	                    dataTable.addRow([repo['repo_name'], start, end]);
+	                }
+            	}
+               	    dataTable.sort({column:1});
+	            var height = displayCount * 43;
+	            options = {'height':height};
+	            chart.draw(dataTable, options);
+            }
         });
         $.getJSON("{{ api_url }}/collection_status/commits", function(response) {
             // ----------------------------- COMMITS COMPLETION STATUS PIE CHART
@@ -375,6 +405,24 @@
         });
     }
 
+	var reduceButton = document.getElementById("reduce_button");
+    reduceButton.style.display = "none";
+
+    function expandTimeline(){
+    	var reduceButton = document.getElementById("reduce_button");
+        reduceButton.style.display = "block";
+        var expandButton = document.getElementById("expand_button");
+        expandButton.style.display = "none";
+        loadCharts();
+    }
+
+    function reduceTimeline(){
+    	var reduceButton = document.getElementById("reduce_button");
+        reduceButton.style.display = "none";
+        var expandButton = document.getElementById("expand_button");
+        expandButton.style.display = "block";
+        loadCharts();
+    }
 
 
     // Load Gchart packages and render charts
