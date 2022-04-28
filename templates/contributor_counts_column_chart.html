@@ -16,7 +16,12 @@
             "repo_id": repo_id,
             "return_data": "true"
         }
+<<<<<<< HEAD
        $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", params, function (response) {
+=======
+        //need to get data here 
+       // $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", params, function (response) {
+>>>>>>> 3bfd4857b9fe8f11fdaf167d5a96a0797c0b4744
 
             console.log(response)
 
@@ -67,7 +72,11 @@
             window.addEventListener('resize', function () {
                 chart.draw(view, options);
             }, false);
+<<<<<<< HEAD
         });
+=======
+        //});
+>>>>>>> 3bfd4857b9fe8f11fdaf167d5a96a0797c0b4744
     }
 
     function get_repo_id() {
