@@ -16,8 +16,7 @@
             "repo_id": repo_id,
             "return_data": "true"
         }
-        //need to get data here 
-       // $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", params, function (response) {
+       $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", params, function (response) {
 
             console.log(response)
 
@@ -68,7 +67,7 @@
             window.addEventListener('resize', function () {
                 chart.draw(view, options);
             }, false);
-        //});
+        });
     }
 
     function get_repo_id() {
