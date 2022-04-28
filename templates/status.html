@@ -148,12 +148,13 @@
                     title: 'Repos'
                 },
                 vAxis: {
-                    title: 'Number of datapoints'
+                    title: 'Number of datapoints',
+                    logScale: true
                 }
             };
             // var materialChart = new google.charts.Bar(document.getElementById('pull_requests_div_1'));
             var materialChart  = new google.visualization.ChartWrapper({
-                'chartType': 'Bar',
+                'chartType': 'ColumnChart',
                 'containerId': 'pull_requests_div_1',
                 options
             });
