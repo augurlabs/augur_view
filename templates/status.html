@@ -208,15 +208,15 @@
                 chart: {
                     title: 'Ratio of collected to total pull requests'
                 },
-                vAxis: {
-                    title: 'Repos'
-                },
                 hAxis: {
                     title: 'Ratio',
                     format:'#%',
                     min:0,
                     max:1
-                }
+                },
+		vAxis: {
+                    title: 'Repos'
+                },
             };
             materialChart = new google.charts.BarChart(document.getElementById('pull_requests_div_3'));
             materialChart.draw(data, options);
