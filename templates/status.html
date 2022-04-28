@@ -56,13 +56,51 @@
                 </datalist>  
                 <div class="container-fluid d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
                     <div id="singleRepo_div" style="min-width: 90%; min-height: 300px">
-                        <h1>Single Repo Name: </h1>
-                        <h3>Issue Request Amount:</h3>
-                        <h3>Missing Pull Request:</h3>
-                        <h3>Issue Collected Ratio:</h3>
-                        <h3>Number of issues collected:</h3>
-                        <h3>time between:</h3>
-                        <h3>link:</h3>
+                        <ul class="list-group">
+                            <li class="list-group-item list-group-item-primary d-flex justify-content-between align-items-center">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">Repo Name: </h5>
+                                    <small id = "single_repo_name">x</small>
+                                </div>
+                            </li>
+                            <li class = "list-group-item list-group-item-primary flex-column align-items-start">
+                                <div class="d-flex justify-content-between align-items-center">
+                                Issue Request Amount:
+                                <small id = "single_repo_IA">x</small>
+                                </div>
+                            </li>
+                            <li class = "list-group-item list-group-item-primary flex-column align-items-start">
+                                <div class="d-flex justify-content-between align-items-center">
+                                Missing Pull Request:
+                                <small id = "single_repo_MPR">x</small>
+                                </div>
+                            </li>
+                            <li class = "list-group-item list-group-item-primary flex-column align-items-start">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    Issue Collected Ratio:
+                                    <small id = "single_repo_ICR">x</small>
+                                </div>
+                                <p class="mb-1">The closer this number is to 1 the better</p>
+                            </li>
+                            <li class = "list-group-item list-group-item-primary flex-column align-items-start">
+                                <div class="d-flex justify-content-between align-items-center">
+                                Number of issues collected:
+                                <small id = "single_repo_IC">x</small>
+                                </div>
+                            </li>
+                            <li class = "list-group-item list-group-item-primary flex-column align-items-start">
+                                <div class="d-flex justify-content-between align-items-center">
+                                time between:
+                                <small id = "single_repo_TB">x</small>
+                                </div>
+                            </li>
+                            <li class="list-group-item list-group-item-primary d-flex justify-content-between align-items-center">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">link: </h5>
+                                <div id = "single_repo_Link"><small>x</small></div>
+                              </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -134,24 +172,19 @@
 	    data.sort({column: 1});
 
             options = {
-			  title: "Missing pull requests",
+                chart: {
+                    title: 'Missing pull requests'
+                },
                 hAxis: {
-                    title: 'Number of Missing PRS',
-					scaleType: 'log',
-					ticks: [0, 25, 75, 200, 400]
+                    title: 'Repos'
                 },
                 vAxis: {
-                    title: 'Repos',
-					//scaleType: 'log',
-					//ticks: [0, 25, 75, 200, 400]
+                    title: 'Number of Missing PRS'
                 }
             };
-			
-			var logChart = new google.visualization.BarChart(document.getElementById('pull_requests_div_2'));
-			logChart.draw(data, options);
-            //materialChart = new google.charts.Bar(document.getElementById('pull_requests_div_2'));
-            //materialChart.draw(data, options);
-            
+            materialChart = new google.charts.Bar(document.getElementById('pull_requests_div_2'));
+            materialChart.draw(data, options);
+
             // ------------------------------------------------- PRS RATIO CHART
             data = new google.visualization.DataTable();
             data.addColumn('string', 'Repo Name');
@@ -275,8 +308,7 @@
 
             chart.draw(data, options);
         });
-
-        document.getElementById("singleRepoSubmit").addEventListener("click", singleRepoFill)
+        document.getElementById("singleRepoSubmit").addEventListener("click", singleRepoFill);
     }
 
     function singleRepoFill()
@@ -284,6 +316,55 @@
         var repoName = (document.getElementById("singleRepo").value);
         document.getElementById("singleRepo").value = "";
         console.log(repoName);
+        var tempName = "not a valid repo";
+        var IssueCount = "x";
+        var MissingRequest = "x";
+        var IssueRatio = "x";
+        var IssueRequestCount = "x";
+        var TimeBetween = "x";
+        var link = "<small>x</small>";
+
+        $.getJSON("{{ api_url }}/collection_status/pull_requests", function(response) {
+            for(let i = 0; i < response.length; ++i) {
+                let repo = response[i];
+                if(repo['repo_name'] == repoName) {
+                    console.log(repo);
+                    tempName = repo['repo_name'];
+                    IssueCount = repo['pull_request_count'];
+                    MissingRequest = repo['pull_requests_missing'];
+                    IssueRatio = repo['ratio_issues'];
+                }
+            }
+            document.getElementById("single_repo_name").innerHTML = tempName;
+            document.getElementById("single_repo_IA").innerHTML = IssueCount;
+            document.getElementById("single_repo_MPR").innerHTML = MissingRequest;
+            document.getElementById("single_repo_ICR").innerHTML = IssueRatio;
+        });
+        $.getJSON("{{ api_url }}/collection_status/issues", function(response) {
+            for(let i = 0; i < response.length; ++i) {
+                let repo = response[i];
+                if(repo['repo_name'] == repoName) {
+                    console.log(repo);
+                    date1 = new Date(Date.parse(repo['last_collected']));  
+                    date2 = new Date(Date.parse(repo['most_recently_collected_issue']));
+                    TimeBetween =  Math.floor((date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24)) + " Days";  
+                    IssueRequestCount = repo['issues_count'];
+                }
+            }
+            document.getElementById("single_repo_IC").innerHTML = IssueRequestCount;
+            document.getElementById("single_repo_TB").innerHTML = TimeBetween;
+            
+        });
+        $.getJSON("{{ api_url }}/collection_status/commits", function(response) {
+            for(let i = 0; i < response.length; ++i) {
+                let repo = response[i];
+                if(repo['repo_name'] == repoName) {
+                    console.log(repo);
+                    link = "<a href ="+repo['repo_git']+">"+repo['repo_git']+"</a>";
+                }
+            }
+            document.getElementById("single_repo_Link").innerHTML = link;
+        });
     }
 
     // Load Gchart packages and render charts
