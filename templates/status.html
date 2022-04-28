@@ -46,7 +46,46 @@
                 </div>
             </div>
         </div>
-
+        <h2>Committers</h2>
+        <div class="row row-cols-1 col-auto g-3" style="margin-bottom: 30px; min-width: 80%;">
+            <div class="col">
+                <div class="card d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
+                    <div id="committers_div" style="min-width: 90%; min-height: 300px"></div>
+                </div>
+            </div>
+        </div>
+        <h2>Default Branches</h2>
+        <div class="row row-cols-1 col-auto g-3" style="margin-bottom: 30px; min-width: 80%;">
+            <div class="col">
+                <div class="card d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
+                    <div id="default_branches_div" style="min-width: 90%; min-height: 300px"></div>
+                </div>
+            </div>
+        </div>
+        <h2>Forks</h2>
+        <div class="row row-cols-1 col-auto g-3" style="margin-bottom: 30px; min-width: 80%;">
+            <div class="col">
+                <div class="card d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
+                    <div id="forks_div" style="min-width: 90%; min-height: 300px"></div>
+                </div>
+            </div>
+        </div>
+        <h2>Stars</h2>
+        <div class="row row-cols-1 col-auto g-3" style="margin-bottom: 30px; min-width: 80%;">
+            <div class="col">
+                <div class="card d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
+                    <div id="stars_div" style="min-width: 90%; min-height: 300px"></div>
+                </div>
+            </div>
+        </div>
+        <h2>Watchers</h2>
+        <div class="row row-cols-1 col-auto g-3" style="margin-bottom: 30px; min-width: 80%;">
+            <div class="col">
+                <div class="card d-flex justify-content-center align-items-center" style="margin-bottom: 30px; padding: 10px;">
+                    <div id="watchers_div" style="min-width: 90%; min-height: 300px"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -225,6 +264,131 @@
             var chart = new google.visualization.PieChart(document.getElementById('commits_div'));
 
             chart.draw(data, options);
+        });
+        $.getJSON("{{ api_url }}/metadata/repo_info", function(response) {
+            // ---------------------------------------------------- COMMITTERS CHART
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Repo Name');
+            data.addColumn('number', 'Committers Count');
+
+            for(let i = 0; i < response.length; ++i) {
+                let repo = response[i];
+                data.addRow([repo['repo_name'], repo['committers_count']]);
+            }
+
+            var options = {
+                chart: {
+                    title: 'Number of committers collected'
+                },
+                hAxis: {
+                    title: 'Repos'
+                },
+                vAxis: {
+                    title: 'Number of datapoints'
+                }
+            };
+            var materialChart = new google.charts.Bar(document.getElementById('committers_div'));
+            materialChart.draw(data, options);
+        });
+        $.getJSON("{{ api_url }}/metadata/repo_info", function(response) {
+            // ----------------------------- DEFAULT BRANCHES PIE CHART
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Default branch');
+            data.addColumn('number', 'Number of repos');
+
+            var main = 0;
+            for(let i = 0; i < response.length; ++i) {
+                let repo = response[i];
+                if(repo['default_branch'] == "main") {
+                    ++main;
+                }
+            }
+
+            data.addRow(["main", main]);
+            data.addRow(["master", response.length - main]);
+
+            var options = {
+                title: 'Distribution of default branches'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('default_branches_div'));
+
+            chart.draw(data, options);
+        });
+        $.getJSON("{{ api_url }}/metadata/repo_info", function(response) {
+            // ---------------------------------------------------- FORKS CHART
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Repo Name');
+            data.addColumn('number', 'Forks Count');
+
+            for(let i = 0; i < response.length; ++i) {
+                let repo = response[i];
+                data.addRow([repo['repo_name'], repo['fork_count']]);
+            }
+
+            var options = {
+                chart: {
+                    title: 'Number of forks collected'
+                },
+                hAxis: {
+                    title: 'Repos'
+                },
+                vAxis: {
+                    title: 'Number of datapoints'
+                }
+            };
+            var materialChart = new google.charts.Bar(document.getElementById('forks_div'));
+            materialChart.draw(data, options);
+        });
+        $.getJSON("{{ api_url }}/metadata/repo_info", function(response) {
+            // ---------------------------------------------------- STARS CHART
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Repo Name');
+            data.addColumn('number', 'Stars Count');
+
+            for(let i = 0; i < response.length; ++i) {
+                let repo = response[i];
+                data.addRow([repo['repo_name'], repo['stars_count']]);
+            }
+
+            var options = {
+                chart: {
+                    title: 'Number of stars collected'
+                },
+                hAxis: {
+                    title: 'Repos'
+                },
+                vAxis: {
+                    title: 'Number of datapoints'
+                }
+            };
+            var materialChart = new google.charts.Bar(document.getElementById('stars_div'));
+            materialChart.draw(data, options);
+        });
+        $.getJSON("{{ api_url }}/metadata/repo_info", function(response) {
+            // ---------------------------------------------------- WATCHERS CHART
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Repo Name');
+            data.addColumn('number', 'Watchers Count');
+
+            for(let i = 0; i < response.length; ++i) {
+                let repo = response[i];
+                data.addRow([repo['repo_name'], repo['watchers_count']]);
+            }
+
+            var options = {
+                chart: {
+                    title: 'Number of watchers collected'
+                },
+                hAxis: {
+                    title: 'Repos'
+                },
+                vAxis: {
+                    title: 'Number of datapoints'
+                }
+            };
+            var materialChart = new google.charts.Bar(document.getElementById('watchers_div'));
+            materialChart.draw(data, options);
         });
     }
     // Load Gchart packages and render charts
