@@ -217,7 +217,7 @@
                     min:0,
                     max:1
                 },
-		vAxis: {
+		        vAxis: {
                     title: 'Repos'
                 },
             };
@@ -255,8 +255,8 @@
                 },
                 hAxis: {
                     title: 'Repos',
-                scaleType: 'log',
-                ticks: [0, 25, 400, 1000, 12000]
+                    scaleType: 'log',
+                    ticks: [0, 25, 400, 1000, 12000]
                     },
                     vAxis: {
                         title: 'Number of datapoints'
@@ -386,7 +386,7 @@
                     console.log(repo);
                     date1 = new Date(Date.parse(repo['last_collected']));  
                     date2 = new Date(Date.parse(repo['most_recently_collected_issue']));
-                    TimeBetween =  Math.floor((date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24)) + " Days";  
+                    TimeBetween =  Math.abs(Math.floor((date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24)) + " Days");  
                     IssueRequestCount = repo['issues_count'];
                 }
             }
