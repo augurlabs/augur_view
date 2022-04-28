@@ -1,0 +1,126 @@
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<div id="pr_stacked_bar">
+    <div id="spinner" class="spinner-border" role="status"></div>
+</div>
+<div id="pr_stacked_bar_caption"></div>
+
+<html>
+  <head>
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        // This is for the chart "Pull Request Counts by Merged Status"
+        // Previously "augur: Count of All Closed Pull Requests by Merged Status"
+
+        // Load the Visualization API and the corechart package.
+        google.charts.load('current', {'packages':['corechart', 'bar']});
+
+        // Set a callback to run when the Google Visualization API is loaded.
+        google.charts.setOnLoadCallback(drawStacked);
+
+        // Callback that creates and populates a data table,
+        // instantiates the pie chart, passes in the data and
+        // draws it.
+        function drawStacked() {
+        // Hardcoded data from response
+        var response = {
+            "data": {
+                "All": [
+                    {
+                        "Merged / Accepted": 0,
+                        "Not Merged / Rejected": 69,
+                        "year": "2018"
+                    },
+                    {
+                        "Merged / Accepted": 1,
+                        "Not Merged / Rejected": 58,
+                        "year": "2019"
+                    },
+                    {
+                        "Merged / Accepted": 0,
+                        "Not Merged / Rejected": 13,
+                        "year": "2020"
+                    }
+                ],
+                "Slowest 20%": [
+                    {
+                        "Merged / Accepted": 0,
+                        "Not Merged / Rejected": 9,
+                        "year": "2018"
+                    },
+                    {
+                        "Merged / Accepted": 1,
+                        "Not Merged / Rejected": 13,
+                        "year": "2019"
+                    },
+                    {
+                        "Merged / Accepted": 0,
+                        "Not Merged / Rejected": 7,
+                        "year": "2020"
+                    }
+                ]
+            }
+        }
+        
+        // extract values from response into logical data names
+        let data = response["data"]
+        let all = data["All"]
+        let slowest = data["Slowest 20%"]
+
+        // Initialize the data table and add each column
+        var table_data = new google.visualization.DataTable();
+        table_data.addColumn('string', 'Year Closed');
+        table_data.addColumn('number', 'All Merged / Accepted');
+        table_data.addColumn('number', 'All Not Merged / Rejected');
+        table_data.addColumn('number', 'Slowest 20% Merged / Accepted');
+        table_data.addColumn('number', 'Slowest 20% Not Merged / Rejected');
+
+        // Iterate over the data and add each available year
+        var max = 0;
+        for (var i = 0; i < all.length; i++) {
+            year = all[i]["year"];
+            merged = all[i]["Merged / Accepted"];
+            not_merged = all[i]["Not Merged / Rejected"];
+            slowest_merged = slowest[i]["Merged / Accepted"];
+            slowest_not_merged = slowest[i]["Not Merged / Rejected"];
+
+            if (merged > max) max = merged;
+            else if (not_merged > max) max = not_merged;
+            else if (slowest_merged > max) max = slowest_merged;
+            else if (slowest_not_merged > max) max = slowest_not_merged;
+
+            table_data.addRow([year, merged, not_merged, slowest_merged, slowest_not_merged]);
+        }
+        
+        // Making sure the columns stack correctly and stylization
+        var options = {
+            isStacked: true,
+            title: 'Pull Request Counts by Merged Status',
+            series: {
+                0: {targetAxisIndex: 0, color: '#6a00a8'},
+                1: {targetAxisIndex: 0, color: '#b12a90'},
+                2: {targetAxisIndex: 1, color: '#fca635'},
+                3: {targetAxisIndex: 1, color: '#de6562'}
+            },
+            // Horizontal axis title defined by data input
+            vAxes: {
+                // Add titles to each axis
+                0: {title: 'Count of Pull Requests', viewWindow: { max: max } },
+                1: {viewWindow: { max: max} }
+            },
+            colors: ['#de6562', '#fca635', '#b12a90', '#6a00a8']
+        };
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.charts.Bar(document.getElementById('chart_div'));
+        chart.draw(table_data, google.charts.Bar.convertOptions(options));
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="chart_div"></div>
+  </body>
+</html>
