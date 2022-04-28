@@ -295,7 +295,7 @@
 	                if(start < end && largestDifferences.includes(daysBetween(end, start)) && count < amountToDisplay) {
 	                	count++;
 	                    dataTable.addRow([repo['repo_name'], start, end]);
-	                    console.log(count);
+	                    //console.log(count);
 	                }
 	            }
 		    dataTable.sort({column:1});
@@ -354,7 +354,6 @@
     {
         var repoName = (document.getElementById("singleRepo").value);
         document.getElementById("singleRepo").value = "";
-        console.log(repoName);
         var tempName = "not a valid repo";
         var IssueCount = "x";
         var MissingRequest = "x";
@@ -367,7 +366,6 @@
             for(let i = 0; i < response.length; ++i) {
                 let repo = response[i];
                 if(repo['repo_name'] == repoName) {
-                    console.log(repo);
                     tempName = repo['repo_name'];
                     IssueCount = repo['pull_request_count'];
                     MissingRequest = repo['pull_requests_missing'];
@@ -383,7 +381,6 @@
             for(let i = 0; i < response.length; ++i) {
                 let repo = response[i];
                 if(repo['repo_name'] == repoName) {
-                    console.log(repo);
                     date1 = new Date(Date.parse(repo['last_collected']));  
                     date2 = new Date(Date.parse(repo['most_recently_collected_issue']));
                     TimeBetween =  Math.abs(Math.floor((date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24)) + " Days");  
@@ -398,7 +395,6 @@
             for(let i = 0; i < response.length; ++i) {
                 let repo = response[i];
                 if(repo['repo_name'] == repoName) {
-                    console.log(repo);
                     link = "<a href ="+repo['repo_git']+">"+repo['repo_git']+"</a>";
                 }
             }
