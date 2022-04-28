@@ -9,9 +9,9 @@ settings = {}
 def init_settings():
     global settings
     settings["approot"] = "/"
-    settings["caching"] = "static/cache"
+    settings["caching"] = "static/cache/"
     settings["cache_expiry"] = 604800
-    settings["serving"] = "default.osshealth.io"
+    settings["serving"] = "http://augur.chaoss.io/api/unstable"
     settings["pagination_offset"] = 25
     settings["reports"] = "reports.yml"
 
