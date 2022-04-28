@@ -61,11 +61,34 @@ function DynamicVisualizer(){
     }).then(function(data){
       var tempRepoNames = [];
       for(var i =0; i < data.length; i ++){
-        if(data[i].repo_name != null || data[i].repo_name !== ''){
+        if( data[i].repo_name != null || data[i].repo_name !== ''){
           tempRepoNames.push({"name" : data[i].repo_name, "id" : data[i].repo_id});
         }
       }
       setRepoNames(tempRepoNames)
+    })
+  }
+  function getFirstGraphData(){
+    fetch("http://augur.chaoss.io/api/unstable/repos/" + firstRepoId + "/watchers-count").then(
+      function(res){
+        return res.json()
+      }
+    ).then(function(data){
+      console.log(data)
+    })
+    fetch("http://augur.chaoss.io/api/unstable/repos/" + firstRepoId + "/stars-count").then(
+      function(res){
+        return res.json()
+      }
+    ).then(function(data){
+      console.log(data)
+    })
+    fetch("http://augur.chaoss.io/api/unstable/repos/" + firstRepoId + "/stars-count").then(
+      function(res){
+        return res.json()
+      }
+    ).then(function(data){
+      console.log(data)
     })
   }
 
@@ -74,6 +97,10 @@ function DynamicVisualizer(){
     getRepoNames()
   }, [])
 
+  useEffect(() => {
+    getFirstGraphData()
+  },[firstRepoId])
+
   function getGraphDataForRepos(){
     if(dataType != null && firstRepoId != null && secondRepoId != null){
       fetch("http://augur.chaoss.io/api/unstable/repos/"+ firstRepoId+ "/" + dataType)
@@ -81,7 +108,13 @@ function DynamicVisualizer(){
         return res.json()
       }).then(function(data){
         if(data != null && data.length > 0){
-          setFirstGraph(data)
+          var tempA = []
+          for(var i =0; i <data.length; i ++){
+            if(i % 10 == 0){
+              tempA.push(data[i])
+            }
+          }
+          setFirstGraph(tempA)
         }
       })
       fetch("http://augur.chaoss.io/api/unstable/repos/"+ secondRepoId+"/" + dataType)
@@ -89,7 +122,13 @@ function DynamicVisualizer(){
         return res.json()
       }).then(function(data){
         if(data != null){
-          setSecondGraph(data)
+          var tempB = []
+          for(var i =0; i <data.length; i ++){
+            if(i % 10 == 0){
+              tempB.push(data[i])
+            }
+          }
+          setSecondGraph(tempB)
         }
       })
     }
@@ -136,6 +175,8 @@ function DynamicVisualizer(){
               <option> -- Select data -- </option>
               <option value="forks">Forks</option>
               <option value="stars">Stars</option>
+              <option value="watchers">Watchers</option>
+              <option value="code-changes">Code changes</option>
             </select>
           </p>
         </div>
@@ -196,6 +237,9 @@ function DynamicVisualizer(){
         </div>
         :<div></div>
       }
+      <div>
+        
+      </div>
     </div>
 
     </div>
