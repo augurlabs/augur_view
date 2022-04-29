@@ -7,8 +7,11 @@
         <h1 id="message">Report for: {{ repo.repo_name|title }}</h1>
         <p><a href="https://{{ repo.url }}" target="_blank" data-toggle="tooltip" title="opens in new tab">https://{{ repo.url }}</a></p>
         <h2>Contributor Reports</h2>
+        <!-- <div style="width: 40%;">
+            {% include "contributor_counts_column_chart.html" %}
+        </div> -->
         <div style="width: 40%;">
-            {% include "pie_chart.html" %}
+            {% include "new_contributors_stacked_bar_chart.html" %}
         </div>
         {% else %}
         <h1 id="message">Repository {{ repo_id }} not found<h1>
