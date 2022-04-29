@@ -45,6 +45,20 @@ Most recent updates as of April 28th -
     Added more options to data drop down. Lessened the amount of data points displayed on the graphs for better readability. 
 
 
-Goals - 
+Goals For Future: 
+    Incorporate the z-scores for the comparisons
+    Create a document at bottom of page that compare all their stats
+    Include cool animations 
+    Make it so that each graph 
+    Update the user interface to adjust to different screen sizes 
+    Give user the option to choose what graph type
+    
+    
+    
+    
+    
+    
+    
+
 
 
