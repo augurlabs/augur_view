@@ -4,11 +4,11 @@ HTML frontend for Chaoss/Augur, written with Bootstrap and served by Flask
 
 To run as a local instance:
 
-1. setup a virtual environment
+1. [setup a virtual environment](https://docs.python.org/3/library/venv.html#module-venv)
     - `python3 -m venv env`
     - `source env/bin/activate`
 2. Make sure you have the requirements installed
-    - `pip3 install python3-venv flask pyyaml urllib3`
+    - `pip3 install flask pyyaml urllib3`
 3. Run the app
     - `./run.sh`
 

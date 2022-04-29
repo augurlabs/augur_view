@@ -158,16 +158,16 @@ def clear_cache():
     try:
         for f in os.listdir(getSetting('caching')):
             os.remove(os.path.join(getSetting('caching'), f))
-        return renderMessage("Cache Cleared", "Server cache was successfully cleared", None)
+        return renderMessage("Cache Cleared", "Server cache was successfully cleared", redirect="/")
     except Exception as err:
         print(err)
-        return renderMessage("Error", "An error occurred while clearing server cache.", None, 5)
+        return renderMessage("Error", "An error occurred while clearing server cache.",  redirect="/", pause=5)
 
 # API endpoint to reload settings from disk
 @app.route('/settings/reload')
 def reload_settings():
     loadSettings()
-    return renderMessage("Settings Reloaded", "Server settings were successfully reloaded.", None, 5)
+    return renderMessage("Settings Reloaded", "Server settings were successfully reloaded.", redirect="/", pause=5)
 
 """ ----------------------------------------------------------------
 Locking request loop:
