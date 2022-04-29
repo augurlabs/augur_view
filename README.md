@@ -36,6 +36,14 @@ Day 1 Tuesday April 19th:
 
     Created drop down selectors for the desired data to be displayed and two repository selections. Allocated them dynamically based on api. Also reformatted the graphs for data display.
 
+Day 2 Thursday April 21st:
+
+    Added titles for graphs and dynamically creates graphs based on drop down selections. 
+
+Most recent updates as of April 28th -
+
+    Added more options to data drop down. Lessened the amount of data points displayed on the graphs for better readability. 
+
 
 Goals - 
 
