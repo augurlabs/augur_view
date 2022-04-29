@@ -1,0 +1,227 @@
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<div id="avg_commits_per_pr_chart" style="height: 500px;">
+    <div id="spinner" class="spinner-border" role="status"></div>
+</div>
+<div id="avg_commits_per_pr_caption"></div>
+
+
+<script type="text/javascript">
+    function loadCharts() {
+
+        let repo_id = get_repo_id()
+        var avg_commits_params = {
+            "repo_id": repo_id,
+            "return_data": "true"
+        }
+
+        $.getJSON("{{ api_url }}/", avg_commits_params, function (response) {
+
+            
+            response = {"data": [
+                {
+                    "Merged / Accepted": 5.0,
+                    "Not Merged / Rejected": 2.0,
+                    "year_month": "2018-01"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 2.0,
+                    "year_month": "2018-02"
+                },
+                {
+                    "Merged / Accepted": 7.3,
+                    "Not Merged / Rejected": 46.6,
+                    "year_month": "2018-03"
+                },
+                {
+                    "Merged / Accepted": 53.2,
+                    "Not Merged / Rejected": 4.5,
+                    "year_month": "2018-04"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.5,
+                    "year_month": "2018-05"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.0,
+                    "year_month": "2018-06"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 2.0,
+                    "year_month": "2018-07"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.0,
+                    "year_month": "2018-08"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 4.0,
+                    "year_month": "2018-09"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 2.5,
+                    "year_month": "2018-10"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 6.5,
+                    "year_month": "2018-11"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.0,
+                    "year_month": "2018-12"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.2,
+                    "year_month": "2019-01"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.2,
+                    "year_month": "2019-02"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 24.8,
+                    "year_month": "2019-03"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.4,
+                    "year_month": "2019-04"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 26.2,
+                    "year_month": "2019-05"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.0,
+                    "year_month": "2019-06"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 6.7,
+                    "year_month": "2019-07"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.7,
+                    "year_month": "2019-08"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.5,
+                    "year_month": "2019-09"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 9.0,
+                    "year_month": "2019-10"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 2.5,
+                    "year_month": "2019-11"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.0,
+                    "year_month": "2019-12"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.8,
+                    "year_month": "2020-01"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 63.2,
+                    "year_month": "2020-02"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.0,
+                    "year_month": "2020-03"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.0,
+                    "year_month": "2020-06"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 2.0,
+                    "year_month": "2020-07"
+                },
+                {
+                    "Merged / Accepted": null,
+                    "Not Merged / Rejected": 1.0,
+                    "year_month": "2020-09"
+                }
+                ],
+                "repo_name": "linux"
+            }
+      
+            let data = response["data"]
+            console.log(data)
+            var table_data = new google.visualization.DataTable();
+
+            table_data.addColumn('string', 'Year-Month');
+            table_data.addColumn('number', 'Merged / Accepted');
+            table_data.addColumn('number', 'Not Merged / Rejected');
+            
+            for (var i = 0; i < data.length; i++) {
+                yearMonth = data[i]["year_month"]
+                mergedAccepted = data[i]["Merged / Accepted"]
+                notMergedRejected = data[i]["Not Merged / Rejected"]
+            
+                table_data.addRow([yearMonth, mergedAccepted, notMergedRejected])
+            } 
+
+        var options = {
+            title: 'Average Commit Counts Per Year for All Pull Requests',
+            hAxis: {
+                title: 'Year Closed',
+                minValue: 0,
+                textStyle: {
+                    fontSize: 7
+                }
+            },
+            vAxis: {
+                title: 'Average Commits / Pull Request',
+                // gridlines:  {
+                //     count: 3
+                // }
+            }
+        };
+        var chart = new google.visualization.ColumnChart(document.getElementById('avg_commits_per_pr_chart'));
+        chart.draw(table_data, options);
+    
+        });
+    }
+
+    function get_repo_id() {
+        var url_array = window.location.href.split("/");
+        var repo_id = url_array[url_array.length - 1];
+        return repo_id
+    }
+
+
+
+    // Load Gchart packages and render charts
+    google.charts.load('current', { packages: ['corechart', 'bar', 'timeline', 'controls'] });
+    google.charts.setOnLoadCallback(loadCharts);
+</script>
