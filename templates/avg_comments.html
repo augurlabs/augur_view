@@ -1,0 +1,121 @@
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<div id="avg_comments_per_pr_chart" style="height: 500px;">
+    <div id="spinner" class="spinner-border" role="status"></div>
+</div>
+<div id="avg_comments_per_pr_caption"></div>
+
+
+<script type="text/javascript">
+    function loadCharts() {
+
+        let repo_id = get_repo_id()
+        var avg_comments_params = {
+            "repo_id": repo_id,
+            "return_data": "true"
+        }
+
+        $.getJSON("{{ api_url }}/", avg_comments_params, function (response) {
+
+            
+            response = {"data": [
+                {
+                "merged_comment_mean": 9.1,
+                "not_merged_comment_mean": 2.3,
+                "year": "2016"
+                },
+                {
+                "merged_comment_mean": 14.4,
+                "not_merged_comment_mean": 9.8,
+                "year": "2017"
+                },
+                {
+                "merged_comment_mean": 12.8,
+                "not_merged_comment_mean": 6.8,
+                "year": "2018"
+                },
+                {
+                "merged_comment_mean": 15.9,
+                "not_merged_comment_mean": 12.0,
+                "year": "2019"
+                },
+                {
+                "merged_comment_mean": 16.1,
+                "not_merged_comment_mean": 11.6,
+                "year": "2020"
+                },
+                {
+                "merged_comment_mean": 13.9,
+                "not_merged_comment_mean": 8.2,
+                "year": "2021"
+                },
+                {
+                "merged_comment_mean": 10.3,
+                "not_merged_comment_mean": 10.5,
+                "year": "2022"
+                }
+                ],
+                "repo_name": "linux"
+            }
+      
+            let data = response["data"]
+            console.log(data)
+            var table_data = new google.visualization.DataTable();
+
+            table_data.addColumn('string', 'Year');
+            table_data.addColumn('number', 'Merged_Comment_Avg');
+            table_data.addColumn('number', 'Rejected_Comment_Avg');
+            
+            for (var i = 0; i < data.length; i++) {
+                year = data[i]["year"]
+                mergedMean = data[i]["merged_comment_mean"]
+                notMergedMean = data[i]["not_merged_comment_mean"]
+            
+                table_data.addRow([year, mergedMean, notMergedMean])
+            } 
+     
+      
+
+/*       var data = google.visualization.arrayToDataTable([
+        ['City', '2010 Population', {type: 'string', role: 'annotation'},
+         '2000 Population', {type: 'string', role: 'annotation'}],
+        ['New York City, NY', 8175000, '8.1M', 8008000, '8M'],
+        ['Los Angeles, CA', 3792000, '3.8M', 3694000, '3.7M'],
+        ['Chicago, IL', 2695000, '2.7M', 2896000, '2.9M'],
+        ['Houston, TX', 2099000, '2.1M', 1953000, '2.0M'],
+        ['Philadelphia, PA', 1526000, '1.5M', 1517000, '1.5M']
+      ]); */
+
+        var options = {
+            title: 'Mean Comments Per Pull Request',
+            hAxis: {
+                title: 'Average Comments / Pull Request',
+                minValue: 0,
+            },
+            vAxis: {
+                title: 'Year Closed',
+                gridlines:  {
+                    count: 3
+                }
+            }
+        };
+        var chart = new google.visualization.BarChart(document.getElementById('avg_comments_per_pr_chart'));
+        chart.draw(table_data, options);
+    
+        });
+    }
+
+    function get_repo_id() {
+        var url_array = window.location.href.split("/");
+        var repo_id = url_array[url_array.length - 1];
+        return repo_id
+    }
+
+
+
+    // Load Gchart packages and render charts
+    google.charts.load('current', { packages: ['corechart', 'bar', 'timeline', 'controls'] });
+    google.charts.setOnLoadCallback(loadCharts);
+</script>
