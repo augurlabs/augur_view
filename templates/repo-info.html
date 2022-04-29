@@ -10,8 +10,11 @@
         <!-- <div style="width: 40%;">
             {% include "contributor_counts_column_chart.html" %}
         </div> -->
-        <div style="width: 40%;">
+        <!-- <div style="width: 40%;">
             {% include "new_contributors_stacked_bar_chart.html" %}
+        </div> -->
+        <div style="width: 40%;">
+            {% include "pr_stacked_bar.html" %}
         </div>
         {% else %}
         <h1 id="message">Repository {{ repo_id }} not found<h1>
