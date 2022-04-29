@@ -68,38 +68,38 @@ function DynamicVisualizer(){
       setRepoNames(tempRepoNames)
     })
   }
-  function getFirstGraphData(){
-    fetch("http://augur.chaoss.io/api/unstable/repos/" + firstRepoId + "/watchers-count").then(
-      function(res){
-        return res.json()
-      }
-    ).then(function(data){
-      console.log(data)
-    })
-    fetch("http://augur.chaoss.io/api/unstable/repos/" + firstRepoId + "/stars-count").then(
-      function(res){
-        return res.json()
-      }
-    ).then(function(data){
-      console.log(data)
-    })
-    fetch("http://augur.chaoss.io/api/unstable/repos/" + firstRepoId + "/stars-count").then(
-      function(res){
-        return res.json()
-      }
-    ).then(function(data){
-      console.log(data)
-    })
-  }
+  // function getFirstGraphData(){
+  //   fetch("http://augur.chaoss.io/api/unstable/repos/" + firstRepoId + "/watchers-count").then(
+  //     function(res){
+  //       return res.json()
+  //     }
+  //   ).then(function(data){
+  //     console.log(data)
+  //   })
+  //   fetch("http://augur.chaoss.io/api/unstable/repos/" + firstRepoId + "/stars-count").then(
+  //     function(res){
+  //       return res.json()
+  //     }
+  //   ).then(function(data){
+  //     console.log(data)
+  //   })
+  //   fetch("http://augur.chaoss.io/api/unstable/repos/" + firstRepoId + "/stars-count").then(
+  //     function(res){
+  //       return res.json()
+  //     }
+  //   ).then(function(data){
+  //     console.log(data)
+  //   })
+  // }
 
 
   useEffect(() => {
     getRepoNames()
   }, [])
 
-  useEffect(() => {
-    getFirstGraphData()
-  },[firstRepoId])
+  // useEffect(() => {
+  //   getFirstGraphData()
+  // },[firstRepoId])
 
   function getGraphDataForRepos(){
     if(dataType != null && firstRepoId != null && secondRepoId != null){
@@ -107,6 +107,7 @@ function DynamicVisualizer(){
       .then(function(res){
         return res.json()
       }).then(function(data){
+        console.log(data)
         if(data != null && data.length > 0){
           var tempA = []
           for(var i =0; i <data.length; i ++){
@@ -177,6 +178,7 @@ function DynamicVisualizer(){
               <option value="stars">Stars</option>
               <option value="watchers">Watchers</option>
               <option value="code-changes">Code changes</option>
+              <option value="contributors">Contributors</option>
             </select>
           </p>
         </div>
@@ -218,7 +220,7 @@ function DynamicVisualizer(){
             <YAxis />
             <Tooltip content={CustomTooltip} />
             <Legend />
-            <Line type="monotone" dataKey={dataType? dataType : "stars"} stroke="#8884d8" />
+            <Line type="monotone" dataKey={dataType == 'code-changes'? "commit_count": dataType} stroke="#8884d8" />
         </LineChart>
         </div>
         : <div></div>
@@ -232,7 +234,7 @@ function DynamicVisualizer(){
             <YAxis />
             <Tooltip content={CustomTooltip}/>
             <Legend />
-            <Line type="monotone" dataKey={dataType? dataType: "stars"} stroke="#8884d8" />
+            <Line type="monotone" dataKey={dataType == 'code-changes'? "commit_count": dataType} stroke="#8884d8" />
         </LineChart>
         </div>
         :<div></div>
