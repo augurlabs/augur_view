@@ -12,47 +12,100 @@
 <body>
     <script>
         //function to load select drop down with repo options
-        function loadSelections() {
-            var select1 = document.getElementById('repo1');
-            var select2 = document.getElementById('repo2');
+        let repoData
 
-            $.getJSON("http://augur.chaoss.io/api/unstable/repos",function(data){
+        async function loadSelections() {
+
+            await $.getJSON("http://augur.chaoss.io/api/unstable/repos", function (data) {
                 var select1 = document.getElementById('repo1');
                 var select2 = document.getElementById('repo2');
 
-                for(let i=0; i < data.length; ++i ){
+                repoData = data;
+
+                for (let i = 0; i < data.length; ++i) {
                     var repo = data[i];
+
                     var repoName = repo['repo_name'];
                     var el = document.createElement('option');
                     el.textContent = repoName;
                     el.value = repoName;
-                    select1.appendChild(el);       
+                    select1.appendChild(el);
+                    //console.log(repo)
                 }
 
-                for(let i=0; i < data.length; ++i ){
+                for (let i = 0; i < data.length; ++i) {
                     var repo = data[i];
                     var repoName = repo['repo_name'];
                     var el = document.createElement('option');
                     el.textContent = repoName;
                     el.value = repoName;
-                    select2.appendChild(el);        
+                    select2.appendChild(el);
                 }
             });
+        }
 
+        function displayRepoLeft() {
+            let id = $("select[name='repo1'] option:selected").index() - 1;
+            let repoID = repoData[id]['repo_id']
+
+            $.ajax({
+                type: "GET",
+                url: "{{ url_for('repo_repo_view', id='id') }}".replace("id", repoID),
+                success: function (data) {
+                    $('#c1').html(data)
+                }
+            });
+            console.log('Display left')
+        }
+
+        function displayRepoRight() {
+            let id = $("select[name='repo2'] option:selected").index() - 1;
+            let repoID = repoData[id]['repo_id']
+
+            $.ajax({
+                type: "GET",
+                url: "{{ url_for('repo_repo_view', id='id') }}".replace("id", repoID),
+                success: function (data) {
+                    $('#c2').html(data)
+                }
+            });
+            console.log('Display right')
+        }
+
+        function clearRepoRight() {
+            var compare2 = document.getElementById('c2');
+            var repo2 = document.getElementById('repo2');
+            compare2.innerHTML = "Select Repo";
 
         }
+        function clearRepoLeft() {
+            var compare1 = document.getElementById('c1');
+            var repo1 = document.getElementById('repo1');
+            compare1.innerHTML = "Select Repo";
+        }
+
         loadSelections();
     </script>
-    <select name="repo1" id="repo1">
-        <option value=null>Select Repo 1</option>
+    <button type="button" name="button-left" class="btn btn-dark" style="background-color: #6f42c1;"
+        onclick="clearRepoRight()">Clear</button>
+    <select name="repo1" id="repo1" onchange="displayRepoLeft()">
+        <option value=select-repo1>Select Repo 1</option>
     </select>
-    <select name="repo2" id="repo2">
-        <option value=null>Select Repo 2</option>
+    <select name="repo2" id="repo2" onchange="displayRepoRight()">
+        <option value=select-repo2>Select Repo 2</option>
     </select>
-    <button>Clear</button>
-    <div>
-        
+    <button name="button-right" type="button" class="btn btn-dark" style="background-color: #6f42c1;"
+        onclick="clearRepoLeft()">Clear</button>
+    <div style="padding: 10px; height: 100%;">
+        <div style="width: 50%; height: 80%; background-color: #6f42c1; float:left; padding-right: 10px; max-height: 80%;"
+            id="c1">
+            <p id="compare1">select-repo</p>
+        </div>
+        <div style="width: 50%; height: 80%; background-color: 6f42c1; float:right; max-height: 80%;" id="c2">
+            <p id="compare2">select-repo</p>
+        </div>
     </div>
+
     <p>Test</p>
 </body>
 

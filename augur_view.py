@@ -113,6 +113,7 @@ report page:
 """
 @app.route('/repos/views/repo/<id>')
 def repo_repo_view(id):
+
     # For some reason, there is no reports definition (shouldn't be possible)
     if reports is None:
         return renderMessage("Report Definitions Missing", "You requested a report for a repo on this instance, but a definition for the report layout was not found.")
@@ -182,6 +183,9 @@ def wait_for_request(id):
 
 
 
-@app.route('/averages')
+@app.route('/compare')
 def averages():   
+
     return render_module("averages", title="Average")
+   
+
