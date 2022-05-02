@@ -1,8 +1,10 @@
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #6f42c1;">
     <div class="container-fluid">
         <!-- BRAND LOGO -->
-        <a class="navbar-brand nav-image" href="{{ url_for('root') }}"><img src="{{ url_for('logo') }}" class="img-fluid nav-img" alt="augur Logo"></a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <a class="navbar-brand nav-image" href="{{ url_for('root') }}"><img src="{{ url_for('logo') }}"
+                class="img-fluid nav-img" alt="augur Logo"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -16,7 +18,8 @@
 
                 <!-- COLLAPSABLE NAVBAR SECTION -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {% if title == 'Repos' %} active {% endif %}" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle {% if title == 'Repos' %} active {% endif %}" href="#"
+                        id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Repos
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -27,15 +30,22 @@
 
                 <!-- STATIC NAVBAR SECTION -->
                 <li class="nav-item">
-                    <a class="nav-link {% if title == 'Groups' %} active {% endif %}" aria-current="page" href=" {{ url_for('repo_groups_view') }}">Groups</a>
+                    <a class="nav-link {% if title == 'Groups' %} active {% endif %}" aria-current="page"
+                        href=" {{ url_for('repo_groups_view') }}">Groups</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if title == 'Status' %} active {% endif %}" aria-current="page" href="{{ url_for('status_view') }}">Collection Status</a>
+                    <a class="nav-link {% if title == 'Status' %} active {% endif %}" aria-current="page"
+                        href="{{ url_for('status_view') }}">Collection Status</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if title == 'Status' %} active {% endif %}" aria-current="page"
+                        href="{{ url_for('averages') }}">Compare</a>
                 </li>
                 <!-- .junk->NAVBAR_EXTRAS -->
             </ul>
             <form class="d-flex" method="get" action="?">
-                <input class="form-control me-2" name="q" type="search" placeholder="Filter Repos" aria-label="Search" value="{{query_key or ''}}">
+                <input class="form-control me-2" name="q" type="search" placeholder="Filter Repos" aria-label="Search"
+                    value="{{query_key or ''}}">
                 <button class="btn btn-outline-dark" type="submit" style="color: white;">Search</button>
             </form>
         </div>
