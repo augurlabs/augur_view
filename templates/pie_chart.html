@@ -16,10 +16,24 @@
             "repo_id": repo_id,
             "return_data": "true"
         }
+        console.log("Making pie chart")
 
-        $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", pie_chart_params, function (response) {
+        $.getJSON("{{ api_url }}/", pie_chart_params, function (response) {
 
-            console.log(response)
+            console.log("Pie chart data")
+            // console.log(response)
+
+            response = {
+                "data": {
+                    "Drive_By": 2,
+                        "Repeat": 0
+                },
+                "end_date": "2022-5-3",
+                    "repo_name": "zephyr-testing",
+                        "required_contributions": 4,
+                            "required_time": 365,
+                                "start_date": "2021-01-01"
+            }
 
             // extract values from response into logical data names
             let data = response["data"]
@@ -64,8 +78,11 @@
             // Define the piechart object and where it needs to go in the html
             var chart = new google.visualization.PieChart(document.getElementById('pie_chart'));
 
-            var div = document.getElementById('spinner');
-            div.remove();
+            console.log("Pie chart object")
+            console.log(chart)
+
+            // var div = document.getElementById('spinner');
+            // div.remove();
             // Draw the data onto the pie chart with the given options
             chart.draw(table_data, options);
 

@@ -60,6 +60,9 @@
             let all = data["All"]
             let slowest = data["Slowest 20%"]
 
+            console.log("Pr stacked bar data")
+            console.log(data)
+
             // Initialize the data table and add each column
             var table_data = new google.visualization.DataTable();
             table_data.addColumn('string', 'Year Closed');
@@ -106,6 +109,11 @@
             // Instantiate and draw our chart, passing in some options.
             var chart = new google.charts.Bar(document.getElementById('pr_stacked_bar'));
 
+            console.log("Pr stacked bar chart object")
+            console.log(chart)
+
+            console.log(table_data)
+
             var div = document.getElementById('spinner');
             div.remove();
 
@@ -114,7 +122,7 @@
             chart.draw(table_data, converted_options);
 
             // Add a caption to the table
-            // var caption = "Template Caption: This pie chart shows the percentage of new contributors who were fly-by or repeat contributors. Fly by contributors are contributors who make less than the required 4 contributions in 365 days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made 4 or more contributions in 365 days and their first contribution is in the specified time period."
+            var caption = "Template Caption: This pie chart shows the percentage of new contributors who were fly-by or repeat contributors. Fly by contributors are contributors who make less than the required 4 contributions in 365 days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made 4 or more contributions in 365 days and their first contribution is in the specified time period."
 
             document.getElementById("pr_stacked_bar_caption").innerHTML = caption;
 
