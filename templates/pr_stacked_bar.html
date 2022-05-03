@@ -60,9 +60,6 @@
             let all = data["All"]
             let slowest = data["Slowest 20%"]
 
-            console.log("Pr stacked bar data")
-            console.log(data)
-
             // Initialize the data table and add each column
             var table_data = new google.visualization.DataTable();
             table_data.addColumn('string', 'Year Closed');
@@ -108,11 +105,6 @@
 
             // Instantiate and draw our chart, passing in some options.
             var chart = new google.charts.Bar(document.getElementById('pr_stacked_bar'));
-
-            console.log("Pr stacked bar chart object")
-            console.log(chart)
-
-            console.log(table_data)
 
             var div = document.getElementById('spinner');
             div.remove();

@@ -87,13 +87,13 @@
             chart.draw(table_data, options);
 
             // Add a caption to the table
-            // var caption = "This pie chart shows the percentage of new contributors who were fly-by or repeat contributors. Fly by contributors are contributors who make less than the required " + required_contributions + " contributions in " + required_time + " days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made " + required_contributions + " or more contributions in " + required_time + " days and their first contribution is in the specified time period."
+            var caption = "This pie chart shows the percentage of new contributors who were fly-by or repeat contributors. Fly by contributors are contributors who make less than the required " + required_contributions + " contributions in " + required_time + " days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made " + required_contributions + " or more contributions in " + required_time + " days and their first contribution is in the specified time period."
 
-            // document.getElementById("pie_chart_caption").innerHTML = caption;
+            document.getElementById("pie_chart_caption").innerHTML = caption;
 
-            // window.addEventListener('resize', function () {
-            //     chart.draw(table_data, options);
-            // }, false);
+            window.addEventListener('resize', function () {
+                chart.draw(table_data, options);
+            }, false);
         });
     }
 
