@@ -18,7 +18,7 @@
             "return_data": "true"
         }
 
-        $.getJSON("{{ api_url }}/", pr_time_til_first_response_params, function (response) {
+        $.getJSON("{{ api_url }}/pull_request_reports/PR_time_to_first_response/", pr_time_til_first_response_params, function (response) {
 
             
             response = {"data": [
