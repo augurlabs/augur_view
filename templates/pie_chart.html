@@ -16,9 +16,10 @@
             "repo_id": repo_id,
             "return_data": "true"
         }
-        console.log("Making pie chart")
 
         $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", pie_chart_params, function (response) {
+
+            console.log(response)
 
             // extract values from response into logical data names
             let data = response["data"]
@@ -63,22 +64,19 @@
             // Define the piechart object and where it needs to go in the html
             var chart = new google.visualization.PieChart(document.getElementById('pie_chart'));
 
-            console.log("Pie chart object")
-            console.log(chart)
-
-            // var div = document.getElementById('spinner');
-            // div.remove();
+            var div = document.getElementById('spinner');
+            div.remove();
             // Draw the data onto the pie chart with the given options
             chart.draw(table_data, options);
 
             // Add a caption to the table
-            var caption = "This pie chart shows the percentage of new contributors who were fly-by or repeat contributors. Fly by contributors are contributors who make less than the required " + required_contributions + " contributions in " + required_time + " days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made " + required_contributions + " or more contributions in " + required_time + " days and their first contribution is in the specified time period."
+            // var caption = "This pie chart shows the percentage of new contributors who were fly-by or repeat contributors. Fly by contributors are contributors who make less than the required " + required_contributions + " contributions in " + required_time + " days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made " + required_contributions + " or more contributions in " + required_time + " days and their first contribution is in the specified time period."
 
-            document.getElementById("pie_chart_caption").innerHTML = caption;
+            // document.getElementById("pie_chart_caption").innerHTML = caption;
 
-            window.addEventListener('resize', function () {
-                chart.draw(table_data, options);
-            }, false);
+            // window.addEventListener('resize', function () {
+            //     chart.draw(table_data, options);
+            // }, false);
         });
     }
 
@@ -91,6 +89,6 @@
 
 
     // Load Gchart packages and render charts
-    google.charts.load('current', { packages: ['corechart'] });
+    google.charts.load('current', { packages: ['corechart', 'bar', 'timeline', 'controls'] });
     google.charts.setOnLoadCallback(loadCharts);
 </script>
