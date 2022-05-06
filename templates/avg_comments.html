@@ -17,51 +17,9 @@
             "return_data": "true"
         }
 
-        $.getJSON("{{ api_url }}/", avg_comments_params, function (response) {
-
-            
-            response = {"data": [
-                {
-                "merged_comment_mean": 9.1,
-                "not_merged_comment_mean": 2.3,
-                "year": "2016"
-                },
-                {
-                "merged_comment_mean": 14.4,
-                "not_merged_comment_mean": 9.8,
-                "year": "2017"
-                },
-                {
-                "merged_comment_mean": 12.8,
-                "not_merged_comment_mean": 6.8,
-                "year": "2018"
-                },
-                {
-                "merged_comment_mean": 15.9,
-                "not_merged_comment_mean": 12.0,
-                "year": "2019"
-                },
-                {
-                "merged_comment_mean": 16.1,
-                "not_merged_comment_mean": 11.6,
-                "year": "2020"
-                },
-                {
-                "merged_comment_mean": 13.9,
-                "not_merged_comment_mean": 8.2,
-                "year": "2021"
-                },
-                {
-                "merged_comment_mean": 10.3,
-                "not_merged_comment_mean": 10.5,
-                "year": "2022"
-                }
-                ],
-                "repo_name": "linux"
-            }
+        $.getJSON("{{ api_url }}/pull_request_reports/average_comments_per_PR/", avg_comments_params, function (response) {
       
             let data = response["data"]
-            console.log(data)
             var table_data = new google.visualization.DataTable();
 
             table_data.addColumn('string', 'Year');
@@ -75,18 +33,6 @@
             
                 table_data.addRow([year, mergedMean, notMergedMean])
             } 
-     
-      
-
-/*       var data = google.visualization.arrayToDataTable([
-        ['City', '2010 Population', {type: 'string', role: 'annotation'},
-         '2000 Population', {type: 'string', role: 'annotation'}],
-        ['New York City, NY', 8175000, '8.1M', 8008000, '8M'],
-        ['Los Angeles, CA', 3792000, '3.8M', 3694000, '3.7M'],
-        ['Chicago, IL', 2695000, '2.7M', 2896000, '2.9M'],
-        ['Houston, TX', 2099000, '2.1M', 1953000, '2.0M'],
-        ['Philadelphia, PA', 1526000, '1.5M', 1517000, '1.5M']
-      ]); */
 
         var options = {
             title: 'Mean Comments Per Pull Request',
