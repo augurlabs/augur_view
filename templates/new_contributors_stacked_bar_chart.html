@@ -2,28 +2,26 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 
-<div class="row my-2">
+<div class="row">
     <div class="col-xxl-1"></div>
-    <div class="col-xxl-5 mx-auto" id="column_chart1">
+    <div class="col-xxl-5 chart_margin chart_height" id="column_chart1">
         <div id="spinner1" class="spinner-border" role="status"></div>
     </div>
-    <div class="col-xxl-5" id="column_chart2">
+    <div class="col-xxl-5 chart_margin chart_height" id="column_chart2">
         <div id="spinner2" class="spinner-border" role="status"></div>
     </div>
     <div class="col-xxl-1"></div>
 </div>
-<div class="row my-2 align-items-center justify-content-center">
+<div class="row">
     <div class="col-xxl-1"></div>
-    <div class="col-xxl-5" id="column_chart3">
+    <div class="col-xxl-5 chart_margin chart_height" id="column_chart3">
         <div id="spinner3" class="spinner-border" role="status"></div>
     </div>
-    <div class="col-xxl-5" id="column_chart4">
+    <div class="col-xxl-5 chart_margin chart_height" id="column_chart4">
         <div id="spinner4" class="spinner-border" role="status"></div>
     </div>
     <div class="col-xxl-1"></div>
 </div>
-
-<div id="column_chart_caption"></div>
 
 
 <script type="text/javascript">
@@ -37,6 +35,8 @@
         $.getJSON("{{ api_url }}/contributor_reports/new_contributors_stacked_bar/", params, function (response) {
                             
             // Set the table options
+            var data_views = [];
+            var charts = [];
             let options = {
                     title: "",
                     titleTextStyle: {
@@ -44,7 +44,6 @@
                     bold: true,    // true or false
                     italic: false   // true of false
                 },
-                     height: 450,
                      legend: { position: 'top', maxLines: 3 },
                      bar: { groupWidth: '70%' },
                      isStacked: true,
@@ -76,8 +75,10 @@
                     var table_view = google.visualization.arrayToDataTable(table_data);
                     
                     var data_view = new google.visualization.DataView(table_view);
+                    data_views.push(data_view);
                     var chart = new google.visualization.ColumnChart(document.getElementById("column_chart"+table_num));
-                    options["title"] = titles[table_num-1];
+                    charts.push(chart);
+                    
                     var div = document.getElementById('spinner'+table_num);
                     div.remove();
                     chart.draw(data_view, options);
@@ -85,11 +86,25 @@
                     
 
 
-                    window.addEventListener('resize', function () {
-                        chart.draw(data_view, options);
-                    }, false);
+                    
 
                  }
+                 
+
+
+
+                 window.addEventListener('resize', function () {
+                        options["title"] = titles[0];
+                        charts[0].draw(data_views[0], options);
+                        options["title"] = titles[1];
+                        charts[1].draw(data_views[1], options);
+                        options["title"] = titles[2];
+                        charts[2].draw(data_views[2], options);
+                        options["title"] = titles[4];
+                        charts[3].draw(data_views[3], options);
+                    }, false);
+
+
 
 
             

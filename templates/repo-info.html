@@ -11,7 +11,7 @@
 
         {% include "new_contributors_stacked_bar_chart.html" %}
 
-        <div class="row my-2 align-items-center justify-content-center">
+        <div class="row">
             <div class="col-xxl-1"></div>
             <div class="col-xxl-5">
                 {% include "avg_comments.html" %}
@@ -22,7 +22,7 @@
             <div class="col-xxl-1"></div>
         </div>
 
-        <div class="row my-2 align-items-center justify-content-center">
+        <div class="row">
             <div class="col-xxl-1"></div>
             <div class="col-xxl-5">
                 {% include "pie_chart.html" %}
@@ -30,6 +30,14 @@
             <div class="col-xxl-5">
                 {% include "pr_time_til_first_response.html" %}
             </div>
+            <div class="col-xxl-1"></div>
+        </div>
+        <div class="row">
+            <div class="col-xxl-1"></div>
+            <div class="col-xxl-5">
+                {% include "contributor_counts_column_chart.html" %}
+            </div>
+            <div class="col-xxl-5"></div>
             <div class="col-xxl-1"></div>
         </div>
 

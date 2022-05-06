@@ -2,7 +2,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 
-<div id="pr_time_til_first_response_chart" style="height: 500px;">
+<div id="pr_time_til_first_response_chart" class="chart_height chart_margin">
     <div id="spinner" class="spinner-border" role="status"></div>
 </div>
 <div id="pr_time_til_first_response_caption"></div>
@@ -189,11 +189,13 @@
         console.log("create scatterchart");
         var chart = new google.visualization.ScatterChart(document.getElementById('pr_time_til_first_response_chart'));
         chart.draw(table_data, options);
-
-        console.log(chart);
         
         // var chart = new google.charts.Scatter(document.getElementById('pr_time_til_first_response_chart'));
         // chart.draw(table_data, google.charts.Scatter.convertOptions(options));
+
+        window.addEventListener('resize', function () {
+            chart.draw(table_data, options);
+        }, false);
     
         });
     }

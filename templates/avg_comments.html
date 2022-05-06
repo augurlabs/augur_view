@@ -2,7 +2,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 
-<div id="avg_comments_per_pr_chart" style="height: 500px;">
+<div id="avg_comments_per_pr_chart" class="chart_height chart_margin">
     <div id="spinner" class="spinner-border" role="status"></div>
 </div>
 <div id="avg_comments_per_pr_caption"></div>
@@ -49,7 +49,11 @@
         };
         var chart = new google.visualization.BarChart(document.getElementById('avg_comments_per_pr_chart'));
         chart.draw(table_data, options);
-    
+
+        window.addEventListener('resize', function () {
+            chart.draw(table_data, options);
+        }, false);
+
         });
     }
 
