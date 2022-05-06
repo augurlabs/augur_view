@@ -20,21 +20,6 @@
 
         $.getJSON("{{ api_url }}/contributor_reports/returning_contributors_pie_chart/", pie_chart_params, function (response) {
 
-            console.log("Pie chart data")
-            // console.log(response)
-
-            response = {
-                "data": {
-                    "Drive_By": 2,
-                        "Repeat": 0
-                },
-                "end_date": "2022-5-3",
-                    "repo_name": "zephyr-testing",
-                        "required_contributions": 4,
-                            "required_time": 365,
-                                "start_date": "2021-01-01"
-            }
-
             // extract values from response into logical data names
             let data = response["data"]
             let start_date = response["start_date"]
@@ -106,6 +91,6 @@
 
 
     // Load Gchart packages and render charts
-    google.charts.load('current', { packages: ['corechart', 'bar', 'timeline', 'controls'] });
+    google.charts.load('current', { packages: ['corechart'] });
     google.charts.setOnLoadCallback(loadCharts);
 </script>
