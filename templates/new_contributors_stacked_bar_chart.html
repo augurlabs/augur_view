@@ -2,17 +2,25 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 
-<div id="column_chart1">
-    <div id="spinner1" class="spinner-border" role="status"></div>
+<div class="row my-2">
+    <div class="col-xxl-1"></div>
+    <div class="col-xxl-5 mx-auto" id="column_chart1">
+        <div id="spinner1" class="spinner-border" role="status"></div>
+    </div>
+    <div class="col-xxl-5" id="column_chart2">
+        <div id="spinner2" class="spinner-border" role="status"></div>
+    </div>
+    <div class="col-xxl-1"></div>
 </div>
-<div id="column_chart2">
-    <div id="spinner2" class="spinner-border" role="status"></div>
-</div>
-<div id="column_chart3">
-    <div id="spinner3" class="spinner-border" role="status"></div>
-</div>
-<div id="column_chart4">
-    <div id="spinner4" class="spinner-border" role="status"></div>
+<div class="row my-2 align-items-center justify-content-center">
+    <div class="col-xxl-1"></div>
+    <div class="col-xxl-5" id="column_chart3">
+        <div id="spinner3" class="spinner-border" role="status"></div>
+    </div>
+    <div class="col-xxl-5" id="column_chart4">
+        <div id="spinner4" class="spinner-border" role="status"></div>
+    </div>
+    <div class="col-xxl-1"></div>
 </div>
 
 <div id="column_chart_caption"></div>
@@ -42,7 +50,6 @@
                     bold: true,    // true or false
                     italic: false   // true of false
                 },
-                     width: 800,
                      height: 450,
                      legend: { position: 'top', maxLines: 3 },
                      bar: { groupWidth: '70%' },
