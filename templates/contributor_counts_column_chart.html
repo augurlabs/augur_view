@@ -2,7 +2,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 
-<div id="column_chart">
+<div id="column_chart" class="chart_height chart_margin">
     <div id="spinner" class="spinner-border" role="status"></div>
 </div>
 <div id="column_chart_caption"></div>
@@ -44,8 +44,6 @@
                     bold: true,    // true or false
                     italic: false   // true of false
                 },
-                    width: 800,
-                    height: 450,
                     legend: { position: 'top', maxLines: 3 },
                     bar: { groupWidth: '70%' },
                     isStacked: true,
@@ -62,7 +60,7 @@
              let required_time = response["required_time"];
             var caption = " This graph shows the number of new contributors in the specified time period, and indicates how many were fly-by and repeat contributors. Fly by contributors are contributors who make less than the required"+required_contributions+ "contributions in"+ required_time +"days. New contributors are individuals who make their first contribution in the specified time period. Repeat contributors are contributors who have made" + required_contributions+"or more contributions in" +required_time+ "days and their first contribution is in the specified time period.";
 
-            document.getElementById("column_chart_caption").innerHTML = caption;
+            // document.getElementById("column_chart_caption").innerHTML = caption;
 
             window.addEventListener('resize', function () {
                 chart.draw(view, options);

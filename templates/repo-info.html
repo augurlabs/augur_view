@@ -3,22 +3,48 @@
 
 <div class="container-fluid mt-4">
     <div class="row justify-content-center">
+
         {% if repo.repo_id %}
         <h1 id="message">Report for: {{ repo.repo_name|title }}</h1>
         <p><a href="https://{{ repo.url }}" target="_blank" data-toggle="tooltip" title="opens in new tab">https://{{ repo.url }}</a></p>
         <h2>Contributor Reports</h2>
-        <!-- <div style="width: 40%;">
-            {% include "contributor_counts_column_chart.html" %}
-        </div> -->
-        <!-- <div style="width: 40%;">
-            {% include "new_contributors_stacked_bar_chart.html" %}
-        </div> -->
-        <div style="width: 40%;">
-            {% include "pr_stacked_bar.html" %}
+
+        {% include "new_contributors_stacked_bar_chart.html" %}
+
+        <div class="row">
+            <div class="col-xxl-1"></div>
+            <div class="col-xxl-5">
+                {% include "avg_comments.html" %}
+            </div>
+            <div class="col-xxl-5">
+                {% include "avg_commits.html" %}
+            </div>
+            <div class="col-xxl-1"></div>
         </div>
+
+        <div class="row">
+            <div class="col-xxl-1"></div>
+            <div class="col-xxl-5">
+                {% include "pie_chart.html" %}
+            </div>
+            <div class="col-xxl-5">
+                {% include "pr_time_til_first_response.html" %}
+            </div>
+            <div class="col-xxl-1"></div>
+        </div>
+        <div class="row">
+            <div class="col-xxl-1"></div>
+            <div class="col-xxl-5">
+                {% include "contributor_counts_column_chart.html" %}
+            </div>
+            <div class="col-xxl-5"></div>
+            <div class="col-xxl-1"></div>
+        </div>
+
         {% else %}
         <h1 id="message">Repository {{ repo_id }} not found<h1>
         {% endif %}
+
     </div>
 </div>
 {% if repo.repo_id %}

@@ -2,7 +2,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 
-<div id="pie_chart">
+<div id="pie_chart" class="chart_height chart_margin">
     <div id="spinner" class="spinner-border" role="status"></div>
 </div>
 <div id="pie_chart_caption"></div>
@@ -58,7 +58,7 @@
                     bold: true,    // true or false
                     italic: false   // true of false
                 },
-                is3D: true
+                is3D: true,
             };
 
             // Define the piechart object and where it needs to go in the html
@@ -74,9 +74,9 @@
 
             // document.getElementById("pie_chart_caption").innerHTML = caption;
 
-            // window.addEventListener('resize', function () {
-            //     chart.draw(table_data, options);
-            // }, false);
+            window.addEventListener('resize', function () {
+                chart.draw(table_data, options);
+            }, false);
         });
     }
 

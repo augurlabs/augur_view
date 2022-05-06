@@ -2,14 +2,14 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 
-<div id="pr_time_til_first_response_chart" style="height: 500px;">
+<div id="pr_time_til_first_response_chart" class="chart_height chart_margin">
     <div id="spinner" class="spinner-border" role="status"></div>
 </div>
 <div id="pr_time_til_first_response_caption"></div>
 
 
 <script type="text/javascript">
-    console.log("test");
+    console.log("begin");
     function loadCharts() {
 
         let repo_id = get_repo_id()
@@ -17,21 +17,26 @@
             "repo_id": repo_id,
             "return_data": "true"
         }
+        
+        console.log("getting json")
+        $.getJSON("{{ api_url }}/pull_request_reports/PR_time_to_first_response/", pr_time_til_first_response_params, function (response) {
 
-        $.getJSON("{{ api_url }}/", pr_time_til_first_response_params, function (response) {
-
-            
+            console.log("gotten json")
+            /*
             response = {"data": [
                     {
                         "Merged / Accepted first response time": 2.6835532407407405,
+                        "Not Merged / Rejected first response time": 5,
                         "date": "2021-05-26"
                     },
                     {
                         "Merged / Accepted first response time": 0.5060185185185185,
+                        "Not Merged / Rejected first response time": 7,
                         "date": "2021-06-04"
                     },
                     {
                         "Merged / Accepted first response time": 0.031469907407407405,
+                        "Not Merged / Rejected first response time": 0.5,
                         "date": "2021-06-03"
                     },
                     {
@@ -132,31 +137,41 @@
                     },
                     {
                         "Merged / Accepted first response time": 5.010798611111111,
+                        "Not Merged / Rejected first response time": 3,
                         "date": "2021-11-10"
                     }
                 ],
                 "outlier_cutoff": 11.121684215122462,
                 "outliers_removed": 1
-            }
+            } */
+
+            console.log(response)
       
             let data = response["data"]
             console.log(data)
             var table_data = new google.visualization.DataTable();
 
-            table_data.addColumn('date', 'Date Closed');
+            table_data.addColumn('string', 'Date Closed');
             table_data.addColumn('number', 'Merged / Accepted first response time');
             table_data.addColumn('number', 'Not Merged / Rejected first response time');
             
             for (var i = 0; i < data.length; i++) {
+                // console.log("Data Point")
+                // console.log(data[i]["date"]);
                 yearMonth = data[i]["date"]
-                mergedAccepted = data[i]["Merged / Accepted first repsonse time"]
+                // console.log(data[i]["Merged / Accepted first response time"]);
+                mergedAccepted = data[i]["Merged / Accepted first response time"]
+
+                // console.log(yearMonth);
+                // console.log(mergedAccepted);
                 notMergedRejected = data[i]["Not Merged / Rejected first response time"]
             
                 table_data.addRow([yearMonth, mergedAccepted, notMergedRejected])
+                // table_data.addRow([yearMonth, mergedAccepted])
             } 
 
         var options = {
-            title: 'Average Commit Counts Per Year for All Pull Requests',
+            title: 'Pull Request Days to First Response of All Closed PRs',
             hAxis: {
                 title: 'Date Closed',
                 // minValue: 0,
@@ -171,11 +186,16 @@
                 // }
             }
         };
-        // var chart = new google.visualization.ScatterChart(document.getElementById('pr_time_til_first_response_chart'));
-        // chart.draw(table_data, options);
+        console.log("create scatterchart");
+        var chart = new google.visualization.ScatterChart(document.getElementById('pr_time_til_first_response_chart'));
+        chart.draw(table_data, options);
         
-        var chart = new google.charts.Scatter(document.getElementById('pr_time_til_first_response_chart'));
-        chart.draw(table_data, google.charts.Scatter.convertOptions(options));
+        // var chart = new google.charts.Scatter(document.getElementById('pr_time_til_first_response_chart'));
+        // chart.draw(table_data, google.charts.Scatter.convertOptions(options));
+
+        window.addEventListener('resize', function () {
+            chart.draw(table_data, options);
+        }, false);
     
         });
     }
