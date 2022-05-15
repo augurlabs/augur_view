@@ -59,9 +59,15 @@ Goals For Future:
     Give user the option to choose what graph type
     
     
-    
-    
-    
+## Sprint 4
+
+Where we left off - 
+
+Dynamic vizualizations left off with the ability to dynamically switch between data points for the two graphs. As well as being able to dynamically select the repos you are selecting from. There were still some bugs with the dates. Some of the dates were out of order for some of the selected data.
+
+Progress -
+
+Fixed the bugs in the dates to get them back in order and to display current dates. Moved the legend down for better readability. 
     
     
 
