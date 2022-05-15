@@ -272,13 +272,12 @@ function DynamicVisualizer(){
         <h1>{dataType} over time for {secondGraph[0].repo_name}</h1>
           <LineChart width={500} height={500} data={secondGraph} style={{margin:"100px auto", color:"white"}} stroke="white" >
             <CartesianGrid />
-            <XAxis dataKey="date" stroke="white"  angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}>
-            <Label value="Pages of my website" offset={10} position="insideBottom" />
-            </XAxis>
             <YAxis />
             <Tooltip content={CustomTooltip}/>
-
             <Line type="monotone" dataKey={dataType == 'code-changes'? "commit_count": dataType} />
+            <XAxis dataKey="date" stroke="white"  angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}>
+            <Label value="Pages of my website" offset={-10} position="insideBottom" />
+            </XAxis>
         </LineChart>
         </div>
         :<div></div>
