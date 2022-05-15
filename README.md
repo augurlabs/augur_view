@@ -4,11 +4,11 @@ HTML frontend for Chaoss/Augur, written with Bootstrap and served by Flask
 
 To run as a local instance:
 
-1. setup a virtual environment
+1. [setup a virtual environment](https://docs.python.org/3/library/venv.html#module-venv)
     - `python3 -m venv env`
     - `source env/bin/activate`
 2. Make sure you have the requirements installed
-    - `pip3 install python3-venv flask pyyaml urllib3`
+    - `pip3 install flask pyyaml urllib3`
 3. Run the app
     - `./run.sh`
 
@@ -45,6 +45,25 @@ Most recent updates as of April 28th -
     Added more options to data drop down. Lessened the amount of data points displayed on the graphs for better readability. 
 
 
-Goals - 
+Goals For Future: 
+    Incorporate the z-scores for the comparisons
+    
+    Create a document at bottom of page that compare all their stats
+    
+    Include cool animations 
+    
+    Make it so that each graph 
+    
+    Update the user interface to adjust to different screen sizes 
+    
+    Give user the option to choose what graph type
+    
+    
+    
+    
+    
+    
+    
+
 
 
