@@ -1,6 +1,7 @@
 
+
 const {useEffect, useState} = React;
-const {Line, LineChart,CartesianGrid, XAxis, YAxis, Tooltip, Legend} = Recharts;
+const {Line, LineChart,CartesianGrid, XAxis, YAxis, Tooltip, Legend, Label} = Recharts;
 function formatDate(date) {
   var d = new Date(date),
     month = '' + (d.getMonth() + 1),
@@ -100,7 +101,9 @@ function DynamicVisualizer(){
   // useEffect(() => {
   //   getFirstGraphData()
   // },[firstRepoId])
+  function sortGraphByDate(){
 
+  }
   function getGraphDataForRepos(){
     if(dataType != null && firstRepoId != null && secondRepoId != null){
       fetch("http://augur.chaoss.io/api/unstable/repos/"+ firstRepoId+ "/" + dataType)
@@ -115,6 +118,12 @@ function DynamicVisualizer(){
               tempA.push(data[i])
             }
           }
+          tempA.sort(function(a,b){
+            // Turn your strings into dates, and then subtract them
+            // to get a value that is either negative, positive, or zero.
+            return new Date(a.date) - new Date(b.date);
+          });
+          calculateZScore(tempA)
           setFirstGraph(tempA)
         }
       })
@@ -122,22 +131,57 @@ function DynamicVisualizer(){
       .then(function(res){
         return res.json()
       }).then(function(data){
-        if(data != null){
+        if(data != null && data.length > 0){
           var tempB = []
           for(var i =0; i <data.length; i ++){
             if(i % 10 == 0){
               tempB.push(data[i])
             }
           }
+          tempB.sort(function(a,b){
+            // Turn your strings into dates, and then subtract them
+            // to get a value that is either negative, positive, or zero.
+            return new Date(a.date) - new Date(b.date);
+          });
           setSecondGraph(tempB)
         }
       })
     }
   }
 
+  function calculateZScore(data){
+    const myDataType = dataType == 'code-changes'? "commit_count": dataType
+    var calculatedData = []
+    if(data != null && data.length > 0){
+    var sum = 0;
+    for(var i =0; i <data.length; i ++){
+      sum += data[i][myDataType]
+    }
+    var mean = sum / i;
+    var newArray = []
+    var newMSum = 0;
+    for(var j =0; j <data.length; j ++){
+      var temp = data[j][myDataType] - mean 
+      var sqaured = temp * temp
+      newArray.push(sqaured)
+    }
+    for(var z =0; z <newArray.length; z ++){
+      newMSum += newArray[z]
+    }
+
+    var newM = newMSum / newArray.length
+    var sd = Math.sqrt(newMSum) 
+    // console.log(sd)
+
+    for(var p = 0; p < data.length; p ++){
+      calculatedData.push((data[p][myDataType] - mean) / sd )
+      console.log((data[p][myDataType] - mean) / sd )
+      
+    }
+    }
+  }
   useEffect(() => {
     getGraphDataForRepos()
-    console.log("ran")
   }, [dataType, firstRepoId, secondRepoId])
 
   function handleDataChange(e) {
@@ -151,14 +195,13 @@ function DynamicVisualizer(){
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
-      console.log(payload[0].payload)
       return (
         <div style={{backgroundColor: "white"}}>
         { payload[0].payload ?
-          <p style={{color:"black"}} className="desc">{dataType} :  {payload[0].payload[dataType]}</p>:
+          <p style={{color:"black"}} className="desc">{dataType} :  {payload[0].payload[dataType == 'code-changes'? 'commit_count' : dataType]}</p>:
           <p></p>
         }
-          <p style={{color:"black"}} className="label">{'Date :' + stringDate(payload[0].value)}</p>
+          <p style={{color:"black"}} className="label">{'Date :' + stringDate(payload[0].payload['date'])}</p>
         </div>
       );
     }
@@ -178,7 +221,6 @@ function DynamicVisualizer(){
               <option value="stars">Stars</option>
               <option value="watchers">Watchers</option>
               <option value="code-changes">Code changes</option>
-              <option value="contributors">Contributors</option>
             </select>
           </p>
         </div>
@@ -214,36 +256,39 @@ function DynamicVisualizer(){
       {firstGraph? 
       <div id="graph1">
         <h1>{dataType} over time for {firstGraph[0].repo_name}</h1>
-          <LineChart width={500} height={500} data={firstGraph} style={{margin:"100px auto"}} >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}/>
-            <YAxis />
+          <LineChart width={500} height={500} data={firstGraph} style={{margin:"100px auto", color:"white"}} stroke="white"  >
+            <CartesianGrid />
+            <XAxis dataKey="date" stroke="white"  angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}/>
+            <YAxis stroke="white"  />
             <Tooltip content={CustomTooltip} />
-            <Legend />
-            <Line type="monotone" dataKey={dataType == 'code-changes'? "commit_count": dataType} stroke="#8884d8" />
+            <Legend margin={{top: 200}}/>
+            <Line type="monotone" dataKey={dataType == 'code-changes'? "commit_count": dataType}/>
         </LineChart>
         </div>
         : <div></div>
       }
       {secondGraph?
-        <div id="graph2">
+        <div id="graph2">/
         <h1>{dataType} over time for {secondGraph[0].repo_name}</h1>
-          <LineChart width={500} height={500} data={secondGraph} style={{margin:"100px auto"}} >
+          <LineChart width={500} height={500} data={secondGraph} style={{margin:"100px auto", color:"white"}} stroke="white" >
             <CartesianGrid />
-            <XAxis dataKey="date" angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}/>
+            <XAxis dataKey="date" stroke="white"  angle={-28} textAnchor="end" tickFormatter={(tickS) => {return stringDate(tickS)}}>
+            <Label value="Pages of my website" offset={10} position="insideBottom" />
+            </XAxis>
             <YAxis />
             <Tooltip content={CustomTooltip}/>
-            <Legend />
-            <Line type="monotone" dataKey={dataType == 'code-changes'? "commit_count": dataType} stroke="#8884d8" />
+
+            <Line type="monotone" dataKey={dataType == 'code-changes'? "commit_count": dataType} />
         </LineChart>
         </div>
         :<div></div>
       }
       <div>
-        
       </div>
     </div>
+    <div style={{width:"100%", justifyContent:"center", display:"flex", "flex-flow":"row", "justify-content":"space-around"}}>
 
+    </div>
     </div>
       
     )
