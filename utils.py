@@ -5,6 +5,15 @@ from init import *
 import urllib.request, json, os, math, yaml, urllib3, time, logging
 
 """ ----------------------------------------------------------------
+loadSettings:
+    This function attempts to load the application settings from the config file
+    (defined in init.py). It is assumed that the filename or file path defined
+    during initialization is sufficient to locate the config file, and that the
+    current process has read access to that file.
+
+    If loading the config file fails, default settings are loaded via
+    init_settings() and an attempt is made to write default settings to the
+    provided config file.
 """
 def loadSettings():
     try:
@@ -12,8 +21,9 @@ def loadSettings():
             global settings
             settings = yaml.load(file, Loader=yaml.FullLoader)
     except Exception as err:
-        logging.error(f"An exception occurred settings from [{configFile}], default settings kept:")
+        logging.error(f"An exception occurred reading from [{configFile}], default settings kept:")
         logging.error(err)
+        init_settings()
         try:
             with open(configFile, 'w') as file:
                 logging.info("Attempting to generate default config.yml")
@@ -248,7 +258,7 @@ renderRepos:
         The base url to use for the page links
 """
 def renderRepos(view, query, data, sorting = None, rev = False, page = None, filter = False, pageSource = "repo_table_view", sortBasis = None):
-    PaginationOffset = getSetting('paginationOffset')
+    pagination_offset = getSetting('pagination_offset')
 
     """ ----------
         If the data does not exist, we cannot construct the table to display on
@@ -266,7 +276,7 @@ def renderRepos(view, query, data, sorting = None, rev = False, page = None, fil
         data = results
 
     # Determine the maximum number of pages which can be displayed from the data
-    pages = math.ceil(len(data) / PaginationOffset)
+    pages = math.ceil(len(data) / pagination_offset)
 
     if page is not None:
         page = int(page)
@@ -276,7 +286,11 @@ def renderRepos(view, query, data, sorting = None, rev = False, page = None, fil
     """ ----------
         Caller requested sorting of the data. The data is a list of dictionaries
         with numerous sortable elements, and the "sorting" parameter is assumed
-        to be the key of the desired element in the dictionary by which to sort
+        to be the key of the desired element in the dictionary by which to sort.
+
+        We need the "or 0" here to ensure the comparison is valid for rows which
+        do not have data for the requested column (we're making the assumption
+        that the data type is comparable to integer 0).
     """
     if sorting is not None:
         data = sorted(data, key = lambda i: i[sorting] or 0, reverse = rev)
@@ -288,10 +302,10 @@ def renderRepos(view, query, data, sorting = None, rev = False, page = None, fil
         defined above. The result is a list which contains *at most* a number of
         entries equal to the pagination offset
     """
-    x = PaginationOffset * (page - 1)
-    data = data[x: x + PaginationOffset]
+    x = pagination_offset * (page - 1)
+    data = data[x: x + pagination_offset]
 
-    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=PaginationOffset, PS=pageSource, api_url=getSetting('serving'), reverse = rev, sorting = sorting)
+    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=pagination_offset, PS=pageSource, api_url=getSetting('serving'), reverse = rev, sorting = sorting)
 
 """ ----------------------------------------------------------------
     Renders a simple page with the given message information, and optional page
@@ -302,7 +316,7 @@ def renderMessage(messageTitle, messageBody, title = None, redirect = None, paus
 
 """ ----------------------------------------------------------------
 """
-def renderModule(module, **args):
+def render_module(module, **args):
     args.setdefault("title", "Augur View")
     args.setdefault("api_url", getSetting("serving"))
     args.setdefault("body", module)

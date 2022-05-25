@@ -45,7 +45,7 @@ Then run `source env/bin/activate` to activate the virtual environment.
 
 Once you have your virtual environment created and activated, make sure you have the requirements installed
 ```
-pip3 install python3-venv flask pyyaml urllib3
+pip install -r requirements.txt 
 ```
 
 ## Installing the service
@@ -118,10 +118,38 @@ Remember to restart Apache after saving your changes.
 ## Proxy with NGINX
 
 To proxy with NGINX, you need to add a reverse proxy location to the NGINX config file your server is using. The location block should direct traffic to localhost, using the port you chose above (such as `8000`). You can replace the Location below with any relative address of your choice (such as "/augur").
+
+You will also need a running augur instance from https://github.com/chaoss/augur
+
+The Server port will be used to proxy the API served by that instance, which is required by augur\_view.
+
+`server_name` is the full domain that you will have augur\_view resolving to. 
+
+`proxy_pass` for `location /api/unstable/` is the full domain that you have augur\_view resolving to, with an additional port specification that matches the server port specification in your running instance of augur.
+
+**Create this file where your operating system keeps its `sites-enabled` directory. On Ubuntu, that is `/etc/nginx/sites-enabled`.** 
+
+**After adding this file, execute `sudo nginx -t` to make sure it is configured correctly, and `sudo systemctl restart nginx` to have it take effect immediately** 
+
 ```
-location / {
-    proxy_pass http://127.0.0.1:8000;
+server {
+        listen 80;
+        server_name  new.augurlabs.io;
+
+        location /api/unstable/ {
+                proxy_pass http://new.augurlabs.io:5044;
+                proxy_set_header Host $host;
+        }
+
+	location / {
+		proxy_pass http://127.0.0.1:8000;
+	}
+
+        error_log /var/log/nginx/census.osshealth.error.log;
+        access_log /var/log/nginx/census.osshealth.access.log;
+
 }
+
 ```
 ### Note
 Whatever location you set your proxy to, you'll need to update the `approot` parameter of the default config. The default `approot` is `"/"`.
