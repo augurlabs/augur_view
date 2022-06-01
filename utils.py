@@ -16,9 +16,9 @@ loadSettings:
     provided config file.
 """
 def loadSettings():
+    global settings
     try:
         with open(configFile) as file:
-            global settings
             settings = yaml.load(file, Loader=yaml.FullLoader)
     except Exception as err:
         logging.error(f"An exception occurred reading from [{configFile}], default settings kept:")
@@ -32,6 +32,21 @@ def loadSettings():
         except Exception as ioErr:
             logging.error("Error creating default config:")
             logging.error(ioErr)
+
+    # Ensure that the cache directory exists and is valid
+    cachePath = Path(settings["caching"])
+    if not cachePath.is_dir():
+        if cachePath.is_file():
+            raise Exception(f"Cannot initialize caching: cache path [{cachePath}] is a file")
+        else:
+            try:
+                cachePath.mkdir(parents=True)
+                logging.info("cache directory initialized")
+            except Exception as err:
+                raise Exception(f"Cannot initialize caching: could not create cache directory [{cachePath}]")
+
+    # Use the resolved path for cache directory access
+    settings["caching"] = cachePath
 
 """ ----------------------------------------------------------------
 """
@@ -65,12 +80,7 @@ def loadReports():
             logging.error(ioErr)
         return False
 
-# Reports are dynamically assigned IDs during startup, which the default
-# template does not have, therefore once we create the default reports.yml file,
-# we must reload the reports.
-if not loadReports():
-    # We try once more, and then give up
-    loadReports()
+loadReports()
 
 cache_files_requested = []
 
@@ -102,10 +112,10 @@ def toCacheFilename(endpoint):
     return endpoint.replace("/", ".").replace("?", "_").replace("=", "_") + '.agcache'
 
 def toCacheFilepath(endpoint):
-    return getSetting('caching') + toCacheFilename(endpoint)
+    return getSetting('caching').joinpath(toCacheFilename(endpoint))
 
 def toCacheURL(endpoint):
-    return getSetting('approot') + toCacheFilepath(endpoint)
+    return getSetting('approot') + str(toCacheFilepath(endpoint))
 
 """ ----------------------------------------------------------------
 requestJson:
