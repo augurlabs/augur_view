@@ -21,3 +21,55 @@ For installation instructions on a server, see [installing](installing.md).
 To get started with developing for augur_view, see [modules](modules.md).
 
 Copyright 2021 University of Missouri, and University of Nebraska-Omaha
+
+!-----------------------------------------------------------------------------!
+
+## Sprint 3 
+
+Where we left off -
+
+We currently have two graphs displaying default data. The first graph displays the star count over time for the default project 'lodash' and the second graph displays forks over time for the default project. 
+
+Progress - 
+
+Day 1 Tuesday April 19th:
+
+    Created drop down selectors for the desired data to be displayed and two repository selections. Allocated them dynamically based on api. Also reformatted the graphs for data display.
+
+Day 2 Thursday April 21st:
+
+    Added titles for graphs and dynamically creates graphs based on drop down selections. 
+
+Most recent updates as of April 28th -
+
+    Added more options to data drop down. Lessened the amount of data points displayed on the graphs for better readability. 
+
+
+Goals For Future: 
+    Incorporate the z-scores for the comparisons
+    
+    Create a document at bottom of page that compare all their stats
+    
+    Include cool animations 
+    
+    Make it so that each graph 
+    
+    Update the user interface to adjust to different screen sizes 
+    
+    Give user the option to choose what graph type
+    
+    
+## Sprint 4
+
+Where we left off - 
+
+    Dynamic vizualizations left off with the ability to dynamically switch between data points for the two graphs. As well as being able to dynamically select the repos you are selecting from. There were still some bugs with the dates. Some of the dates were out of order for some of the selected data.
+
+Progress -
+
+    Fixed the bugs in the dates to get them back in order and to display current dates. Moved the legend down for better readability. 
+    
+    
+
+
+
