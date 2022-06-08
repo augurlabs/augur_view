@@ -4,6 +4,8 @@
     <div class="row justify-content-center">
         {% if repo.repo_id %}
         <h1 id="message">Report for: {{ repo.repo_name|title }}</h1>
+        <h3 id="commits">All Time Commits: {{ repo.commits_all_time|int }}</h3 style="color: purple;">
+        <h3 id="issues">All Time Issues: {{ repo.issues_all_time|int }}</h3 style="color: purple;">
         <p><a href="https://{{ repo.url }}" target="_blank" data-toggle="tooltip" title="opens in new tab">https://{{ repo.url }}</a></p>
         {% for report in reports %}
         <h2>{{ report|replace("_", " ")|title }}</h2>
