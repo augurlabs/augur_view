@@ -60,8 +60,9 @@ class User(UserMixin):
         connection = sqlite3.connect(users_db)
         cursor = connection.cursor()
 
-        hash_algorithm.update(password.encode('utf8'))
-        pass_hash = hash_algorithm.hexdigest()
+        hashing = hash_algorithm()
+        hashing.update(password.encode('utf8'))
+        pass_hash = hashing.hexdigest()
         cursor.execute("INSERT INTO users VALUES (?, ?, ?)", (self.id, pass_hash, 1))
         connection.commit()
 
@@ -70,8 +71,10 @@ class User(UserMixin):
 
     def validate(self, password):
         if self.exists():
-            hash_algorithm.update(password.encode('utf8'))
-            pass_hash = hash_algorithm.hexdigest()
+            hashing = hash_algorithm()
+            hashing.update(password.encode('utf8'))
+            pass_hash = hashing.hexdigest()
+            print(pass_hash, self.data[1])
             if pass_hash == self.data[1]:
                 self._is_authenticated = True
                 return True

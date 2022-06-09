@@ -126,9 +126,11 @@ def user_login():
                     raise Exception("An error occurred registering your account")
                 else:
                     flash("Account successfully created")
-
+            print(request.form)
             if user.validate(user_pass) and login_user(user, remember = remember):
                 flash(f"Welcome, {user_id}!")
+                if "login_next" in session:
+                    return redirect(session.pop("login_next"))
                 return redirect(url_for('root'))
             else:
                 raise Exception("Invalid login credentials")
@@ -146,6 +148,15 @@ def user_logout():
     logout_user()
     flash("You have been logged out")
     return redirect(url_for('root'))
+
+""" ----------------------------------------------------------------
+settings:
+    Under development
+"""
+@app.route('/settings')
+@login_required
+def user_settings():
+    return render_module("settings", title="Settings")
 
 """ ----------------------------------------------------------------
 report page:

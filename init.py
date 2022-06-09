@@ -8,7 +8,8 @@ version = {"major": 0, "minor": 0.1, "series": "Alpha"}
 
 users_db = None
 
-hash_algorithm = hashlib.sha256()
+def hash_algorithm():
+    return hashlib.sha256()
 
 """ ----------------------------------------------------------------
 """

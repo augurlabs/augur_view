@@ -322,12 +322,12 @@ def renderRepos(view, query, data, sorting = None, rev = False, page = None, fil
     title and redirect
 """
 def renderMessage(messageTitle, messageBody, title = None, redirect = None, pause = None):
-    return render_template('index.html', body="notice", title=title, messageTitle=messageTitle, messageBody=messageBody, api_url=getSetting('serving'), redirect=redirect, pause=pause)
+    return render_module("notice", messageTitle=messageTitle, messageBody=messageBody, title=title, redirect=redirect, pause=pause)
 
 """ ----------------------------------------------------------------
 """
 def render_module(module, **args):
-    args.setdefault("title", "Augur View")
+    # args.setdefault("title", "Augur View")
     args.setdefault("api_url", getSetting("serving"))
     args.setdefault("body", module)
     return render_template('index.html', **args)

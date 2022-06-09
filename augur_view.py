@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, session
+from flask import Flask, render_template, redirect, url_for, session, request
 from flask_login import LoginManager
 from utils import *
 from url_converters import *
@@ -22,6 +22,7 @@ def page_not_found(error):
 
 @login_manager.unauthorized_handler
 def unauthorized():
+    session["login_next"] = url_for(request.endpoint, **request.args)
     return redirect(url_for('user_login'))
 
 @login_manager.user_loader
