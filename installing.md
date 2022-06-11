@@ -69,7 +69,7 @@ After=network.target
 
 [Service]
 User=<user to run the service>
-Group=<(optional) goup with permissions to access augur_view directory>
+Group=<(optional) group with permissions to access augur_view directory>
 WorkingDirectory=<augur_view directory absolute path>
 ExecStart=env/bin/gunicorn -c gunicorn.conf -b 0.0.0.0:8000 wsgi:app
 
