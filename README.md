@@ -12,7 +12,7 @@ To run as a local instance:
 3. Run the app
     - `./run.sh`
 
-Once the server is running, you can change the default `serving` url in `config.yml` and either restart the app or navigate to `[approot]/settings/reload` in the browser to connect to the desired augur instance.
+Once the server is running, you can change the default `serving` url in `config.yml` and either restart the app or navigate to `[approot]/settings/reload` in the browser to connect to the desired augur instance. For example, if you are serving from http://new.augurlabs.io you would enter the url: http://new.augurlabs.io/settings/reload. 
 
 For installation instructions on a server, see [installing](installing.md).
 
