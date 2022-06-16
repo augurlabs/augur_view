@@ -38,6 +38,5 @@ def load_user(user_id):
 
     return user
 
-
 import routes
 import api

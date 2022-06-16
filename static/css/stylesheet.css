@@ -60,6 +60,10 @@ body {
     color: var(--color-fg);
 }
 
+#toast-placeholder {
+    display: none;
+}
+
 .display-table {
     background-color: white !important;
     overflow: auto;
