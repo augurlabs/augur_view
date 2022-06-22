@@ -57,7 +57,7 @@ You'll need to modify the file to your environment parameters.
 - The `Group` parameter optionally specifies the group to run the process as. It's not required for operation.
 - The `WorkingDirectory` parameter describes where the service working directory is. This parameter should be set to the root directory where the `augur_view` executables are located.
 - The `ExecStart` parameter describes the program to run when the service is started. For `augur_view`, we want Gunicorn to run on startup. In this instance, we need to break up this parameter into multiple parts:
-    - First argument will be absolute path or relative path to Gunicorn executable in our virtual environment. For example, if your virtual environment is in the `augur_view` root directory, the relative path will be `<augur_view directory absolute path>/env/bin/gunicorn`
+    - First argument will be the absolute path to the Gunicorn executable, which is installed within the virtual environment.
     - Second, using the `-c` option, we specify the Gunicorn config file (which we demonstrate creating below), using its absolute or relative path.
     - Third, using the `-b` option, we specify the address for Gunicorn to bind to. In this case, we are using the local loopback address at port `8000`.
     - Finally, we specify the wsgi driver module we created earlier in `wsgi.py`, using its absolute or relative path.
