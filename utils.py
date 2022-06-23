@@ -17,21 +17,16 @@ loadSettings:
 """
 def loadSettings():
     global settings
-    try:
-        with open(configFile) as file:
-            settings = yaml.load(file, Loader=yaml.FullLoader)
-    except Exception as err:
-        logging.error(f"An exception occurred reading from [{configFile}], default settings kept:")
-        logging.error(err)
+    configFilePath = Path(configFile)
+    if not configFilePath.is_file():
         init_settings()
-        try:
-            with open(configFile, 'w') as file:
-                logging.info("Attempting to generate default config.yml")
-                yaml.dump(settings, file)
-                logging.info("Default settings file successfully generated.")
-        except Exception as ioErr:
-            logging.error("Error creating default config:")
-            logging.error(ioErr)
+        with open(configFile, 'w') as file:
+            logging.info(f"Generating default configuration file: {configFile}")
+            yaml.dump(settings, file)
+            logging.info("Default configuration file successfully generated.")
+    else:
+        with open(configFilePath) as file:
+            settings = yaml.load(file, Loader=yaml.FullLoader)
 
     # Ensure that the cache directory exists and is valid
     cachePath = Path(settings["caching"])
@@ -54,6 +49,8 @@ def getSetting(key):
     return settings[key]
 
 loadSettings()
+
+version_check(settings)
 
 """ ----------------------------------------------------------------
 """
