@@ -29,8 +29,13 @@ def connect_user_db(filename):
 
 connect_user_db("users.db")
 
+
 report_requests = {}
 settings = {}
+
+def version_check():
+    if "pagination_offset" not in settings:
+        settings["pagination_offset"] = settings.pop("paginationOffset")
 
 def init_settings():
     global settings
