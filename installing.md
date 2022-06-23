@@ -57,10 +57,10 @@ You'll need to modify the file to your environment parameters.
 - The `Group` parameter optionally specifies the group to run the process as. It's not required for operation.
 - The `WorkingDirectory` parameter describes where the service working directory is. This parameter should be set to the root directory where the `augur_view` executables are located.
 - The `ExecStart` parameter describes the program to run when the service is started. For `augur_view`, we want Gunicorn to run on startup. In this instance, we need to break up this parameter into multiple parts:
-    - First, we need the absolute or relative (to the `WorkingDirectory`) path to the Gunicorn executable. In this case, because our virtual environment is in the `augur_view` root directory, we are using the relative path to the executable.
-    - Second, using the `-c` option, we specify the Gunicorn config file (which we demonstrate creating below), using its absolute or relative path.
+    - First, we must provide the absolute path to the Gunicorn executable, which is installed within the virtual environment.
+    - Second, using the `-c` option, we specify the Gunicorn config file (which we demonstrate creating below), using its absolute or relative (to the working directory) path.
     - Third, using the `-b` option, we specify the address for Gunicorn to bind to. In this case, we are using the local loopback address at port `8000`.
-    - Finally, we specify the wsgi driver module we created earlier in `wsgi.py`, using its absolute or relative path.
+    - Finally, we specify the wsgi driver module we created earlier in `wsgi.py`, using its absolute or relative (to the working directory) path.
 
 ```
 [Unit]
@@ -69,9 +69,9 @@ After=network.target
 
 [Service]
 User=<user to run the service>
-Group=<(optional) goup with permissions to access augur_view directory>
+Group=<(optional) group with permissions to access augur_view directory>
 WorkingDirectory=<augur_view directory absolute path>
-ExecStart=env/bin/gunicorn -c gunicorn.conf -b 0.0.0.0:8000 wsgi:app
+ExecStart=<virtual environment absolute path>/bin/gunicorn -c gunicorn.conf -b 0.0.0.0:8000 wsgi:app
 
 [Install]
 WantedBy=multi-user.target
