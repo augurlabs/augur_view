@@ -151,6 +151,7 @@ def requestJson(endpoint):
     except Exception as err:
         logging.error("An exception occurred while fulfilling a json request")
         logging.error(err)
+        return False, str(err)
 
 """ ----------------------------------------------------------------
 """

@@ -34,12 +34,21 @@ def get_version():
     return jsonify(version)
 
 """ ----------------------------------------------------------------
+"""
+@app.route('/requests/make/<path:request_endpoint>')
+def make_api_request(request_endpoint):
+    data = requestJson(request_endpoint)
+    if type(data) == tuple:
+        return jsonify({"request_error": data[1]}), 400
+    return jsonify(data)
+
+""" ----------------------------------------------------------------
 Locking request loop:
     This route will lock the current request until the
     report request completes. A json response is guaranteed.
     Assumes that the requested repo exists.
 """
-@app.route('/requests/wait/<id>')
-def wait_for_request(id):
+@app.route('/requests/report/wait/<id>')
+def wait_for_report_request(id):
     requestReports(id)
     return jsonify(report_requests[id])

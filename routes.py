@@ -126,7 +126,7 @@ def user_login():
                     raise Exception("An error occurred registering your account")
                 else:
                     flash("Account successfully created")
-            print(request.form)
+
             if user.validate(user_pass) and login_user(user, remember = remember):
                 flash(f"Welcome, {user_id}!")
                 if "login_next" in session:
