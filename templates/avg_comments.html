@@ -1,0 +1,71 @@
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<div id="avg_comments_per_pr_chart" class="chart_height chart_margin">
+    <div id="spinner" class="spinner-border" role="status"></div>
+</div>
+<div id="avg_comments_per_pr_caption"></div>
+
+
+<script type="text/javascript">
+    function loadCharts() {
+
+        let repo_id = get_repo_id()
+        var avg_comments_params = {
+            "repo_id": repo_id,
+            "return_data": "true"
+        }
+
+        $.getJSON("{{ api_url }}/pull_request_reports/average_comments_per_PR/", avg_comments_params, function (response) {
+      
+            let data = response["data"]
+            var table_data = new google.visualization.DataTable();
+
+            table_data.addColumn('string', 'Year');
+            table_data.addColumn('number', 'Merged_Comment_Avg');
+            table_data.addColumn('number', 'Rejected_Comment_Avg');
+            
+            for (var i = 0; i < data.length; i++) {
+                year = data[i]["year"]
+                mergedMean = data[i]["merged_comment_mean"]
+                notMergedMean = data[i]["not_merged_comment_mean"]
+            
+                table_data.addRow([year, mergedMean, notMergedMean])
+            } 
+
+        var options = {
+            title: 'Mean Comments Per Pull Request',
+            hAxis: {
+                title: 'Average Comments / Pull Request',
+                minValue: 0,
+            },
+            vAxis: {
+                title: 'Year Closed',
+                gridlines:  {
+                    count: 3
+                }
+            }
+        };
+        var chart = new google.visualization.BarChart(document.getElementById('avg_comments_per_pr_chart'));
+        chart.draw(table_data, options);
+
+        window.addEventListener('resize', function () {
+            chart.draw(table_data, options);
+        }, false);
+
+        });
+    }
+
+    function get_repo_id() {
+        var url_array = window.location.href.split("/");
+        var repo_id = url_array[url_array.length - 1];
+        return repo_id
+    }
+
+
+
+    // Load Gchart packages and render charts
+    google.charts.load('current', { packages: ['corechart', 'bar', 'timeline', 'controls'] });
+    google.charts.setOnLoadCallback(loadCharts);
+</script>

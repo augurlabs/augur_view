@@ -213,3 +213,19 @@ img[id^="report_image_"]:hover {filter: brightness(50%);}
         background-color: #ebe6ff;
     }
 }
+
+
+/* Google charts reports styling */
+
+/* #pr_time_til_first_response_chart {
+    height: 500px;
+} */
+
+.chart_height {
+    height: 400px;
+}
+
+.chart_margin {
+    margin: 20px 10px;
+    padding: 0;
+}
