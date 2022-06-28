@@ -20,6 +20,10 @@ app.url_map.converters['json'] = JSONConverter
 def page_not_found(error):
     return render_template('index.html', title='404', api_url=getSetting('serving')), 404
 
+@app.errorhandler(405)
+def unsupported_method(error):
+    return renderMessage("405 - Method not supported", "The resource you are trying to access does not support the request method used"), 405
+
 @login_manager.unauthorized_handler
 def unauthorized():
     session["login_next"] = url_for(request.endpoint, **request.args)

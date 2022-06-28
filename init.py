@@ -52,7 +52,9 @@ def write_settings(current_settings):
 """
 def version_check(current_settings):
     def to_version_string(version_object):
-        return f'{version_object["major"]}{version_object["minor"]}-{version_object["series"]}'
+        if version_object is None:
+            return "Undefined_version"
+        return f'{version_object["major"]}-{version_object["minor"]}-{version_object["series"]}'
 
     def update_from(old):
         if old == None:
