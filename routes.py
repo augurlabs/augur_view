@@ -3,6 +3,7 @@ from utils import *
 from augur_view import app, login_manager
 from flask_login import login_user, logout_user, current_user, login_required
 from User import User
+from LoginException import LoginException
 import secrets
 
 # ROUTES -----------------------------------------------------------------------
@@ -115,15 +116,15 @@ def user_login():
             user_pass = request.form.get('inputPassword')
             remember = request.form.get('remember') is not None
             if user_id is None or user_pass is None:
-                raise Exception("A login issue occurred")
+                raise LoginException("A login issue occurred")
 
             user = User(user_id)
 
             if request.form.get('register') is not None:
                 if user.exists():
-                    raise Exception("That account already exists")
+                    raise LoginException("That account already exists")
                 elif not user.register(user_pass):
-                    raise Exception("An error occurred registering your account")
+                    raise LoginException("An error occurred registering your account")
                 else:
                     flash("Account successfully created")
 
@@ -133,8 +134,8 @@ def user_login():
                     return redirect(session.pop("login_next"))
                 return redirect(url_for('root'))
             else:
-                raise Exception("Invalid login credentials")
-        except Exception as e:
+                raise LoginException("Invalid login credentials")
+        except LoginException as e:
             flash(str(e))
     return render_module('login', title="Login")
 
