@@ -28,10 +28,10 @@ This will set up the flask server to run under Gunicorn as a service. Next, we n
 
 ### Create a virtual environment
 
-If you haven't already, you'll need to create a virtual environment to run the service. If you don't have virtualenv installed already, run
+If you haven't already, you'll need to create a virtual environment to run the service. If you don't have virtualenv installed already, you'll need to install the python venv package. On Ubuntu, this can be done with:
 
 ```
-sudo apt-get install python3-venv
+sudo apt install python3-venv
 ```
 
 From the augur_view directory, run
@@ -71,13 +71,13 @@ After=network.target
 User=<user to run the service>
 Group=<(optional) group with permissions to access augur_view directory>
 WorkingDirectory=<augur_view directory absolute path>
-ExecStart=<virtual environment absolute path>/bin/gunicorn -c gunicorn.conf -b 0.0.0.0:8000 wsgi:app
+ExecStart=<virtual environment absolute path>/bin/gunicorn -c gunicorn.py -b 127.0.0.1:8000 wsgi:app
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-Now create the `gunicorn.conf` file in the augur_view directory. You probably don't need to adjust any of the parameters in this file, but you may wish to specify different paths for the log files:
+Now create the `gunicorn.py` file in the augur_view directory. You probably don't need to adjust any of the parameters in this file, but you may wish to specify different paths for the log files:
 
 ```
 import multiprocessing
@@ -119,8 +119,6 @@ Remember to restart Apache after saving your changes.
 
 To proxy with NGINX, you need to add a reverse proxy location to the NGINX config file your server is using. The location block should direct traffic to localhost, using the port you chose above (such as `8000`). You can replace the Location below with any relative address of your choice (such as "/augur").
 
-You will also need a running augur instance from https://github.com/chaoss/augur
-
 The Server port will be used to proxy the API served by that instance, which is required by augur\_view.
 
 `server_name` is the full domain that you will have augur\_view resolving to. 
@@ -147,7 +145,6 @@ server {
 
         error_log /var/log/nginx/census.osshealth.error.log;
         access_log /var/log/nginx/census.osshealth.access.log;
-
 }
 
 ```
