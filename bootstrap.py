@@ -57,6 +57,12 @@ def first_time(port):
 
     app = Flask(__name__)
 
+    def all_in(source, update):
+        for key in update.keys():
+            if key not in source:
+                return False
+        return True
+
     # Create a multithreading context for message passing
     update_complete = threading.Condition()
 
@@ -69,11 +75,11 @@ def first_time(port):
         try:
             new_config = request.get_json()
             # Check that the new config has valid keys
-            if(new_config.items() <= settings.items()):
+            if all_in(settings, new_config):
                 settings.update(new_config)
             else:
                 # The form submitted contains a key not in the settings dict
-                raise ValueError("A form error occurred")
+                raise ValueError(f"A form error occurred: {new_config}")
         except Exception as e:
             # Indicate that an error occurred
             # Return for flashing to the user in a modal dialog

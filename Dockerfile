@@ -21,9 +21,8 @@ EXPOSE 8000
 # -------- Configure application --------
 
 # Clone the augur_view source and set the new folder as the working directory
-RUN git clone https://github.com/augurlabs/augur_view.git app
+RUN git clone -b docker-dev https://github.com/augurlabs/augur_view.git app
 WORKDIR /app
-RUN git switch docker-dev
 
 # Since we specified CONFIGURATION=file above, we provide it here
 # If a file is not provided, first-time setup will run on each startup
