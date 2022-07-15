@@ -111,8 +111,8 @@ def first_time(port):
     try:
         update_complete.wait()
     except KeyboardInterrupt as e:
-        # Shutdown gracefully on interrupt
-        pass
+        # Shutdown gracefully on interrupt and abort relaunch
+        settings = None
     except Exception as e:
         # On an unexpected exception, reraise after shutting down
         raise e
@@ -139,6 +139,11 @@ if __name__ == "__main__":
 
     if not config_location.is_file():
         settings = first_time(server_port)
+
+        if not settings:
+            # First time setup was aborted, so just quit
+            os._exit(1)
+
         with open(config_location, "w") as config_file:
             yaml.dump(settings, config_file)
 

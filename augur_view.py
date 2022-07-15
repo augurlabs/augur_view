@@ -4,7 +4,7 @@ from utils import *
 from url_converters import *
 from User import User
 
-app = Flask(__name__, debug = True)
+app = Flask(__name__)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
