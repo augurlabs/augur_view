@@ -1,6 +1,6 @@
 from pathlib import Path
 from server import Environment
-import logging
+import logging, sqlite3
 
 env = Environment()
 
