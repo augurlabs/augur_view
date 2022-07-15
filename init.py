@@ -1,8 +1,11 @@
-import logging, secrets, sqlite3, hashlib, yaml
 from pathlib import Path
+from server import Environment
+import logging
+
+env = Environment()
 
 # load configuration files and initialize globals
-configFile = "config.yml"
+configFile = Path(env.setdefault("CONFIG_LOCATION", "config.yml"))
 
 version = {"major": 0, "minor": 0.1, "series": "Alpha"}
 
