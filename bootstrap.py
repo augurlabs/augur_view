@@ -1,5 +1,6 @@
 from pathlib import Path
 from server import Environment
+from server import ServerThread
 import os, yaml, subprocess
 
 gunicorn_conf = """import multiprocessing
@@ -20,7 +21,6 @@ def first_time(port):
     """
     from flask import Flask, request, render_template
     from init import settings, init_settings
-    from server import ServerThread
     import threading
 
     init_settings()
@@ -147,11 +147,16 @@ if __name__ == "__main__":
         with open(config_location, "w") as config_file:
             yaml.dump(settings, config_file)
 
-    if not gunicorn_location.is_file():
+    if not env["DEVELOPMENT"] and not gunicorn_location.is_file():
         with open(gunicorn_location, "w") as gunicorn_py:
             gunicorn_py.write(gunicorn_conf)
 
-    server = subprocess.Popen(["gunicorn", "-c", str(gunicorn_location), "-b", f"{host_address}:{server_port}", "augur_view:app"])
+    if env["DEVELOPMENT"]:
+        from augur_view import app
+        server = ServerThread(app, port = server_port, address = host_address, reraise = True)
+        server.start()
+    else:
+        server = subprocess.Popen(["gunicorn", "-c", str(gunicorn_location), "-b", f"{host_address}:{server_port}", "augur_view:app"])
 
     try:
         server.wait()

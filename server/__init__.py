@@ -69,6 +69,10 @@ class ServerThread(threading.Thread):
         self.ctx = app.app_context()
         self.ctx.push()
 
+        # For compatibility with subprocesses
+        self.terminate = self.shutdown
+        self.wait = self.join
+
     def run(self):
         self.server.serve_forever()
 

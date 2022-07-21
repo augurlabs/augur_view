@@ -38,7 +38,10 @@
     {% include 'navbar.html' %}
     <!-- body-content -->
     <div class="content">
-        {% if body %}
+        {% if invalid %}
+        <h1>Invalid API URL</h1>
+        <p>The API URL [{{ api_url or 'unspecified'}}] is invalid</p>
+        {% elif body %}
         {% include '%s.html' % body ignore missing %}
         {% else %}
         <h1>404 - Page Not Found</h1>

@@ -4,6 +4,58 @@ from flask import render_template, flash
 from init import *
 import urllib.request, json, os, math, yaml, urllib3, time, logging
 
+def parse_url(url):
+    from urllib.parse import urlparse
+
+    parts = urlparse(url)
+    directories = parts.path.strip('/').split('/')
+    queries = parts.query.strip('&').split('&')
+
+    elements = {
+        'scheme': parts.scheme,
+        'netloc': parts.netloc,
+        'path': parts.path,
+        'params': parts.params,
+        'query': parts.query,
+        'fragment': parts.fragment
+    }
+
+    return elements, directories, queries
+
+def validate_api_url(url):
+    from urllib.parse import urlunparse
+
+    parts = parse_url(url)[0]
+
+    if not parts["scheme"]:
+        parts["scheme"] = "http"
+
+    staged_url = urlunparse(parts.values())
+
+    def is_status_ok():
+        try:
+            with urllib.request.urlopen(staged_url) as url:
+                response = json.loads(url.read().decode())
+                if "status" in response:
+                    return True
+        except Exception as e:
+            pass
+
+        return False
+
+    if not is_status_ok() and ("/api/unstable" not in parts["path"]):
+        # The URL does not point directly to the API
+        # try once more with a new suffix
+        parts["path"] = str(Path(parts["path"]).joinpath("api/unstable"))
+        staged_url = urlunparse(parts.values())
+
+        if not is_status_ok():
+            # The URL does not point to a valid augur instance
+            return ""
+
+    return staged_url
+
+
 """ ----------------------------------------------------------------
 loadSettings:
     This function attempts to load the application settings from the config file
@@ -43,10 +95,19 @@ def loadSettings():
     # Use the resolved path for cache directory access
     settings["caching"] = cachePath
 
+    staged_url = validate_api_url(settings["serving"])
+    if staged_url:
+        settings["serving"] = staged_url
+        settings["valid"] = True
+    else:
+        settings["valid"] = False
+
 """ ----------------------------------------------------------------
 """
 def getSetting(key):
     return settings[key]
+
+init_logging()
 
 loadSettings()
 
@@ -313,7 +374,7 @@ def renderRepos(view, query, data, sorting = None, rev = False, page = None, fil
     x = pagination_offset * (page - 1)
     data = data[x: x + pagination_offset]
 
-    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=pagination_offset, PS=pageSource, api_url=getSetting('serving'), reverse = rev, sorting = sorting)
+    return render_module("repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=pagination_offset, PS=pageSource, reverse = rev, sorting = sorting)
 
 """ ----------------------------------------------------------------
     Renders a simple page with the given message information, and optional page
@@ -328,6 +389,10 @@ def render_module(module, **args):
     # args.setdefault("title", "Augur View")
     args.setdefault("api_url", getSetting("serving"))
     args.setdefault("body", module)
+
+    if not getSetting("valid"):
+        args.setdefault("invalid", True)
+
     return render_template('index.html', **args)
 
 """ ----------------------------------------------------------------
