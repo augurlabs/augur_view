@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: var(--color-accent);">
-    <div class="container-fluid">
+    <div class="container-fluid" id="navbar">
         <!-- BRAND LOGO -->
         <a class="navbar-brand nav-image" href="{{ url_for('root') }}"><img src="{{ url_for('logo') }}" class="img-fluid nav-img" alt="augur Logo"></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,7 +21,8 @@
                         {{ current_user.id }}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{{ url_for('repo_table_view') }}">Settings</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('user_settings') }}">Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('dashboard_view') }}">Dashboard</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('user_logout') }}">Logout</a></li>
                     </ul>
                 </li>
@@ -49,6 +50,13 @@
                     <a class="nav-link {% if title == 'Status' %} active {% endif %}" aria-current="page" href="{{ url_for('status_view') }}">Collection Status</a>
                 </li>
                 <!-- .junk->NAVBAR_EXTRAS -->
+            </ul>
+            <ul class="navbar-nav navbar-right">
+                <li class="nav-item  collapse navbar-collapse">
+                    <a class="navbar-brand" data-bs-toggle="offcanvas" data-bs-target="#notifications-panel" aria-controls="notifications-panel" href="#First">
+                        <img class="notification-icon" src="{{ url_for('static', filename='img/notification-icon.svg') }}">
+                    </a>
+                </li>
             </ul>
             <form class="d-flex" method="get" action="?">
                 <input class="form-control me-2" name="q" type="search" placeholder="Filter Repos" aria-label="Search" value="{{query_key or ''}}">

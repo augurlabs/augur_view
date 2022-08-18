@@ -7,6 +7,7 @@
     --color-accent-dark: #6134b3;
     --color-notice: #00ddff;
     --color-notice-contrast: #006979;
+    --color-link: #5de4ff
 }
 
 html, body {
@@ -46,6 +47,12 @@ body {
     height: 35px;
 }
 
+.notification-icon {
+    height: 30px;
+    -webkit-filter: invert(100%); /* safari 6.0 - 9.0 */
+    filter: invert(100%);
+}
+
 .submitContainer {
     background-color: var(--color-accent);
 }
@@ -64,6 +71,10 @@ body {
     display: none;
 }
 
+.dashboard-sidebar {
+    height: 100%;
+}
+
 .display-table {
     background-color: white !important;
     overflow: auto;
@@ -80,6 +91,27 @@ body {
     text-decoration: none;
 }
 
+/* User settings page */
+
+.user-settings-form {
+    width: 30%;
+    min-width: 300px;
+    margin: auto;
+}
+
+.user-settings-form label {
+    margin-top: 10px;
+}
+
+.user-card {
+    background-color: var(--color-bg-light);
+    margin-bottom: 40px;
+}
+
+.user-card a {
+    color: var(--color-link);
+}
+
 /* Image Zoom */
 
 img[id^="report_image_"] {
@@ -88,7 +120,9 @@ img[id^="report_image_"] {
     transition: 0.3s;
 }
 
-img[id^="report_image_"]:hover {filter: brightness(50%);}
+img[id^="report_image_"]:hover {
+    filter: brightness(50%);
+}
 
 /* The Modal (background) */
 .modal {

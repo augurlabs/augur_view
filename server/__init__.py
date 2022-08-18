@@ -62,7 +62,13 @@ class ServerThread(threading.Thread):
         threading.Thread.__init__(self)
 
         # Required to enable debugging with make_server
-        app.config['PROPAGATE_EXCEPTIONS'] = reraise
+        if reraise:
+            app.config['PROPAGATE_EXCEPTIONS'] = True
+            app.config['TESTING'] = True
+            app.config['DEBUG'] = True
+            app.config['TRAP_HTTP_EXCEPTIONS'] = True
+            app.config['TEMPLATES_AUTO_RELOAD'] = True
+
         debug_app = DebuggedApplication(app, True)
 
         self.server = make_server(address, port, debug_app, threaded = True)

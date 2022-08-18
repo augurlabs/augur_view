@@ -74,7 +74,6 @@ class User(UserMixin):
             hashing = hash_algorithm()
             hashing.update(password.encode('utf8'))
             pass_hash = hashing.hexdigest()
-            print(pass_hash, self.data[1])
             if pass_hash == self.data[1]:
                 self._is_authenticated = True
                 return True

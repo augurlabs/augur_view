@@ -182,3 +182,40 @@ def repo_repo_view(id):
             break
 
     return render_module("repo-info", reports=reports.keys(), images=reports, title="Repo", repo=repo, repo_id=id)
+
+""" ----------------------------------------------------------------
+Admin dashboard:
+    View the admin dashboard.
+"""
+@app.route('/dashboard')
+def dashboard_view():
+    sections = [
+        { "title": "File System", "settings": [
+            { "id": "caching",
+                "display_name": "Cache Directory",
+                "value": settings["caching"],
+                "description": "Folder path for storing cache files"
+            },{ "id": "cache_expiry",
+                "display_name": "Cache Expiration",
+                "value": settings["cache_expiry"],
+                "description": "Time (in seconds) before cache files expire"
+            },{ "id": "reports",
+                "display_name": "Reports File",
+                "value": settings["reports"],
+                "description": "The configuration file which stores the description for the report page"
+            }
+        ]},
+        { "title": "Network", "settings": [
+            { "id": "serving",
+                "display_name": "Augur API URL",
+                "value": settings["serving"],
+                "description": "The Augur API url to use for requests"
+            },{ "id": "approot",
+                "display_name": "Application Root",
+                "value": settings["approot"],
+                "description": "The url path for the root of this application"
+            }
+        ]}
+    ]
+
+    return render_template('admin-dashboard.html', sections = sections)

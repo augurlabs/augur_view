@@ -1,9 +1,35 @@
-<form class="form-inline">
-  <div class="form-group">
-    <label for="inputPassword6">Password</label>
-    <input type="password" id="inputPassword6" class="form-control mx-sm-3" aria-describedby="passwordHelpInline">
-    <small id="passwordHelpInline" class="text-muted">
-      Must be 8-20 characters long.
-    </small>
-  </div>
-</form>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-4">
+            <div class="card user-card">
+                <div class="card-body">
+                    <h1>{{ current_user.id }}</h1>
+                    <a href="#">Delete Account</a>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">User Profile</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-8">
+            <h2>Update Password</h2>
+            <form class="form-inline user-settings-form">
+                <div class="form-group">
+                    <label for="oldPassword">Current Password</label>
+                    <input type="password" id="oldPassword" class="form-control">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" class="form-control" aria-describedby="passwordHelpInline">
+                    <small id="passwordHelpInline" class="text-muted">
+                        Must be 8-20 characters long.
+                    </small>
+                    <br>
+                    <label for="newPasswordConfirmation">Confirm New Password</label>
+                    <input type="password" id="newPasswordConfirmation" class="form-control">
+                </div>
+                <div class="btn" style="background-color: var(--color-accent); padding: 0; margin: 0; margin-top: 10px;">
+                    <button class="btn btn-outline-dark" style="color: white;" type="submit" name="register">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
