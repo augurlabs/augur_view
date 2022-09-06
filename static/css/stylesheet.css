@@ -10,7 +10,8 @@
     --color-link: #5de4ff
 }
 
-html, body {
+html,
+body {
     /* IE 10-11 didn't like using min-height */
     height: 100%;
 }
@@ -22,7 +23,8 @@ body {
 }
 
 .content {
-    flex: 1 0 auto; /* Prevent Chrome, Opera, and Safari from letting these items shrink to smaller than their content's default minimum size. */
+    flex: 1 0 auto;
+    /* Prevent Chrome, Opera, and Safari from letting these items shrink to smaller than their content's default minimum size. */
     padding: 20px;
     padding-top: 100px;
     color: var(--color-fg);
@@ -30,7 +32,8 @@ body {
 }
 
 .footer {
-    flex-shrink: 0; /* Prevent Chrome, Opera, and Safari from letting these items shrink to smaller than their content's default minimum size. */
+    flex-shrink: 0;
+    /* Prevent Chrome, Opera, and Safari from letting these items shrink to smaller than their content's default minimum size. */
     padding: 5px;
     background-color: var(--color-bg-light);
     width: 100%;
@@ -49,7 +52,8 @@ body {
 
 .notification-icon {
     height: 30px;
-    -webkit-filter: invert(100%); /* safari 6.0 - 9.0 */
+    -webkit-filter: invert(100%);
+    /* safari 6.0 - 9.0 */
     filter: invert(100%);
 }
 
@@ -112,6 +116,16 @@ body {
     color: var(--color-link);
 }
 
+/* Login Page */
+
+#registration-div {
+    -webkit-transition: opacity 0.5s ease;
+    -moz-transition: opacity 0.5s ease;
+    -ms-transition: opacity 0.5s ease;
+    -o-transition: opacity 0.5s ease;
+    transition: opacity 0.5s ease;
+}
+
 /* Image Zoom */
 
 img[id^="report_image_"] {
@@ -126,17 +140,26 @@ img[id^="report_image_"]:hover {
 
 /* The Modal (background) */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.9);
+    /* Black w/ opacity */
 }
 
 /* Modal Content (image) */
@@ -170,7 +193,8 @@ img[id^="report_image_"]:hover {
 }
 
 /* Add Animation */
-.modal-content, #caption {
+.modal-content,
+#caption {
     -webkit-animation-name: zoom;
     -webkit-animation-duration: 0.6s;
     animation-name: zoom;
@@ -178,13 +202,23 @@ img[id^="report_image_"]:hover {
 }
 
 @-webkit-keyframes zoom {
-    from {-webkit-transform:scale(0)}
-    to {-webkit-transform:scale(1)}
+    from {
+        -webkit-transform: scale(0)
+    }
+
+    to {
+        -webkit-transform: scale(1)
+    }
 }
 
 @keyframes zoom {
-    from {transform:scale(0)}
-    to {transform:scale(1)}
+    from {
+        transform: scale(0)
+    }
+
+    to {
+        transform: scale(1)
+    }
 }
 
 /* The Close Button */
@@ -206,7 +240,7 @@ img[id^="report_image_"]:hover {
 }
 
 /* 100% Image Width on Smaller Screens */
-@media only screen and (max-width: 700px){
+@media only screen and (max-width: 700px) {
     .modal-content {
         width: 100%;
     }
@@ -235,7 +269,8 @@ img[id^="report_image_"]:hover {
     animation-delay: .5s;
 }
 
-.dot-flashing::before, .dot-flashing::after {
+.dot-flashing::before,
+.dot-flashing::after {
     content: '';
     display: inline-block;
     position: absolute;
@@ -268,6 +303,7 @@ img[id^="report_image_"]:hover {
     0% {
         background-color: #9880ff;
     }
+
     50%,
     100% {
         background-color: #ebe6ff;

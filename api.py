@@ -37,7 +37,10 @@ def get_version():
 """
 @app.route('/requests/make/<path:request_endpoint>')
 def make_api_request(request_endpoint):
-    data = requestJson(request_endpoint)
+    do_cache = True
+    if request.headers.get("nocache"):
+        do_cache = False
+    data = requestJson(request_endpoint, do_cache)
     if type(data) == tuple:
         return jsonify({"request_error": data[1]}), 400
     return jsonify(data)

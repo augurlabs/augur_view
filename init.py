@@ -9,29 +9,6 @@ configFile = Path(env.setdefault("CONFIG_LOCATION", "config.yml"))
 
 version = {"major": 0, "minor": 0.1, "series": "Alpha"}
 
-users_db = None
-
-def hash_algorithm():
-    return hashlib.sha256()
-
-""" ----------------------------------------------------------------
-"""
-def init_user_db(filename):
-    connection = sqlite3.connect(filename)
-    cursor = connection.cursor()
-    cursor.execute("CREATE TABLE users (user_id text, pass_hash text, is_active integer)")
-    connection.commit()
-    connection.close()
-
-def connect_user_db(filename):
-    user_db_file = Path(filename)
-    if not user_db_file.is_file():
-        init_user_db(filename)
-    global users_db
-    users_db = user_db_file
-
-connect_user_db("users.db")
-
 report_requests = {}
 settings = {}
 

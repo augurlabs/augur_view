@@ -2,8 +2,8 @@ from flask import Flask, render_template, render_template_string, request, abort
 from utils import *
 from augur_view import app, login_manager
 from flask_login import login_user, logout_user, current_user, login_required
-from User import User
-from LoginException import LoginException
+from server import User
+from server import LoginException
 import secrets
 
 # ROUTES -----------------------------------------------------------------------
@@ -112,23 +112,22 @@ login:
 def user_login():
     if request.method == 'POST':
         try:
-            user_id = request.form.get('userID')
-            user_pass = request.form.get('inputPassword')
+            user_id = request.form.get('username')
             remember = request.form.get('remember') is not None
-            if user_id is None or user_pass is None:
+            if user_id is None:
                 raise LoginException("A login issue occurred")
 
             user = User(user_id)
 
             if request.form.get('register') is not None:
-                if user.exists():
-                    raise LoginException("That account already exists")
-                elif not user.register(user_pass):
+                if user.exists:
+                    raise LoginException("User already exists")
+                if not user.register(request):
                     raise LoginException("An error occurred registering your account")
                 else:
                     flash("Account successfully created")
 
-            if user.validate(user_pass) and login_user(user, remember = remember):
+            if user.validate(request) and login_user(user, remember = remember):
                 flash(f"Welcome, {user_id}!")
                 if "login_next" in session:
                     return redirect(session.pop("login_next"))
@@ -189,33 +188,18 @@ Admin dashboard:
 """
 @app.route('/dashboard')
 def dashboard_view():
-    sections = [
-        { "title": "File System", "settings": [
-            { "id": "caching",
-                "display_name": "Cache Directory",
-                "value": settings["caching"],
-                "description": "Folder path for storing cache files"
-            },{ "id": "cache_expiry",
-                "display_name": "Cache Expiration",
-                "value": settings["cache_expiry"],
-                "description": "Time (in seconds) before cache files expire"
-            },{ "id": "reports",
-                "display_name": "Reports File",
-                "value": settings["reports"],
-                "description": "The configuration file which stores the description for the report page"
-            }
-        ]},
-        { "title": "Network", "settings": [
-            { "id": "serving",
-                "display_name": "Augur API URL",
-                "value": settings["serving"],
-                "description": "The Augur API url to use for requests"
-            },{ "id": "approot",
-                "display_name": "Application Root",
-                "value": settings["approot"],
-                "description": "The url path for the root of this application"
+    empty = [
+        { "title": "Placeholder", "settings": [
+            { "id": "empty",
+                "display_name": "Empty Entry",
+                "value": "NULL",
+                "description": "There's nothing here 👻"
             }
         ]}
     ]
 
-    return render_template('admin-dashboard.html', sections = sections)
+    backend_config = requestJson("config/get", False)
+
+    print(backend_config)
+
+    return render_template('admin-dashboard.html', sections = empty, config = backend_config)

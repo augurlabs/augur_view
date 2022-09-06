@@ -2,10 +2,18 @@ from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from flask import render_template, flash
 from init import *
+from server import User
 import urllib.request, json, os, math, yaml, urllib3, time, logging
 
 def parse_url(url):
     from urllib.parse import urlparse
+
+    # localhost is not a valid host
+    if "localhost" in url:
+        url = url.replace("localhost", "127.0.0.1")
+    
+        if not url.startswith("http"):
+            url = f"http://{url}"
 
     parts = urlparse(url)
     directories = parts.path.strip('/').split('/')
@@ -34,26 +42,33 @@ def validate_api_url(url):
 
     def is_status_ok():
         try:
-            with urllib.request.urlopen(staged_url) as url:
-                response = json.loads(url.read().decode())
+            with urllib.request.urlopen(staged_url) as request:
+                response = json.loads(request.read().decode())
                 if "status" in response:
-                    return True
+                    return request.url
         except Exception as e:
-            pass
+            logging.error(f"Error during serving URL verification: {str(e)}")
 
         return False
 
-    if not is_status_ok() and ("/api/unstable" not in parts["path"]):
-        # The URL does not point directly to the API
-        # try once more with a new suffix
-        parts["path"] = str(Path(parts["path"]).joinpath("api/unstable"))
-        staged_url = urlunparse(parts.values())
+    status = is_status_ok()
+    if not status:
+        if "/api/unstable" not in parts["path"]:
+            # The URL does not point directly to the API
+            # try once more with a new suffix
+            parts["path"] = str(Path(parts["path"]).joinpath("api/unstable"))
+            staged_url = urlunparse(parts.values())
 
-        if not is_status_ok():
-            # The URL does not point to a valid augur instance
+            status = is_status_ok()
+            if not status:
+                # The URL does not point to a valid augur instance
+                return ""
+            else:
+                return status
+        else:
             return ""
 
-    return staged_url
+    return status
 
 
 """ ----------------------------------------------------------------
@@ -101,6 +116,7 @@ def loadSettings():
         settings["valid"] = True
     else:
         settings["valid"] = False
+        raise ValueError(f"The provided serving URL is not valid: {settings['serving']}")
 
 """ ----------------------------------------------------------------
 """
@@ -110,6 +126,8 @@ def getSetting(key):
 init_logging()
 
 loadSettings()
+
+User.api = getSetting("serving")
 
 version_check(settings)
 
@@ -193,12 +211,12 @@ requestJson:
         URL. Will return None if an error is
         encountered.
 """
-def requestJson(endpoint):
+def requestJson(endpoint, cached = True):
     filename = toCacheFilepath(endpoint)
     requestURL = getSetting('serving') + "/" + endpoint
     logging.info('requesting json')
     try:
-        if cacheFileExists(filename):
+        if cached and cacheFileExists(filename):
             with open(filename) as f:
                 data = json.load(f)
         else:

@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, url_for, session, request
 from flask_login import LoginManager
 from utils import *
 from url_converters import *
-from User import User
+from server import User
 
 app = Flask(__name__)
 
@@ -32,13 +32,15 @@ def unauthorized():
 @login_manager.user_loader
 def load_user(user_id):
     user = User(user_id)
-    if not user.exists():
+
+    if not user.exists:
         return None
 
     # The flask_login library sets a unique session["_id"]
     # when login_user() is called successfully
     if session.get("_id") is not None:
-        user.is_authenticated = True
+        user._is_authenticated = True
+        user._is_active = True
 
     return user
 

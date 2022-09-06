@@ -163,5 +163,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         # Shutdown gracefully on interrupt
         server.terminate()
+        print("\nShutting down gracefully")
 
     # os.getenv("IS_DOCKER")

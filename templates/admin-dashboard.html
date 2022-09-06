@@ -33,7 +33,7 @@
                 <hr>
                 <ul class="nav nav-pills flex-column mb-auto" id="nav-list">
                     <li class="nav-item">
-                        <a href="#stats-section" class="nav-link active" aria-current="page">Home</a>
+                        <a href="#stats-section" class="nav-link active" aria-current="page">Stats</a>
                     </li>
                     <li>
                         <a href="#accounts-section" class="nav-link text-white">Accounts</a>
@@ -78,17 +78,17 @@
                                     <div class="form-group">
                                         <label for="{{ setting.id }}" class="mb-1">{{ setting.display_name }}</label>
                                         <input type="text" class="form-control" id="{{ setting.id }}" placeholder="{{ setting.value }}">
-                                        <div class="form-text mb-1">{{ setting.description }}</div>
+                                        <div class="form-text mb-1">{{ setting.description or "No description available" }}</div>
                                     </div>
                                 </div>
                                 {% endfor %}
                             </div>
                             {% endfor %}
-                            <div class="row">
+                            {# <div class="row">
                                 <div class="d-flex justify-content-end">
                                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Restart</button>
                                 </div>
-                            </div>
+                            </div> #}
                         </form>
                     </div>
                 </div>
@@ -107,17 +107,17 @@
                                     <div class="form-group">
                                         <label for="{{ setting.id }}" class="mb-1">{{ setting.display_name }}</label>
                                         <input type="text" class="form-control" id="{{ setting.id }}" placeholder="{{ setting.value }}">
-                                        <div class="form-text mb-1">{{ setting.description }}</div>
+                                        <div class="form-text mb-1">{{ setting.description or "No description available" }}</div>
                                     </div>
                                 </div>
                                 {% endfor %}
                             </div>
                             {% endfor %}
-                            <div class="row">
+                            {# <div class="row">
                                 <div class="d-flex justify-content-end">
                                     <button type="submit" id="submit" name="submit" class="btn btn-primary">Restart</button>
                                 </div>
-                            </div>
+                            </div> #}
                         </form>
                     </div>
                 </div>
@@ -126,17 +126,17 @@
                 <div class="card dashboard-content">
                     <div class="card-body">
                         <form id="settings-form">
-                            {% for section in sections %}
+                            {% for section in config.items() %}
                             <div class="row mb-3">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <h6 class="mb-3 text-primary">{{ section.title }}</h6>
+                                    <h6 class="mb-3 text-primary">{{ section[0] }}</h6>
                                 </div>
-                                {% for setting in section.settings %}
+                                {% for setting in section[1].items() %}
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                     <div class="form-group">
-                                        <label for="{{ setting.id }}" class="mb-1">{{ setting.display_name }}</label>
-                                        <input type="text" class="form-control" id="{{ setting.id }}" placeholder="{{ setting.value }}">
-                                        <div class="form-text mb-1">{{ setting.description }}</div>
+                                        <label for="config_{{ section[0] }}_{{ setting[0] }}" class="mb-1">{{ setting[0] }}</label>
+                                        <input type="text" class="form-control" id="config_{{ section[0] }}_{{ setting[0] }}" placeholder="{{ setting[1] }}">
+                                        <div class="form-text mb-1">No description available</div>
                                     </div>
                                 </div>
                                 {% endfor %}
@@ -144,35 +144,7 @@
                             {% endfor %}
                             <div class="row">
                                 <div class="d-flex justify-content-end">
-                                    <button type="submit" id="submit" name="submit" class="btn btn-primary">Restart</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                {# Start content card #}
-                <div class="card dashboard-content">
-                    <div class="card-body">
-                        <form id="settings-form">
-                            {% for section in sections %}
-                            <div class="row mb-3">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <h6 class="mb-3 text-primary">{{ section.title }}</h6>
-                                </div>
-                                {% for setting in section.settings %}
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        <label for="{{ setting.id }}" class="mb-1">{{ setting.display_name }}</label>
-                                        <input type="text" class="form-control" id="{{ setting.id }}" placeholder="{{ setting.value }}">
-                                        <div class="form-text mb-1">{{ setting.description }}</div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endfor %}
-                            <div class="row">
-                                <div class="d-flex justify-content-end">
-                                    <button type="submit" id="submit" name="submit" class="btn btn-primary">Restart</button>
+                                    <button type="submit" id="submit" name="submit" class="btn btn-primary">Update Settings</button>
                                 </div>
                             </div>
                         </form>
