@@ -200,6 +200,4 @@ def dashboard_view():
 
     backend_config = requestJson("config/get", False)
 
-    print(backend_config)
-
     return render_template('admin-dashboard.html', sections = empty, config = backend_config)
