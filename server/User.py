@@ -6,6 +6,7 @@ import requests, time
 """
 class User(UserMixin):
     # User.api is set in utils.py
+    # User.logger is set in utils.py
 
     @property
     def is_authenticated(self):
@@ -72,6 +73,10 @@ class User(UserMixin):
 
         if response.status_code == 200:
             return True
+        elif response.status_code != 200:
+            User.logger.debug(f"Could not register user: {response.status_code}")
+        else:
+            User.logger.debug(f"Could not register user: {response.json()['status']}")
 
         return False
 
@@ -84,9 +89,28 @@ class User(UserMixin):
             self._is_authenticated = True
             self._is_active = True
             return True
+        elif response.status_code != 200:
+            User.logger.debug(f"Could not validate user: {response.status_code}")
+        else:
+            User.logger.debug(f"Could not validate user: {response.json()['status']}")
+        
 
         # Avoid abuse by malicious actors
         time.sleep(2)
+        return False
+    
+    def delete(self):
+        endpoint = User.api + "/user/remove"
+
+        response = requests.delete(endpoint, params = {"username": self.id})
+
+        if response.status_code == 200:
+            return True
+        elif response.status_code != 200:
+            User.logger.debug(f"Could not remove user: {response.status_code}")
+        else:
+            User.logger.debug(f"Could not remove user: {response.json()['status']}")
+        
         return False
     
     def __str__(self) -> str:

@@ -87,4 +87,7 @@ reports = {'pull_request_reports': [{'url': 'pull_request_reports/average_commit
 # Initialize logging
 def init_logging():
     format = "%(asctime)s: %(message)s"
+    global logger
+    logger = logging.getLogger("augur view")
+    logger.setLevel("DEBUG")
     logging.basicConfig(filename="augur_view.log", filemode='a', format=format, level=logging.INFO, datefmt="%H:%M:%S")

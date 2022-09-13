@@ -127,7 +127,10 @@ init_logging()
 
 loadSettings()
 
+from init import logger
+
 User.api = getSetting("serving")
+User.logger = logger
 
 version_check(settings)
 
@@ -346,7 +349,7 @@ renderRepos:
 """
 def renderRepos(view, query, data, sorting = None, rev = False, page = None, filter = False, pageSource = "repo_table_view", sortBasis = None):
     pagination_offset = getSetting('pagination_offset')
-
+    
     """ ----------
         If the data does not exist, we cannot construct the table to display on
         site. Rendering the table module without data displays an error message

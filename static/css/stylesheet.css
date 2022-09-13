@@ -126,6 +126,17 @@ body {
     transition: opacity 0.5s ease;
 }
 
+form i {
+    pointer-events: none;
+}
+
+.password-toggle {
+    background-color: var(--color-fg);
+    border: 1px solid #ced4da;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
 /* Image Zoom */
 
 img[id^="report_image_"] {

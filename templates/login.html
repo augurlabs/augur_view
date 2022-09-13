@@ -3,27 +3,41 @@
         <form class="form-signin" style="width: 400px;" method="post" action="{{ url_for('user_login') }}">
             <h1 class="h3 mb-3 font-weight-normal">User Login</h1>
             <hr />
-            <input type="text" id="username" name="username" class="form-control" placeholder="User ID" required
-                autofocus>
-            <br>
-            <input type="password" name="password" class="form-control" placeholder="Password" required>
+            <p>
+                <input type="text" id="username" name="username" class="form-control" placeholder="User ID" required
+                    autofocus>
+            </p>
+            <p>
+                <div class="input-group mb-3">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                    <div class="input-group-append">
+                        <button class="btn password-toggle" type="button" onclick="togglePass()">
+                            <i class="bi bi-eye-slash" id="togglePassword"></i>
+                        </button>
+                    </div>
+                </div>
+            </p>
             <div id="registration-div" style="display: none;">
-                <br>
-                <input type="text" id="email" name="email" class="form-control" placeholder="Email Address">
-                <br>
-                <input type="text" id="first_name" name="first_name" class="form-control" placeholder="First Name">
-                <br>
-                <input type="text" id="last_name" name="last_name" class="form-control" placeholder="Last Name">
+                <p>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Email Address">
+                </p>
+                <p>
+                    <input type="text" id="first_name" name="first_name" class="form-control" placeholder="First Name">
+                </p>
+                <p>
+                    <input type="text" id="last_name" name="last_name" class="form-control" placeholder="Last Name">
+                </p>
             </div>
-            <br>
+            <p>
             <div class="checkbox mb-3">
                 <label>
                     <input type="checkbox" name="remember" value="remember-me"> Remember me</input>
                 </label>
             </div>
+            </p>
             <div class="btn" style="background-color: var(--color-accent); padding: 0; margin: 0;">
-                <button id="sigbtn" class="btn btn-outline-dark" style="color: white;" type="submit"
-                    name="signin">Sign in</button>
+                <button id="sigbtn" class="btn btn-outline-dark" style="color: white;" type="submit" name="signin">Sign
+                    in</button>
             </div>
             <div class="btn" style="background-color: var(--color-accent); padding: 0; margin: 0;">
                 <button id="regbtn" class="btn btn-outline-dark" style="color: white;" onclick="registration()"
@@ -32,7 +46,24 @@
         </form>
     </div>
 </div>
+<script>
+    // Password visibility toggle
+    const togglePassword = document.querySelector("#togglePassword");
+    const password = document.querySelector("#password");
+
+    function togglePass() {
+        // toggle the type attribute
+        const type = password.getAttribute("type") === "password" ? "text" : "password";
+        password.setAttribute("type", type);
+
+        // toggle the icon
+        togglePassword.classList.toggle("bi-eye");
+    }
+
+    togglePassword.addEventListener("click", togglePass);
+</script>
 <script type="text/javascript">
+    // registration setup
     var registerFields = ["email", "first_name", "last_name"];
     var sigbtn = document.getElementById("sigbtn");
     var regbtn = document.getElementById("regbtn");

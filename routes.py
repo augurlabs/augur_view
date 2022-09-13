@@ -44,6 +44,7 @@ table:
 @app.route('/')
 @app.route('/repos/views/table')
 def repo_table_view():
+    return renderMessage("Repo Info Disabled", "Missing materialized view required for viewing repo info")
     query = request.args.get('q')
     page = request.args.get('p')
     sorting = request.args.get('s')
@@ -67,6 +68,7 @@ card:
 """
 @app.route('/repos/views/card')
 def repo_card_view():
+    return renderMessage("Repo Info Disabled", "Missing materialized view required for viewing repo info")
     query = request.args.get('q')
     return renderRepos("card", query, requestJson("repos"), filter = True)
 
@@ -108,7 +110,7 @@ def status_view():
 login:
     Under development
 """
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/account/login', methods=['GET', 'POST'])
 def user_login():
     if request.method == 'POST':
         try:
@@ -142,12 +144,23 @@ def user_login():
 logout:
     Under development
 """
-@app.route('/logout')
+@app.route('/account/logout')
 @login_required
 def user_logout():
     logout_user()
     flash("You have been logged out")
     return redirect(url_for('root'))
+
+@app.route('/account/delete')
+@login_required
+def user_delete():
+    if current_user.delete():
+        flash(f"Account {current_user.id} successfully removed")
+        logout_user()
+    else:
+        flash("An error occurred removing the account")
+    
+    return redirect(url_for("root"))
 
 """ ----------------------------------------------------------------
 settings:
@@ -199,7 +212,5 @@ def dashboard_view():
     ]
 
     backend_config = requestJson("config/get", False)
-
-    print(backend_config)
 
     return render_template('admin-dashboard.html', sections = empty, config = backend_config)

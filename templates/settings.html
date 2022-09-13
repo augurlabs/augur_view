@@ -4,7 +4,7 @@
             <div class="card user-card">
                 <div class="card-body">
                     <h1>{{ current_user.id }}</h1>
-                    <a href="#">Delete Account</a>
+                    <a id="delete-link" href="#">Delete Account</a>
                 </div>
                 <div class="card-footer">
                     <small class="text-muted">User Profile</small>
@@ -33,3 +33,17 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    var deleteLink = document.querySelector("#delete-link");
+    var confimationText = "Click again to confirm deletion";
+    
+    deleteLink.addEventListener("click", function() {
+        if(deleteLink.innerHTML == confimationText) {
+            window.location.replace("{{url_for('user_delete')}}");
+        } else {
+            deleteLink.classList.toggle("link-warning");
+            deleteLink.innerHTML = confimationText;
+        }
+    });
+</script>
