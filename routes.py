@@ -44,7 +44,6 @@ table:
 @app.route('/')
 @app.route('/repos/views/table')
 def repo_table_view():
-    return renderMessage("Repo Info Disabled", "Missing materialized view required for viewing repo info")
     query = request.args.get('q')
     page = request.args.get('p')
     sorting = request.args.get('s')
@@ -68,7 +67,6 @@ card:
 """
 @app.route('/repos/views/card')
 def repo_card_view():
-    return renderMessage("Repo Info Disabled", "Missing materialized view required for viewing repo info")
     query = request.args.get('q')
     return renderRepos("card", query, requestJson("repos"), filter = True)
 
@@ -159,7 +157,7 @@ def user_delete():
         logout_user()
     else:
         flash("An error occurred removing the account")
-    
+
     return redirect(url_for("root"))
 
 """ ----------------------------------------------------------------
