@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 from flask import render_template, flash
 from init import *
 from server import User
-import urllib.request, json, os, math, yaml, urllib3, time, logging
+import urllib.request, urllib.error, json, os, math, yaml, urllib3, time, logging, re
 
 def parse_url(url):
     from urllib.parse import urlparse
@@ -112,7 +112,7 @@ def loadSettings():
 
     staged_url = validate_api_url(settings["serving"])
     if staged_url:
-        settings["serving"] = staged_url
+        settings["serving"] = re.sub("/$", "", staged_url)
         settings["valid"] = True
     else:
         settings["valid"] = False
@@ -160,7 +160,6 @@ def loadReports():
         return False
 
 loadReports()
-
 cache_files_requested = []
 
 """ ----------------------------------------------------------------
@@ -211,22 +210,27 @@ requestJson:
 @RETURN:    data: JSON
         An object representing the JSON data read
         from either the cache file or the enpoint
-        URL. Will return None if an error is
+        URL. Will return None if an error isreturn None
         encountered.
 """
 def requestJson(endpoint, cached = True):
     filename = toCacheFilepath(endpoint)
     requestURL = getSetting('serving') + "/" + endpoint
-    logging.info('requesting json')
+    logging.info(f'requesting json from: {endpoint}')
     try:
         if cached and cacheFileExists(filename):
             with open(filename) as f:
                 data = json.load(f)
         else:
             with urllib.request.urlopen(requestURL) as url:
+                if url.getcode() != 200:
+                    raise urllib.error.HTTPError(code = url.getcode())
+
                 data = json.loads(url.read().decode())
-                with open(filename, 'w') as f:
-                    json.dump(data, f)
+
+                if cached:
+                    with open(filename, 'w') as f:
+                        json.dump(data, f)
         if filename in cache_files_requested:
             cache_files_requested.remove(filename)
         return data

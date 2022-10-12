@@ -84,6 +84,9 @@
 </nav>
 {% elif query_key %}
 <h1>Your search did not match any repositories</h1>
+{% elif current_user.is_authenticated %}
+<h1>No Repos Tracked</h1>
+<p>Add repos to your personal tracker in your <a href="{{ url_for('user_settings') }}">profile page</a></p>
 {% else %}
 <h1>Unable to load repository information</h1>
 {% endif %}

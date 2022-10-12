@@ -55,11 +55,23 @@ def repo_table_view():
             rev = True
     else:
         rev = False
+    
+    if current_user.is_authenticated:
+        data = requestJson("repos", cached = False)
+        user_repo_ids = current_user.query_repos()
+        user_repos = []
+        for repo in data:
+            if repo["repo_id"] in user_repo_ids:
+                user_repos.append(repo)
+        
+        data = user_repos or None
+    else:
+        data = requestJson("repos")
 
     #if not cacheFileExists("repos.json"):
     #    return renderLoading("repos/views/table", query, "repos.json")
 
-    return renderRepos("table", query, requestJson("repos"), sorting, rev, page, True)
+    return renderRepos("table", query, data, sorting, rev, page, True)
 
 """ ----------------------------------------------------------------
 card:
@@ -160,11 +172,21 @@ def user_delete():
 
     return redirect(url_for("root"))
 
+@app.route('/account/update')
+@login_required
+def user_update_password():
+    if current_user.update_password(request):
+        flash(f"Account {current_user.id} successfully updated")
+    else:
+        flash("An error occurred updating the account")
+    
+    return redirect(url_for("user_settings"))
+
 """ ----------------------------------------------------------------
 settings:
     Under development
 """
-@app.route('/settings')
+@app.route('/account/settings')
 @login_required
 def user_settings():
     return render_module("settings", title="Settings")

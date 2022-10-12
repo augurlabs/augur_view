@@ -13,21 +13,84 @@
         </div>
         <div class="col-12 col-lg-8">
             <h2>Update Password</h2>
-            <form class="form-inline user-settings-form">
+            <form id="user-settings-form" class="form-inline user-settings-form" action="{{ url_for('user_update_password') }}">
                 <div class="form-group">
-                    <label for="oldPassword">Current Password</label>
-                    <input type="password" id="oldPassword" class="form-control">
-                    <label for="newPassword">New Password</label>
-                    <input type="password" id="newPassword" class="form-control" aria-describedby="passwordHelpInline">
+                    <label for="password">Current Password</label>
+                    <input type="password" id="password" class="form-control" required>
+                    <label for="new_password">New Password</label>
+                    <input type="password" id="new_password" class="form-control" aria-describedby="passwordHelpInline" required>
                     <small id="passwordHelpInline" class="text-muted">
                         Must be 8-20 characters long.
                     </small>
                     <br>
-                    <label for="newPasswordConfirmation">Confirm New Password</label>
-                    <input type="password" id="newPasswordConfirmation" class="form-control">
+                    <label for="new_password_confirmation">Confirm New Password</label>
+                    <input type="password" id="new_password_confirmation" class="form-control" required>
                 </div>
-                <div class="btn" style="background-color: var(--color-accent); padding: 0; margin: 0; margin-top: 10px;">
-                    <button class="btn btn-outline-dark" style="color: white;" type="submit" name="register">Save</button>
+                <div class="btn"
+                    style="background-color: var(--color-accent); padding: 0; margin: 0; margin-top: 10px;">
+                    <button class="btn btn-outline-dark" style="color: white;" type="submit"
+                        name="register">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-4">
+            <br>
+            <h2>User Repos</h2>
+            {%- set repos = current_user.query_repos() -%}
+            {% if repos %}
+            {%- set tableHeaders =
+            [{"title" : "#"},
+            {"title" : "Repo ID", "key" : "repo_id"}] -%}
+            <div class="display-table rounded w3-animate-opacity">
+                <table class="table table-striped table-bordered">
+                    <!-- Table header start -->
+                    <thead>
+                        <tr>
+                            {%- for header in tableHeaders -%}
+                            {% if PS and header.key %}
+                            {%- if sorting == header.key -%}
+                            {%- set sorting_link = url_for(PS, q=query_key, p=activePage, s=header.key, r= not reverse)
+                            -%}
+                            {%- else -%}
+                            {%- set sorting_link = url_for(PS, q=query_key, p=activePage, s=header.key) -%}
+                            {%- endif -%}
+                            <th scope="col"><a class="sorting-link" href="{{ sorting_link }}"> {{ header.title }}
+                                    {%- if sorting == header.key and reverse %} ▲ {% elif sorting == header.key %} ▼ {%
+                                    endif %}</a></th>
+                            {% else -%}
+                            <th scope="col">{{ header.title }}</th>
+                            {% endif %} {%- endfor -%}
+                        </tr>
+                    </thead>
+                    <!-- Table rows start -->
+                    <tbody>
+                        {% for repo in repos %}
+                        <tr>
+                            <th scope="row">{{ loop.index }}</th>
+                            <td><a href="{{ url_for('repo_repo_view', id=repo) }}">{{ repo }}</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <h3>No repos selected</h3>
+            {% endif %}
+        </div>
+        <div class="col-12 col-lg-8">
+            <br>
+            <h2>Add Repos</h2>
+            <form id="user_repo_form" class="form-inline user-settings-form">
+                <div class="form-group">
+                    <label for="repo_url">New Repo or Organization URL</label>
+                    <input type="text" id="repo_url" class="form-control" required>
+                </div>
+                <div class="btn"
+                    style="background-color: var(--color-accent); padding: 0; margin: 0; margin-top: 10px;">
+                    <button class="btn btn-outline-dark" style="color: white;" type="submit"
+                        name="add_repo">Add</button>
                 </div>
             </form>
         </div>
@@ -37,13 +100,40 @@
 <script type="text/javascript">
     var deleteLink = document.querySelector("#delete-link");
     var confimationText = "Click again to confirm deletion";
-    
-    deleteLink.addEventListener("click", function() {
-        if(deleteLink.innerHTML == confimationText) {
-            window.location.replace("{{url_for('user_delete')}}");
+
+    deleteLink.addEventListener("click", function () {
+        if (deleteLink.innerHTML == confimationText) {
+            window.location.replace("{{ url_for('user_delete')}}");
         } else {
             deleteLink.classList.toggle("link-warning");
             deleteLink.innerHTML = confimationText;
+        }
+    });
+
+    repoForm = document.getElementById("user_repo_form");
+    repoForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        var input = document.getElementById("repo_url");
+        window.location.replace("{{ url_for('add_user_repo') }}/" + input.value);
+    });
+
+    function formError(event, message) {
+        event.preventDefault();
+        flashToast(message);
+    }
+
+    passForm = document.getElementById("user-settings-form");
+    passForm.addEventListener("submit", (event) => {
+        var password = document.getElementById("password");
+        var newpassw = document.getElementById("new_password");
+        var passconf = document.getElementById("new_password_confirmation")
+
+        if(newpassw.value.length < 8) {
+            formError(event, "Password must be at least 8 characters");
+        } else if(newpassw.value.length > 20) {
+            formError(event, "Password must be at most 20 characters");
+        } else if(newpassw.value != passconf.value) {
+            formError(event, "Passwords do not match");
         }
     });
 </script>

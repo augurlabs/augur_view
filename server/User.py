@@ -64,11 +64,61 @@ class User(UserMixin):
 
     def get_id(self):
         return self.id
+    
+    def query_repos(self):
+        endpoint = User.api + "/user/repos"
+
+        response = requests.post(endpoint, params = {"username": self.id})
+
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "success":
+                return data.get("repo_ids")
+            else:
+                User.logger.warning(f"Could not get user repos: {data.get('status')}")
+        else:
+            User.logger.warning(f"Could not get user repos: {response.status_code}")
+    
+    def add_repo(self, url):
+        endpoint = User.api + "/user/add_repo"
+
+        response = requests.post(endpoint, params = {"username": self.id, "repo_url": url})
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "Repo Added":
+                return True
+            else:
+                User.logger.warning(f"Could not add user repo {url}: {data.get('status')}")
+        else:
+            User.logger.warning(f"Could not add user repo {url}: {response.status_code}")
+        
+        return False
+
+    def add_org(self, url):
+        endpoint = User.api + "/user/add_org"
+
+        response = requests.post(endpoint, params = {"username": self.id, "org_url": url})
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "Org repos added":
+                return True
+            else:
+                User.logger.warning(f"Could not add user org {url}: {data.get('status')}")
+        else:
+            User.logger.warning(f"Could not add user org {url}: {response.status_code}")
+        
+        return False
+
 
     def register(self, request):
         endpoint = User.api + "/user/create"
 
-        # TODO Sanitize data (IE: any rando could exploit this to create an admin account)
+        data = request.form.to_dict()
+
+        # admin creation is CLI only for now
+        if "create_admin" in data:
+            data.pop("create_admin")
+
         response = requests.post(endpoint, params = request.form.to_dict())
 
         if response.status_code == 200:
@@ -97,6 +147,23 @@ class User(UserMixin):
 
         # Avoid abuse by malicious actors
         time.sleep(2)
+        return False
+    
+    def update_password(self, request):
+        endpoint = User.api + "/user/update"
+
+        data = request.form.to_dict()
+        data["username"] = self.id
+
+        response = requests.post(endpoint, params = data)
+
+        if response.status_code == 200 and "Updated" in response.json()["status"]:
+            return True
+        elif response.status_code != 200:
+            User.logger.debug(f"Could not update user password: {response.status_code}")
+        else:
+            User.logger.debug(f"Could not update user password: {response.json()['status']}")
+        
         return False
     
     def delete(self):

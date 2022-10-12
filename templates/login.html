@@ -1,6 +1,6 @@
 <div class="container-fluid mt-4">
     <div class="row justify-content-center">
-        <form class="form-signin" style="width: 400px;" method="post" action="{{ url_for('user_login') }}">
+        <form id="login-form" class="form-signin" style="width: 400px;" method="post" action="{{ url_for('user_login') }}">
             <h1 class="h3 mb-3 font-weight-normal">User Login</h1>
             <hr />
             <p>
@@ -8,16 +8,31 @@
                     autofocus>
             </p>
             <p>
+                <small id="passwordHelpInline" class="text-muted registration hidden">
+                    Must be 8-20 characters long.
+                </small>
+            <div class="input-group mb-3">
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password"
+                    required>
+                <div class="input-group-append">
+                    <button class="btn password-toggle" type="button" onclick="togglePass()">
+                        <i class="bi bi-eye-slash" id="togglePassword"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="password-confirm-block" class="registration hidden">
                 <div class="input-group mb-3">
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                    <input type="password" id="password-confirm" name="password-confirm" class="form-control"
+                        placeholder="Confirm Password">
                     <div class="input-group-append">
                         <button class="btn password-toggle" type="button" onclick="togglePass()">
-                            <i class="bi bi-eye-slash" id="togglePassword"></i>
+                            <i class="bi bi-eye-slash" id="togglePasswordConfirm"></i>
                         </button>
                     </div>
                 </div>
+            </div>
             </p>
-            <div id="registration-div" style="display: none;">
+            <div id="registration-div" class="registration hidden">
                 <p>
                     <input type="email" id="email" name="email" class="form-control" placeholder="Email Address">
                 </p>
@@ -46,28 +61,59 @@
         </form>
     </div>
 </div>
+<script type="text/javascript">
+    function formError(event, message) {
+        event.preventDefault();
+        flashToast(message);
+    }
+
+    function submitForm(event) {
+        var password = document.getElementById("password");
+        var passconf = document.getElementById("password-confirm");
+        var regdiv = document.getElementById("registration-div");
+        var registering = !regdiv.classList.contains("hidden");
+
+        if(registering) {
+            if(password.value.length < 8) {
+                formError(event, "Password must be at least 8 characters");
+            } else if(password.value.length > 20) {
+                formError(event, "Password must be at most 20 characters");
+            } else if(password.value != passconf.value) {
+                formError(event, "Passwords do not match");
+            }
+        }
+    }
+
+    form = document.getElementById("login-form");
+    form.addEventListener("submit", submitForm);
+</script>
 <script>
     // Password visibility toggle
     const togglePassword = document.querySelector("#togglePassword");
+    const togglePasswordConfirm = document.querySelector("#togglePasswordConfirm");
     const password = document.querySelector("#password");
+    const passwordConfirm = document.querySelector("#password-confirm")
 
     function togglePass() {
         // toggle the type attribute
         const type = password.getAttribute("type") === "password" ? "text" : "password";
         password.setAttribute("type", type);
+        passwordConfirm.setAttribute("type", type);
 
         // toggle the icon
         togglePassword.classList.toggle("bi-eye");
+        togglePasswordConfirm.classList.toggle("bi-eye");
     }
 
     togglePassword.addEventListener("click", togglePass);
 </script>
+<script src="{{ url_for('static', filename='js/range.js') }}" charset="utf-8"></script>
 <script type="text/javascript">
     // registration setup
     var registerFields = ["email", "first_name", "last_name"];
     var sigbtn = document.getElementById("sigbtn");
     var regbtn = document.getElementById("regbtn");
-    var regdiv = document.getElementById("registration-div");
+    var registrationElements = document.getElementsByClassName("registration");
 
     // Reflow form with additional elements for registration
     function registration() {
@@ -80,7 +126,11 @@
             obj.setAttribute("required", "");
         });
 
-        regdiv.style = "";
+        range(registrationElements.length).forEach(i => {
+            var element = registrationElements[i];
+            element.classList.toggle("hidden");
+        });
+
         sigbtn.setAttribute("onclick", "cancelRegistration()");
         regbtn.removeAttribute("onclick");
     }
@@ -91,7 +141,10 @@
         sigbtn.setAttribute("type", "submit");
         sigbtn.innerHTML = "Sign In";
 
-        regdiv.style = "display: none;";
+        range(registrationElements.length).forEach(i => {
+            var element = registrationElements[i];
+            element.classList.toggle("hidden");
+        });
 
         registerFields.forEach(field => {
             var obj = document.getElementById(field);

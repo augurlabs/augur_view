@@ -22,7 +22,7 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="{{ url_for('user_settings') }}">Profile</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('dashboard_view') }}">Dashboard</a></li>
+                        {# <li><a class="dropdown-item" href="{{ url_for('dashboard_view') }}">Dashboard</a></li> #}
                         <li><a class="dropdown-item" href="{{ url_for('user_logout') }}">Logout</a></li>
                     </ul>
                 </li>
@@ -51,13 +51,13 @@
                 </li>
                 <!-- .junk->NAVBAR_EXTRAS -->
             </ul>
-            <ul class="navbar-nav navbar-right">
+            {# <ul class="navbar-nav navbar-right">
                 <li class="nav-item  collapse navbar-collapse">
                     <a class="navbar-brand" data-bs-toggle="offcanvas" data-bs-target="#notifications-panel" aria-controls="notifications-panel" href="#First">
                         <img class="notification-icon" src="{{ url_for('static', filename='img/notification-icon.svg') }}">
                     </a>
                 </li>
-            </ul>
+            </ul> #}
             <form class="d-flex" method="get" action="?">
                 <input class="form-control me-2" name="q" type="search" placeholder="Filter Repos" aria-label="Search" value="{{query_key or ''}}">
                 <button class="btn btn-outline-dark" type="submit" style="color: white;">Search</button>
