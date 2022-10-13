@@ -39,8 +39,8 @@ def get_version():
 @login_required
 def add_user_repo(repo_url = None):
     if not repo_url:
-        flash("Repo URL must not be empty")
-    elif current_user.add_repo(repo_url):
+        flash("Repo or org URL must not be empty")
+    elif current_user.try_add_url(repo_url):
         flash("Successfully added repo")
     else:
         flash("Could not add repo")

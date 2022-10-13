@@ -1,6 +1,6 @@
 from flask_login import UserMixin
 # I'm using requests here to avoid circular integration with utils
-import requests, time
+import requests, time, re
 
 """ ----------------------------------------------------------------
 """
@@ -78,6 +78,14 @@ class User(UserMixin):
                 User.logger.warning(f"Could not get user repos: {data.get('status')}")
         else:
             User.logger.warning(f"Could not get user repos: {response.status_code}")
+    
+    def try_add_url(self, url):
+        result = re.search("https?:\/\/github\.com\/([[:alnum:] - _]+)\/([[:alnum:] - _]+)(.git)?\/?$", url)
+
+        if result:
+            return self.add_repo(url)
+        else:
+            return self.add_org(url)
     
     def add_repo(self, url):
         endpoint = User.api + "/user/add_repo"
