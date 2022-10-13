@@ -41,9 +41,9 @@ def add_user_repo(repo_url = None):
     if not repo_url:
         flash("Repo or org URL must not be empty")
     elif current_user.try_add_url(repo_url):
-        flash("Successfully added repo")
+        flash("Successfully added repo or org")
     else:
-        flash("Could not add repo")
+        flash("Could not add repo or org")
     
     return redirect(url_for("user_settings"))
 

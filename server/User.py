@@ -80,12 +80,19 @@ class User(UserMixin):
             User.logger.warning(f"Could not get user repos: {response.status_code}")
     
     def try_add_url(self, url):
-        result = re.search("https?:\/\/github\.com\/([[:alnum:] - _]+)\/([[:alnum:] - _]+)(.git)?\/?$", url)
+        repo = re.search("https?:\/\/github\.com\/([A-Za-z0-9 \- _]+)\/([A-Za-z0-9 \- _]+)(.git)?\/?$", url)
+        org = re.search("https?:\/\/github\.com\/([A-Za-z0-9 \- _]+)\/?$", url)
 
-        if result:
+        print(repo, org)
+
+        if repo:
+            print("Here")
             return self.add_repo(url)
-        else:
+        elif org:
+            print("There")
             return self.add_org(url)
+            
+        return False
     
     def add_repo(self, url):
         endpoint = User.api + "/user/add_repo"
