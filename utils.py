@@ -387,7 +387,11 @@ def renderRepos(view, query, data, sorting = None, rev = False, page = None, fil
         that the data type is comparable to integer 0).
     """
     if sorting is not None:
-        data = sorted(data, key = lambda i: i[sorting] or 0, reverse = rev)
+        try:
+            data = sorted(data, key = lambda i: i[sorting] or 0, reverse = rev)
+        except Exception as e:
+            flash("An error occurred during sorting")
+            logger.error(str(e))
 
     """ ----------
         Here we extract a subset of the data for display on the site. First we

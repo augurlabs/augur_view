@@ -96,9 +96,17 @@
         </div>
     </div>
 </div>
+<div id="loading-modal" class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered spinner-container">
+        <svg class="spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+            <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+        </svg>
+    </div>
+</div>
 
 <script type="text/javascript">
     var deleteLink = document.querySelector("#delete-link");
+    var loadingModal = new bootstrap.Modal(document.getElementById('loading-modal'));
     var confimationText = "Click again to confirm deletion";
 
     deleteLink.addEventListener("click", function () {
@@ -114,6 +122,7 @@
     repoForm.addEventListener("submit", (event) => {
         event.preventDefault();
         var input = document.getElementById("repo_url");
+        loadingModal.show();
         window.location.replace("{{ url_for('add_user_repo') }}/" + input.value);
     });
 
