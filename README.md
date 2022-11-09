@@ -1,6 +1,6 @@
 # Group 12 Semester project
 
-[CS4320 Group 12 Semester Project - Requirements.pdf](https://github.com/Simon-SS/augur_view_group_12/files/9966363/CS4320.Group.12.Semester.Project.-.Requirements.pdf)
+![CS4320 Group 12 Semester Project - Requirements.pdf](https://github.com/Simon-SS/augur_view_group_12/files/9966363/CS4320.Group.12.Semester.Project.-.Requirements.pdf)
 
 # augur_view
 
