@@ -1,6 +1,7 @@
 # Group 12 Semester project
 
-![](./CS4320.Group.12.Semester.Project.-.Requirements.pdf)
+## Sprint 1
+See CS4320.Group.12.Semester.Project.-.Requirements.pdf in root directory
 
 # augur_view
 
