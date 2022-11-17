@@ -34,7 +34,7 @@
     for a response.
 #}
 <script type="text/javascript">
-    $.getJSON("{{ url_for('wait_for_request', id=repo_id) }}", function(image_data) {
+    $.getJSON("{{ url_for('wait_for_report_request', id=repo_id) }}", function(image_data) {
         // Collect all placeholder images to be replaced with their visualizations
         var image_placeholders = document.getElementsByClassName("img_placeholder");
         for(let index = 0; index < image_placeholders.length; ++index) {

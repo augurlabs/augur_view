@@ -1,18 +1,38 @@
-# Running on a server
-To run Augur-View headless on a server, we'll install it as a system service under systemd and proxy it through your web server of choice. The WSGI server will be run under Gunicorn for performance reasons. we'll provide proxy instructions for Apache and NGINX. These instructions assume you have a working web server (such as Apache or NGINX) already installed.
+# Running on a server with Docker
 
----
+Acquire the [Dockerfile](Dockerfile), and place it on your server. There are a number of configuration options available in the Dockerfile, so make sure to read through them and see that they fit your needs.
 
-Make sure you have the proxy modules enabled in your web server. With NGINX, proxy will already be enabled, but in Apache, this can be done with:
+Also note that this installation option requires that you have [Docker](https://docs.docker.com/get-docker/) installed.
 
-```
-a2enmod
+## Build your container
+
+In the same directory as your Dockerfile, run the following command in the terminal:
+
+```bash
+docker build -t augur-view .
 ```
 
-Then, provide the following list of modules at the prompt:
+In this example, we have called the container `augur-view`, but you may call it whatever you wish.
+
+## Run the container
+
+Once you have built your container, you can run it with the following command:
+
+```bash
+docker run -dp 8000:8000 augur-view
 ```
-proxy proxy_ajp proxy_http rewrite deflate headers proxy_balancer proxy_connect proxy_html
-```
+
+This command has several parts, let's address each of them:
+- The `-d` option runs the container in "detached" mode, meaning that it will not take input from or print to the current terminal session (IE: it runs in the background).
+- The `-p` option allows us to specify a port mapping between the host and the container.
+  - In this example, we have mapped the host port `8000` to the container port `8000`.
+  - Keep in mind that the mapping is specified as `[host port]:[container port]`
+- The final parameter is the name of the container we built above
+
+If you modified the port options in the Dockerfile before building the container, please remember to use the updated values when you run the container.
+
+# Running on a server with systemd
+To run Augur-View headless on a server, we'll install it as a system service under systemd and proxy it through your web server of choice. The WSGI server in this example will be run under Gunicorn. we'll provide proxy instructions for Apache and NGINX. These instructions assume you have a working web server (such as Apache or NGINX) already installed.
 
 ## Preparing the app
 In the root augur_view folder, create a new Python file, we'll call it `wsgi.py`, and populate it with the following code:
@@ -45,7 +65,7 @@ Then run `source env/bin/activate` to activate the virtual environment.
 
 Once you have your virtual environment created and activated, make sure you have the requirements installed
 ```
-pip install -r requirements.txt 
+pip install -r requirements.txt
 ```
 
 ## Installing the service
@@ -97,6 +117,19 @@ To start the service, you need to run `sudo systemctl start augur_view` (or what
 
 If you want the service to run on startup, you can run `sudo systemctl enable augur_view`.
 
+# Setting up a proxy
+
+Make sure you have the proxy modules enabled in your web server. With NGINX, proxy will already be enabled, but in Apache, this can be done with:
+
+```
+a2enmod
+```
+
+Then, provide the following list of modules at the prompt:
+```
+proxy proxy_ajp proxy_http rewrite deflate headers proxy_balancer proxy_connect proxy_html
+```
+
 ## Proxy with Apache
 
 To proxy with Apache, you need to edit an existing virtualhost or create a new one. The proxy you create should direct traffic to localhost, using the port you chose above (such as `8000`). You can replace the Location below with any relative address of your choice (such as "/augur").
@@ -121,13 +154,13 @@ To proxy with NGINX, you need to add a reverse proxy location to the NGINX confi
 
 The Server port will be used to proxy the API served by that instance, which is required by augur\_view.
 
-`server_name` is the full domain that you will have augur\_view resolving to. 
+`server_name` is the full domain that you will have augur\_view resolving to.
 
 `proxy_pass` for `location /api/unstable/` is the full domain that you have augur\_view resolving to, with an additional port specification that matches the server port specification in your running instance of augur.
 
-**Create this file where your operating system keeps its `sites-enabled` directory. On Ubuntu, that is `/etc/nginx/sites-enabled`.** 
+**Create this file where your operating system keeps its `sites-enabled` directory. On Ubuntu, that is `/etc/nginx/sites-enabled`.**
 
-**After adding this file, execute `sudo nginx -t` to make sure it is configured correctly, and `sudo systemctl restart nginx` to have it take effect immediately** 
+**After adding this file, execute `sudo nginx -t` to make sure it is configured correctly, and `sudo systemctl restart nginx` to have it take effect immediately**
 
 ```
 server {
@@ -148,5 +181,5 @@ server {
 }
 
 ```
-### Note
+## Note
 Whatever location you set your proxy to, you'll need to update the `approot` parameter of the default config. The default `approot` is `"/"`.

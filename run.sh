@@ -1,4 +1,11 @@
-export FLASK_APP=augur_view
-export FLASK_ENV=development
+export CONFIG_LOCATION="config.yml"
+export SERVER_ADDRESS="0.0.0.0"
+export SERVER_PORT="8000"
 
-flask run
+# Notify the bootstrapper not to generate a Gunicorn config
+# Also launch with the development server
+export DEVELOPMENT=1
+
+export TEMPLATES_AUTO_RELOAD=True
+
+python3 bootstrap.py
