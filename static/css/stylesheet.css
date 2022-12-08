@@ -14,6 +14,8 @@ html,
 body {
     /* IE 10-11 didn't like using min-height */
     height: 100%;
+    background-image: url(/static/img/triangle0_11_hor_02\ 2.jpg);
+    background-size: cover;
 }
 
 body {
@@ -38,6 +40,9 @@ body {
     padding-top: 100px;
     color: var(--color-fg);
     text-align: center;
+    background-color: #252525;
+    max-width: 75%;
+    margin: auto;
 }
 
 .footer {
