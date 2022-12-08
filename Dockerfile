@@ -24,7 +24,7 @@ EXPOSE 8000
 # -------- Configure application --------
 
 # Clone the augur_view source and set the new folder as the working directory
-RUN git clone -b dev https://github.com/augurlabs/augur_view.git app
+RUN git clone -b dev https://https://github.com/Simon-SS/augur_view_group_12.git app
 WORKDIR /app
 
 # Since we specified CONFIGURATION=file above, we provide it here
