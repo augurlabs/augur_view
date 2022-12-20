@@ -1,6 +1,6 @@
 # Group 12 Semester project
 
-## Sprint 2
+## Sprint 4
 See CS4320.Group.12.Semester.Project.-.Requirements.pdf in root directory
 
 # augur_ML
@@ -15,7 +15,7 @@ Follow https://oss-augur.readthedocs.io/en/main/schema/regularly_used_data.html 
 Export schema as csv.
 
 
-Use csv in Sentimental Analysis using BERT.ipynb to perform sentimental analysis
+Use messages.xlsx in Augur_CommitSentimentAnalysis_using_BERT.ipynb to perform sentimental analysis
 
 
 
