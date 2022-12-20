@@ -12,7 +12,7 @@ Install Augur following
 
 Follow https://oss-augur.readthedocs.io/en/main/schema/regularly_used_data.html to get familiarize with message schema.
 
-Export schema as csv.
+Export schema as xlsx.
 
 
 Use messages.xlsx in Augur_CommitSentimentAnalysis_using_BERT.ipynb to perform sentimental analysis
