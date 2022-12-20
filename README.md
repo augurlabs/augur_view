@@ -1,3 +1,35 @@
+# Group 12 Semester project
+
+## Sprint 4
+See CS4320.Group.12.Semester.Project.-.Requirements.pdf in root directory
+
+# augur_ML
+
+
+Install Augur following 
+
+
+
+Follow https://oss-augur.readthedocs.io/en/main/schema/regularly_used_data.html to get familiarize with message schema.
+
+Export schema as xlsx.
+
+
+Use messages.xlsx in Augur_CommitSentimentAnalysis_using_BERT.ipynb to perform sentimental analysis
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # augur_view
 
 HTML frontend for Chaoss/Augur, written with Bootstrap and served by Flask
