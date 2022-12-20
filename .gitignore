@@ -9,3 +9,4 @@ wsgi.py
 *.yml
 *.conf
 !*/static/cache/README.md
+*.db

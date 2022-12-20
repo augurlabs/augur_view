@@ -1,8 +1,75 @@
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
-from flask import render_template
+from flask import render_template, flash
 from init import *
-import urllib.request, json, os, math, yaml, urllib3, time, logging
+from server import User
+import urllib.request, urllib.error, json, os, math, yaml, urllib3, time, logging, re
+
+def parse_url(url):
+    from urllib.parse import urlparse
+
+    # localhost is not a valid host
+    if "localhost" in url:
+        url = url.replace("localhost", "127.0.0.1")
+    
+        if not url.startswith("http"):
+            url = f"http://{url}"
+
+    parts = urlparse(url)
+    directories = parts.path.strip('/').split('/')
+    queries = parts.query.strip('&').split('&')
+
+    elements = {
+        'scheme': parts.scheme,
+        'netloc': parts.netloc,
+        'path': parts.path,
+        'params': parts.params,
+        'query': parts.query,
+        'fragment': parts.fragment
+    }
+
+    return elements, directories, queries
+
+def validate_api_url(url):
+    from urllib.parse import urlunparse
+
+    parts = parse_url(url)[0]
+
+    if not parts["scheme"]:
+        parts["scheme"] = "http"
+
+    staged_url = urlunparse(parts.values())
+
+    def is_status_ok():
+        try:
+            with urllib.request.urlopen(staged_url) as request:
+                response = json.loads(request.read().decode())
+                if "status" in response:
+                    return request.url
+        except Exception as e:
+            logging.error(f"Error during serving URL verification: {str(e)}")
+
+        return False
+
+    status = is_status_ok()
+    if not status:
+        if "/api/unstable" not in parts["path"]:
+            # The URL does not point directly to the API
+            # try once more with a new suffix
+            parts["path"] = str(Path(parts["path"]).joinpath("api/unstable"))
+            staged_url = urlunparse(parts.values())
+
+            status = is_status_ok()
+            if not status:
+                # The URL does not point to a valid augur instance
+                return ""
+            else:
+                return status
+        else:
+            return ""
+
+    return status
+
 
 """ ----------------------------------------------------------------
 loadSettings:
@@ -17,21 +84,16 @@ loadSettings:
 """
 def loadSettings():
     global settings
-    try:
-        with open(configFile) as file:
-            settings = yaml.load(file, Loader=yaml.FullLoader)
-    except Exception as err:
-        logging.error(f"An exception occurred reading from [{configFile}], default settings kept:")
-        logging.error(err)
+    configFilePath = Path(configFile)
+    if not configFilePath.is_file():
         init_settings()
-        try:
-            with open(configFile, 'w') as file:
-                logging.info("Attempting to generate default config.yml")
-                yaml.dump(settings, file)
-                logging.info("Default settings file successfully generated.")
-        except Exception as ioErr:
-            logging.error("Error creating default config:")
-            logging.error(ioErr)
+        with open(configFile, 'w') as file:
+            logging.info(f"Generating default configuration file: {configFile}")
+            yaml.dump(settings, file)
+            logging.info("Default configuration file successfully generated.")
+    else:
+        with open(configFilePath) as file:
+            settings = yaml.load(file, Loader=yaml.FullLoader)
 
     # Ensure that the cache directory exists and is valid
     cachePath = Path(settings["caching"])
@@ -48,12 +110,29 @@ def loadSettings():
     # Use the resolved path for cache directory access
     settings["caching"] = cachePath
 
+    staged_url = validate_api_url(settings["serving"])
+    if staged_url:
+        settings["serving"] = re.sub("/$", "", staged_url)
+        settings["valid"] = True
+    else:
+        settings["valid"] = False
+        raise ValueError(f"The provided serving URL is not valid: {settings['serving']}")
+
 """ ----------------------------------------------------------------
 """
 def getSetting(key):
     return settings[key]
 
+init_logging()
+
 loadSettings()
+
+from init import logger
+
+User.api = getSetting("serving")
+User.logger = logger
+
+version_check(settings)
 
 """ ----------------------------------------------------------------
 """
@@ -81,7 +160,6 @@ def loadReports():
         return False
 
 loadReports()
-
 cache_files_requested = []
 
 """ ----------------------------------------------------------------
@@ -132,28 +210,34 @@ requestJson:
 @RETURN:    data: JSON
         An object representing the JSON data read
         from either the cache file or the enpoint
-        URL. Will return None if an error is
+        URL. Will return None if an error isreturn None
         encountered.
 """
-def requestJson(endpoint):
+def requestJson(endpoint, cached = True):
     filename = toCacheFilepath(endpoint)
     requestURL = getSetting('serving') + "/" + endpoint
-    logging.info('requesting json')
+    logging.info(f'requesting json from: {endpoint}')
     try:
-        if cacheFileExists(filename):
+        if cached and cacheFileExists(filename):
             with open(filename) as f:
                 data = json.load(f)
         else:
             with urllib.request.urlopen(requestURL) as url:
+                if url.getcode() != 200:
+                    raise urllib.error.HTTPError(code = url.getcode())
+
                 data = json.loads(url.read().decode())
-                with open(filename, 'w') as f:
-                    json.dump(data, f)
+
+                if cached:
+                    with open(filename, 'w') as f:
+                        json.dump(data, f)
         if filename in cache_files_requested:
             cache_files_requested.remove(filename)
         return data
     except Exception as err:
         logging.error("An exception occurred while fulfilling a json request")
         logging.error(err)
+        return False, str(err)
 
 """ ----------------------------------------------------------------
 """
@@ -269,7 +353,7 @@ renderRepos:
 """
 def renderRepos(view, query, data, sorting = None, rev = False, page = None, filter = False, pageSource = "repo_table_view", sortBasis = None):
     pagination_offset = getSetting('pagination_offset')
-
+    
     """ ----------
         If the data does not exist, we cannot construct the table to display on
         site. Rendering the table module without data displays an error message
@@ -303,7 +387,11 @@ def renderRepos(view, query, data, sorting = None, rev = False, page = None, fil
         that the data type is comparable to integer 0).
     """
     if sorting is not None:
-        data = sorted(data, key = lambda i: i[sorting] or 0, reverse = rev)
+        try:
+            data = sorted(data, key = lambda i: i[sorting] or 0, reverse = rev)
+        except Exception as e:
+            flash("An error occurred during sorting")
+            logger.error(str(e))
 
     """ ----------
         Here we extract a subset of the data for display on the site. First we
@@ -315,21 +403,25 @@ def renderRepos(view, query, data, sorting = None, rev = False, page = None, fil
     x = pagination_offset * (page - 1)
     data = data[x: x + pagination_offset]
 
-    return render_template('index.html', body="repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=pagination_offset, PS=pageSource, api_url=getSetting('serving'), reverse = rev, sorting = sorting)
+    return render_module("repos-" + view, title="Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=pagination_offset, PS=pageSource, reverse = rev, sorting = sorting)
 
 """ ----------------------------------------------------------------
     Renders a simple page with the given message information, and optional page
     title and redirect
 """
 def renderMessage(messageTitle, messageBody, title = None, redirect = None, pause = None):
-    return render_template('index.html', body="notice", title=title, messageTitle=messageTitle, messageBody=messageBody, api_url=getSetting('serving'), redirect=redirect, pause=pause)
+    return render_module("notice", messageTitle=messageTitle, messageBody=messageBody, title=title, redirect=redirect, pause=pause)
 
 """ ----------------------------------------------------------------
 """
 def render_module(module, **args):
-    args.setdefault("title", "Augur View")
+    # args.setdefault("title", "Augur View")
     args.setdefault("api_url", getSetting("serving"))
     args.setdefault("body", module)
+
+    if not getSetting("valid"):
+        args.setdefault("invalid", True)
+
     return render_template('index.html', **args)
 
 """ ----------------------------------------------------------------

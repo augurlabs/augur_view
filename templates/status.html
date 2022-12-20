@@ -52,7 +52,7 @@
 
 <script type="text/javascript">
     function loadCharts() {
-        $.getJSON("{{ api_url }}/collection_status/pull_requests", function(response) {
+        $.getJSON("{{ url_for('make_api_request', request_endpoint='collection_status/pull_requests') }}", function(response) {
             // ------------------------------------------------- PRS COUNT CHART
             var data = new google.visualization.DataTable();
             var dashboard = new google.visualization.Dashboard(document.getElementById('pull_requests_dashboard_div_1'));
@@ -149,7 +149,7 @@
             materialChart = new google.charts.Bar(document.getElementById('pull_requests_div_3'));
             materialChart.draw(data, options);
         });
-        $.getJSON("{{ api_url }}/collection_status/issues", function(response) {
+        $.getJSON("{{ url_for('make_api_request', request_endpoint='collection_status/issues') }}", function(response) {
             // ---------------------------------------------------- ISSUES CHART
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Repo Name');
@@ -201,7 +201,7 @@
             chart.draw(dataTable, options);
 
         });
-        $.getJSON("{{ api_url }}/collection_status/commits", function(response) {
+        $.getJSON("{{ url_for('make_api_request', request_endpoint='collection_status/commits') }}", function(response) {
             // ----------------------------- COMMITS COMPLETION STATUS PIE CHART
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Completion status');
