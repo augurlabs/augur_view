@@ -35,6 +35,24 @@ class User(UserMixin):
     @property
     def exists(self):
         return self._exists
+    
+    @property
+    def default_group(self):
+        if not self.is_authenticated:
+            return None
+        elif self._default_group:
+            return self._default_group
+        
+        group_name = self.id + "_default"
+        groups = self.get_groups()
+
+        if group_name not in groups:
+            if not self.add_repo_group(group_name):
+                User.logger.warning("Default user group does not exist, and could not be created")
+                return None
+        
+        self._default_group = group_name
+        return group_name
 
     def __init__(self, id):
         # flask_login requires that the id be of type string
@@ -43,6 +61,7 @@ class User(UserMixin):
         self._is_anonymous = False
         self._is_authenticated = False
         self._is_active = False
+        self._default_group = None
 
         # Query the server for the existence of this user
         self.query_user()
@@ -65,8 +84,11 @@ class User(UserMixin):
     def get_id(self):
         return self.id
     
-    def query_repos(self):
+    def query_repos(self, group = None):
         endpoint = User.api + "/user/repos"
+
+        if not group:
+            group = self.default_group
 
         response = requests.post(endpoint, params = {"username": self.id})
 
@@ -79,25 +101,25 @@ class User(UserMixin):
         else:
             User.logger.warning(f"Could not get user repos: {response.status_code}")
     
-    def try_add_url(self, url):
+    def try_add_url(self, url, group = None):
         repo = re.search("https?:\/\/github\.com\/([A-Za-z0-9 \- _]+)\/([A-Za-z0-9 \- _]+)(.git)?\/?$", url)
         org = re.search("https?:\/\/github\.com\/([A-Za-z0-9 \- _]+)\/?$", url)
 
-        print(repo, org)
-
         if repo:
-            print("Here")
-            return self.add_repo(url)
+            return self.add_repo(url, group)
         elif org:
-            print("There")
-            return self.add_org(url)
+            return self.add_org(url, group)
             
         return False
     
-    def add_repo(self, url):
+    def add_repo(self, url, group = None):
         endpoint = User.api + "/user/add_repo"
 
+        if not group:
+            group = self.default_group
+
         response = requests.post(endpoint, params = {"username": self.id, "repo_url": url})
+
         if response.status_code == 200:
             data = response.json()
             if data.get("status") == "Repo Added":
@@ -109,10 +131,11 @@ class User(UserMixin):
         
         return False
 
-    def add_org(self, url):
+    def add_org(self, url, group = None):
         endpoint = User.api + "/user/add_org"
 
         response = requests.post(endpoint, params = {"username": self.id, "org_url": url})
+
         if response.status_code == 200:
             data = response.json()
             if data.get("status") == "Org repos added":
@@ -124,6 +147,60 @@ class User(UserMixin):
         
         return False
 
+    def get_groups(self):
+        endpoint = User.api + "/user/groups"
+
+        response = requests.post(endpoint, params = {"username": self.id})
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            data = response.json()
+            User.logger.warning(f"Could not get user groups: {data.get('status')}")
+            
+    def add_repo_group(self, group_name):
+        endpoint = User.api + "/user/add_group"
+
+        response = requests.post(endpoint, params = {"username": self.id, "group_name": group_name})
+
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "Group created":
+                return True
+            else:
+                User.logger.warning(f"Could not add user group: {data.get('status')}")
+        else:
+            User.logger.warning(f"Could not add user group: {response.status_code}")
+
+    def remove_repo_group(self, group_name):
+        endpoint = User.api + "/user/remove_group"
+
+        response = requests.post(endpoint, params = {"username": self.id, "group_name": group_name})
+
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "Group deleted":
+                return True
+            else:
+                User.logger.warning(f"Could not remove user group: {data.get('status')}")
+        else:
+            User.logger.warning(f"Could not remove user group: {response.status_code}")
+    
+    def select_group(self, group_name, **kwargs):
+        endpoint = User.api + "/user/group_repos"
+
+        kwargs["username"] = self.id
+        kwargs["group_name"] = group_name
+
+        response = requests.post(endpoint, params = kwargs)
+
+        if response.status_code == 200:
+            return response.json()
+        elif response.status_code == 400:
+            data = response.json()
+            User.logger.warning(f"Could not select user group {group_name}: {data.get('status')}")
+        else:
+            User.logger.warning(f"Could not select user group {group_name}: {response.status_code}")
 
     def register(self, request):
         endpoint = User.api + "/user/create"
@@ -140,7 +217,7 @@ class User(UserMixin):
             return True
         elif response.status_code != 200:
             User.logger.debug(f"Could not register user: {response.status_code}")
-        else:
+        else: # :/
             User.logger.debug(f"Could not register user: {response.json()['status']}")
 
         return False

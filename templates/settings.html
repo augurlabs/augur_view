@@ -37,39 +37,30 @@
     <div class="row justify-content-center">
         <div class="col-12 col-lg-4">
             <br>
-            <h2>User Repos</h2>
-            {%- set repos = current_user.query_repos() -%}
-            {% if repos %}
+            <h2>Your Repo Groups</h2>
+            {%- set groups = current_user.get_groups() -%}
+            {% if groups %}
+            {% for group in groups %}
             {%- set tableHeaders =
-            [{"title" : "#"},
-            {"title" : "Repo ID", "key" : "repo_id"}] -%}
+            [{"title" : "Group ID"},
+            {"title" : "Group Name"}]
+            -%}
             <div class="display-table rounded w3-animate-opacity">
                 <table class="table table-striped table-bordered">
                     <!-- Table header start -->
                     <thead>
                         <tr>
                             {%- for header in tableHeaders -%}
-                            {% if PS and header.key %}
-                            {%- if sorting == header.key -%}
-                            {%- set sorting_link = url_for(PS, q=query_key, p=activePage, s=header.key, r= not reverse)
-                            -%}
-                            {%- else -%}
-                            {%- set sorting_link = url_for(PS, q=query_key, p=activePage, s=header.key) -%}
-                            {%- endif -%}
-                            <th scope="col"><a class="sorting-link" href="{{ sorting_link }}"> {{ header.title }}
-                                    {%- if sorting == header.key and reverse %} ▲ {% elif sorting == header.key %} ▼ {%
-                                    endif %}</a></th>
-                            {% else -%}
                             <th scope="col">{{ header.title }}</th>
-                            {% endif %} {%- endfor -%}
+                            {%- endfor -%}
                         </tr>
                     </thead>
                     <!-- Table rows start -->
                     <tbody>
                         {% for repo in repos %}
                         <tr>
-                            <th scope="row">{{ loop.index }}</th>
-                            <td><a href="{{ url_for('repo_repo_view', id=repo) }}">{{ repo }}</a></td>
+                            <th scope="row">{{ group.group_id }}</th>
+                            <td><a href="{{ url_for('user_group_view', group = group.name) }}">{{ group.name }}</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>

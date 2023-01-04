@@ -216,6 +216,47 @@ def repo_repo_view(id):
     return render_module("repo-info", reports=reports.keys(), images=reports, title="Repo", repo=repo, repo_id=id)
 
 """ ----------------------------------------------------------------
+default:
+table:
+    This route returns the default view of the application, which
+    is currently defined as the repository table view
+"""
+@app.route('/user/group/<group>')
+def user_group_view(group):
+    params = {}
+
+    # NOT IMPLEMENTED
+    # query = request.args.get('q')
+
+    try:
+        params["page"] = int(request.args.get('p'))
+    except:
+        pass
+
+    if sort := request.args.get('s'):
+        params["sort"] = sort
+
+    rev = request.args.get('r')
+    if rev is not None:
+        if rev == "False":
+            params["direction"] = "ASC"
+        elif rev == "True":
+            params["direction"] = "DESC"
+    
+    if current_user.is_authenticated:
+        data = current_user.select_group(group, **params)
+
+        if not data:
+            return renderMessage("Error Loading Group", "Either the group you requestion does not exist, or an unspecified error occurred.")
+    else:
+        return renderMessage("Authentication Required", "You must be logged in to view this page.")
+
+    #if not cacheFileExists("repos.json"):
+    #    return renderLoading("repos/views/table", query, "repos.json")
+
+    return renderRepos("table", None, data, sorting, rev, page, True)
+
+""" ----------------------------------------------------------------
 Admin dashboard:
     View the admin dashboard.
 """
