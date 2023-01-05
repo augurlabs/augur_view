@@ -227,19 +227,36 @@ class User(UserMixin):
 
         response = requests.post(endpoint, params = request.form.to_dict())
 
-        if response.status_code == 200 and response.json()["status"] == "Validated":
-            self._is_authenticated = True
-            self._is_active = True
-            return True
+        if response.status_code == 200
+            data = response.json()
+            if data["status"] == "Validated":
+                self._is_authenticated = True
+                self._is_active = True
+                return data["session"]
         elif response.status_code != 200:
             User.logger.debug(f"Could not validate user: {response.status_code}")
         else:
             User.logger.debug(f"Could not validate user: {response.json()['status']}")
         
-
         # Avoid abuse by malicious actors
         time.sleep(2)
-        return False
+
+    def oauth(self, session_key = None):
+        endpoint = User.api + "/user/oauth"
+
+        response = requests.post(endpoint, params = {"session": session_key})
+
+        if response.status_code == 200:
+            data = response.json()
+            if data["status"] == "Validated":
+                return data["oauth_token"]
+        elif response.status_code != 200:
+            User.logger.debug(f"Could not validate user: {response.status_code}")
+        else:
+            User.logger.debug(f"Could not validate user: {response.json()['status']}")
+        
+        # Avoid abuse by malicious actors
+        time.sleep(2)
     
     def update_password(self, request):
         endpoint = User.api + "/user/update"

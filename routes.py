@@ -1,6 +1,6 @@
 from flask import Flask, render_template, render_template_string, request, abort, jsonify, redirect, url_for, session, flash
 from utils import *
-from augur_view import app, login_manager
+from augur_view import app, login_manager, unauthorized
 from flask_login import login_user, logout_user, current_user, login_required
 from server import User
 from server import LoginException
@@ -139,7 +139,9 @@ def user_login():
                 else:
                     flash("Account successfully created")
 
-            if user.validate(request) and login_user(user, remember = remember):
+            session_key = user.validate(request)
+            if session_key and login_user(user, remember = remember):
+                session["aug_t"] = session_key
                 flash(f"Welcome, {user_id}!")
                 if "login_next" in session:
                     return redirect(session.pop("login_next"))
@@ -218,9 +220,31 @@ def repo_repo_view(id):
 """ ----------------------------------------------------------------
 default:
 table:
-    This route returns the default view of the application, which
-    is currently defined as the repository table view
+    This route performs external authorization for a user
 """
+@app.route('/user/authorize')
+def user_oauth():
+    response_url = request.args.get("rurl") or session["rurl"]
+
+    if not response_url:
+        return renderMessage("Invalid Request", "It looks like some information went missing. You may need to return to the previous application and make the request again.")
+    elif not current_user.is_authenticated:
+        session["rurl"] = response_url
+        return unauthorized()
+    
+    if "rurl" in session:
+        session.pop("rurl")
+    
+    token = current_user.oauth(session["aug_t"])
+    
+    return redirect(f"{response_url}?t={token}")
+
+""" ----------------------------------------------------------------
+default:
+table:
+    This route returns a view of the selected user repo group
+"""
+@login_required
 @app.route('/user/group/<group>')
 def user_group_view(group):
     params = {}
@@ -242,19 +266,16 @@ def user_group_view(group):
             params["direction"] = "ASC"
         elif rev == "True":
             params["direction"] = "DESC"
-    
-    if current_user.is_authenticated:
-        data = current_user.select_group(group, **params)
 
-        if not data:
-            return renderMessage("Error Loading Group", "Either the group you requestion does not exist, or an unspecified error occurred.")
-    else:
-        return renderMessage("Authentication Required", "You must be logged in to view this page.")
+    data = current_user.select_group(group, **params)
+
+    if not data:
+        return renderMessage("Error Loading Group", "Either the group you requested does not exist, or an unspecified error occurred.")
 
     #if not cacheFileExists("repos.json"):
     #    return renderLoading("repos/views/table", query, "repos.json")
 
-    return renderRepos("table", None, data, sorting, rev, page, True)
+    return render_module("repos-table", title=f"{group} Repos", repos=data, query_key=query, activePage=page, pages=pages, offset=getSetting('pagination_offset'), PS="user_group_view", reverse = rev, sorting = sorting)
 
 """ ----------------------------------------------------------------
 Admin dashboard:
